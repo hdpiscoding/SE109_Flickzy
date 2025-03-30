@@ -75,7 +75,7 @@ const App = () => {
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "#4AB7B6", // Green color
+          colorPrimary: "", // Green color
         },
       }}
     >
