@@ -1,0 +1,37 @@
+package com.flickzy.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+import java.util.List;
+import java.util.UUID;
+
+@Entity
+@Table(name = "room")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Room {
+    @Id
+    @GeneratedValue
+    @Column(columnDefinition = "uuid")
+    UUID roomId;
+
+    @ManyToOne
+    @JoinColumn(name = "cinema_id")
+    Cinemas cinema;
+
+    @Column(columnDefinition = "text")
+    String roomName;
+
+    String roomType;
+
+    @OneToMany(mappedBy = "room")
+    List<Seats> seats;
+
+    @OneToMany(mappedBy = "room")
+    List<Schedule> schedules;
+}
