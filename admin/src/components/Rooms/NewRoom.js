@@ -16,48 +16,87 @@ export default function RectangleGrid() {
     color: "#000000",
   });
 
+  const [rowLabelMode, setRowLabelMode] = useState("all"); // "all" hoặc "aToZ"
   const handleOpenDrawer = () => {
     setIsDrawerVisible(true);
   };
-  const handleRightShift = () => {
-    try {
-      if (selectedGridRectangle !== null) {
-        const updatedRectangles = rectangles
-          .map((rect, index) => {
-            if (
-              rect.row === rectangles[selectedGridRectangle].row &&
-              index >= selectedGridRectangle
-            ) {
-              const newCol = rect.col + 1;
-              if (newCol + rect.width > column + 1) {
-                return null; // Remove rectangle if it goes out of bounds
-              }
-              return { ...rect, col: newCol };
-            }
-            return rect;
-          })
-          .filter(Boolean); // Remove null values (rectangles that went out of bounds)
+  const [columnsToDelete, setColumnsToDelete] = useState(""); // Lưu danh sách các cột cần xóa
 
-        setRectangles(updatedRectangles);
-
-        // Check if the selected rectangle still exists
-        if (!updatedRectangles[selectedGridRectangle]) {
-          setSelectedGridRectangle(null); // Reset selection if the rectangle no longer exists
-        }
-      } else {
-        setSelectedGridRectangle(null); // Reset editRow when no rectangle is selected
-      }
-    } catch (error) {
-      alert("Please select a rectangle to shift right.");
-      setSelectedGridRectangle(null); // Reset editRow when clicking on a rectangle
+  const handleDeleteColumns = () => {
+    if (!columnsToDelete.trim()) {
+      message.error("Please enter columns to delete.");
+      return;
     }
-  };
 
+    // Chuyển danh sách cột từ chuỗi thành mảng số
+    const columns = columnsToDelete
+      .split(",")
+      .map((col) => parseInt(col.trim(), 10))
+      .filter((col) => !isNaN(col)); // Loại bỏ giá trị không hợp lệ
+
+    if (columns.length === 0) {
+      message.error("Invalid column input.");
+      return;
+    }
+
+    // Lọc các hình chữ nhật không thuộc các cột cần xóa trên các hàng được chọn
+    const updatedRectangles = rectangles.filter(
+      (rect) =>
+        !editRows.includes(rect.row - 1) || // Giữ các hình chữ nhật không thuộc hàng được chọn
+        !columns.includes(rect.col) // Giữ các hình chữ nhật không thuộc cột cần xóa
+    );
+
+    setRectangles(updatedRectangles); // Cập nhật danh sách hình chữ nhật
+    setColumnsToDelete(""); // Reset input
+    message.success("Columns deleted successfully.");
+  };
   const handleCloseDrawer = () => {
     setIsDrawerVisible(false);
     setNewRectangle({ name: "", width: 1, height: 1, color: "#000000" }); // Reset form
   };
+  const handleApplyRowLabel = () => {
+    if (editRows.length > 0 && rowLabel.trim() !== "") {
+      let updatedRectangles = [...rectangles];
 
+      if (rowLabelMode === "all") {
+        // Apply the same label to all selected rows
+        updatedRectangles = updatedRectangles.map((rect) => {
+          if (editRows.includes(rect.row - 1)) {
+            const indexInRow = rectangles
+              .filter((r) => r.row === rect.row)
+              .sort((a, b) => a.col - b.col)
+              .indexOf(rect);
+            return { ...rect, name: `${rowLabel} ${indexInRow + 1}` };
+          }
+          return rect;
+        });
+      } else if (rowLabelMode === "aToZ") {
+        // Apply A->Z logic
+        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        updatedRectangles = updatedRectangles.map((rect) => {
+          const rowIndex = editRows.indexOf(rect.row - 1);
+          if (rowIndex !== -1) {
+            const labelPrefix =
+              alphabet[
+                (alphabet.indexOf(rowLabel.toUpperCase()) + rowIndex) %
+                  alphabet.length
+              ];
+            const indexInRow = rectangles
+              .filter((r) => r.row === rect.row)
+              .sort((a, b) => a.col - b.col)
+              .indexOf(rect);
+            return { ...rect, name: `${labelPrefix} ${indexInRow + 1}` };
+          }
+          return rect;
+        });
+      }
+
+      setRectangles(updatedRectangles);
+      setRowLabel(""); // Reset input
+    } else {
+      message.error("Please select rows and enter a label.");
+    }
+  };
   const handleCreateChairType = () => {
     if (!newRectangle.name || newRectangle.width <= 0 || !newRectangle.color) {
       alert("Please fill in all fields correctly.");
@@ -79,59 +118,106 @@ export default function RectangleGrid() {
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
   const [predefinedRectangles, setPredefinedRectangles] = useState([
-    { name: "Ghế thường", width: 1, height: 1, color: "rgb(68, 68, 68)" },
-    { name: "Ghế Vip", width: 1, height: 1, color: "rgb(227, 182, 0)" },
-    { name: "Ghế Couple", width: 2, height: 1, color: "rgb(253, 138, 255)" },
+    {
+      name: "Ghế thường",
+      width: 1,
+      height: 1,
+      color: "rgb(68, 68, 68)",
+      id: 1,
+    },
+    { name: "Ghế Vip", width: 1, height: 1, color: "rgb(227, 182, 0)", id: 2 },
+    {
+      name: "Ghế Couple",
+      width: 2,
+      height: 1,
+      color: "rgb(253, 138, 255)",
+      id: 3,
+    },
   ]);
   const [selectedRectangleForRow, setSelectedRectangleForRow] = useState(null); // Trạng thái cho combobox
   const [arrangeRowLabel, setArrangeRowLabel] = useState(""); // State for row label during arrange
+  const [editRows, setEditRows] = useState([]);
+  const handleRowClick = (rowIndex) => {
+    setSelectedGridRectangle(null);
+    setSelectedRectangle(null);
 
-  const handleArrangeRow = () => {
-    if (editRow !== null && selectedRectangleForRow) {
-      const { width, height } = selectedRectangleForRow;
+    // Nếu hàng đã được chọn, bỏ chọn nó
+    if (editRows.includes(rowIndex)) {
+      setEditRows(editRows.filter((row) => row !== rowIndex));
+    } else {
+      // Nếu chưa được chọn, thêm vào danh sách và sắp xếp
+      const newEditRows = [...editRows];
+      let inserted = false;
 
-      if (!arrangeRowLabel.trim()) {
-      }
-
-      // Remove all rectangles in the current row
-      const updatedRectangles = rectangles.filter(
-        (rect) => rect.row !== editRow
-      );
-
-      // Arrange new rectangles horizontally
-      const newRectangles = [];
-      let colIndex = 1;
-
-      while (colIndex < column + 2 - width) {
-        // Check if there is enough space to place the rectangle
-        const canPlace = !updatedRectangles.some((rect) => {
-          return (
-            rect.row >= editRow &&
-            rect.row < editRow + height &&
-            rect.col >= colIndex &&
-            rect.col < colIndex + width
-          );
-        });
-
-        if (canPlace) {
-          // Add new rectangle with label
-          const indexInRow = newRectangles.length + 1;
-          newRectangles.push({
-            ...selectedRectangleForRow,
-            row: editRow,
-            col: colIndex,
-            name: arrangeRowLabel ? `${arrangeRowLabel} ${indexInRow}` : "",
-          });
-          colIndex += width; // Move right, leaving space for the rectangle
-        } else {
-          colIndex++; // Move right by one cell and check again
+      for (let i = 0; i < newEditRows.length; i++) {
+        if (rowIndex < newEditRows[i]) {
+          newEditRows.splice(i, 0, rowIndex); // Chèn vào đúng vị trí
+          inserted = true;
+          break;
         }
       }
 
-      // Update the list of rectangles
-      setRectangles([...updatedRectangles, ...newRectangles]);
+      if (!inserted) {
+        // Nếu không có phần tử nào lớn hơn, thêm vào cuối
+        newEditRows.push(rowIndex);
+      }
+
+      setEditRows(newEditRows);
+    }
+  };
+
+  const handleArrangeRow = () => {
+    if (editRows.length > 0 && selectedRectangleForRow) {
+      const { width, height } = selectedRectangleForRow;
+
+      let updatedRectangles = [...rectangles];
+
+      // Lặp qua tất cả các hàng được chọn
+      editRows.forEach((rowIndex) => {
+        // Xóa tất cả các hình chữ nhật trong hàng hiện tại
+        updatedRectangles = updatedRectangles.filter(
+          (rect) => rect.row !== rowIndex + 1
+        );
+
+        // Sắp xếp các hình chữ nhật mới theo chiều ngang
+        const newRectangles = [];
+        let colIndex = 1;
+
+        while (colIndex < column + 2 - width) {
+          // Kiểm tra xem có đủ không gian để đặt hình chữ nhật không
+          const canPlace = !updatedRectangles.some((rect) => {
+            return (
+              rect.row >= rowIndex + 1 &&
+              rect.row < rowIndex + 1 + height &&
+              rect.col >= colIndex &&
+              rect.col < colIndex + width
+            );
+          });
+
+          if (canPlace) {
+            // Thêm hình chữ nhật mới với nhãn
+            const indexInRow = newRectangles.length + 1;
+            newRectangles.push({
+              ...selectedRectangleForRow,
+              row: rowIndex + 1,
+              col: colIndex,
+              name: arrangeRowLabel ? `${arrangeRowLabel} ${indexInRow}` : "",
+            });
+            colIndex += width; // Di chuyển sang phải, chừa không gian cho hình chữ nhật
+          } else {
+            colIndex++; // Di chuyển sang phải một ô và kiểm tra lại
+          }
+        }
+
+        // Cập nhật danh sách hình chữ nhật
+        updatedRectangles = [...updatedRectangles, ...newRectangles];
+      });
+
+      setRectangles(updatedRectangles); // Cập nhật trạng thái hình chữ nhật
       setSelectedRectangleForRow(null); // Reset combobox
-      setArrangeRowLabel(""); // Reset row label input
+      setArrangeRowLabel(""); // Reset nhãn hàng
+    } else {
+      message.error("Please select rows and a chair type.");
     }
   };
 
@@ -142,35 +228,16 @@ export default function RectangleGrid() {
     setGrid(newGrid);
   };
 
-  const [editRow, setEditRow] = useState(null);
   const [rowLabel, setRowLabel] = useState("");
 
   // Function to apply row label
-  const handleApplyRowLabel = () => {
-    if (editRow !== null && rowLabel.trim() !== "") {
-      const updatedRectangles = rectangles.map((rect) => {
-        if (rect.row === editRow) {
-          const indexInRow = rectangles
-            .filter((r) => r.row === editRow)
-            .sort((a, b) => a.col - b.col)
-            .indexOf(rect);
-          return { ...rect, name: `${rowLabel} ${indexInRow + 1}` };
-        }
-        return rect;
-      });
-      setRectangles(updatedRectangles);
 
-      setRowLabel("");
-    }
-  };
   const handleDeleteAllRow = () => {
-    if (editRow !== null) {
-      // Lọc bỏ tất cả các hình chữ nhật thuộc hàng được chọn
+    if (editRows.length > 0) {
       const updatedRectangles = rectangles.filter(
-        (rect) => rect.row !== editRow
+        (rect) => !editRows.includes(rect.row - 1)
       );
       setRectangles(updatedRectangles);
-      setEditRow(null); // Đặt lại trạng thái editRow
     }
   };
   // Đặt hình chữ nhật tại vị trí đã chọn
@@ -178,7 +245,7 @@ export default function RectangleGrid() {
   const placeRectangle = (rowIndex, colIndex) => {
     if (!selectedRectangle) return;
 
-    const { width, height } = selectedRectangle;
+    const { width, height, id } = selectedRectangle;
     if (
       rowIndex + height > row || // No need to adjust rowIndex
       colIndex + 1 + width > column + 1 || // Adjust colIndex by adding 1
@@ -195,7 +262,13 @@ export default function RectangleGrid() {
 
     const newRectangles = [
       ...rectangles,
-      { ...selectedRectangle, row: rowIndex, col: colIndex + 1, name: "" }, // Adjust colIndex by adding 1
+      {
+        ...selectedRectangle,
+        row: rowIndex,
+        col: colIndex + 1,
+        name: "",
+        type: id,
+      }, // Adjust colIndex by adding 1
     ];
     setRectangles(newRectangles);
     setSelectedGridRectangle(newRectangles.length - 1); // Select the last added rectangle\
@@ -211,12 +284,12 @@ export default function RectangleGrid() {
 
     const { width, height } = selectedRectangle;
     if (
-      rowIndex + height > row || // No need to adjust rowIndex
+      rowIndex + 1 + height > row + 1 || // No need to adjust rowIndex
       colIndex + 1 + width > column + 1 || // Adjust colIndex by adding 1
       rectangles.some(
         (rect) =>
-          rowIndex < rect.row + rect.height &&
-          rowIndex + height > rect.row &&
+          rowIndex + 1 < rect.row + rect.height &&
+          rowIndex + 1 + height > rect.row &&
           colIndex + 1 < rect.col + rect.width && // Adjust colIndex by adding 1
           colIndex + 1 + width > rect.col // Adjust colIndex by adding 1
       )
@@ -265,22 +338,8 @@ export default function RectangleGrid() {
     setDragging(false);
   };
 
-  const handleAddRectangle = () => {
-    if (
-      !newRectangle.name ||
-      newRectangle.width <= 0 ||
-      newRectangle.height <= 0 ||
-      !newRectangle.color
-    ) {
-      message.error("Please fill in all fields correctly.");
-      return;
-    }
-    setPredefinedRectangles([...predefinedRectangles, newRectangle]);
-    setNewRectangle({ name: "", width: 1, height: 1, color: "#000000" });
-  };
-
   const handleRectangleClick = (index) => {
-    setEditRow(null); // Reset editRow when clicking on a rectangle
+    // Reset editRow when clicking on a rectangle
     setSelectedGridRectangle(index);
     setTimeout(() => {
       if (nameInputRef.current) {
@@ -290,7 +349,6 @@ export default function RectangleGrid() {
   };
 
   const handleDeleteRectangle = () => {
-    setEditRow(null);
     if (selectedGridRectangle !== null) {
       const newRectangles = rectangles.filter(
         (_, i) => i !== selectedGridRectangle
@@ -307,7 +365,21 @@ export default function RectangleGrid() {
       setRectangles(newRectangles);
     }
   };
+  const nextStep = () => {
+    if (rectangles.length === 0) {
+      message.warning("No rectangles have been drawn on the grid.");
+      return;
+    }
 
+    // Xuất danh sách các hình chữ nhật dưới dạng JSON
+    const rectanglesJSON = JSON.stringify(rectangles, null, 2);
+
+    // Hiển thị danh sách trong console
+    alert(rectanglesJSON);
+
+    // Hoặc hiển thị danh sách trong một thông báo
+    message.success("Rectangles exported successfully!");
+  };
   return (
     <div style={{ display: "flex", height: "60vh" }}>
       <div style={{ flex: 1, padding: 16 }}>
@@ -367,25 +439,56 @@ export default function RectangleGrid() {
               transformOrigin: "top left",
             }}
           >
-            {grid.map((row, rowIndex) => (
-              <div key={rowIndex} style={{ display: "flex" }}>
-                {/* Add a clickable cell before each row */}
+            <div style={{ display: "flex" }}>
+              <div
+                style={{
+                  width: cellSize,
+                  height: cellSize,
+                  backgroundColor: "#f0f0f0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "1px solid #000",
+                  fontWeight: "bold",
+                }}
+              >
+                {/* Ô trống đầu tiên */}
+              </div>
+              {Array.from({ length: column }).map((_, colIndex) => (
                 <div
-                  onClick={() => {
-                    setEditRow(rowIndex);
-                    setSelectedGridRectangle(null);
-                    setSelectedRectangle(null);
-                  }}
+                  key={`col-${colIndex}`}
                   style={{
                     width: cellSize,
                     height: cellSize,
-                    backgroundColor: editRow === rowIndex ? "green" : "#f0f0f0", // Change background color if row is being edited
+                    backgroundColor: "#f0f0f0",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #000",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {colIndex + 1}
+                </div>
+              ))}
+            </div>
+
+            {grid.map((row, rowIndex) => (
+              <div key={rowIndex} style={{ display: "flex" }}>
+                <div
+                  onClick={() => handleRowClick(rowIndex)} // Sử dụng hàm mới
+                  style={{
+                    width: cellSize,
+                    height: cellSize,
+                    backgroundColor: editRows.includes(rowIndex)
+                      ? "green"
+                      : "#f0f0f0", // Đổi màu nếu hàng được chọn
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid #000",
                     cursor: "pointer",
-                    color: editRow === rowIndex ? "white" : "black",
+                    color: editRows.includes(rowIndex) ? "white" : "black",
                   }}
                 >
                   {rowIndex + 1}
@@ -395,7 +498,7 @@ export default function RectangleGrid() {
                     key={`${rowIndex}-${colIndex}`}
                     onMouseEnter={() => setHoveredCell({ rowIndex, colIndex })}
                     onMouseLeave={() => setHoveredCell(null)}
-                    onClick={() => placeRectangle(rowIndex, colIndex)}
+                    onClick={() => placeRectangle(rowIndex + 1, colIndex)}
                     style={{
                       width: cellSize,
                       height: cellSize,
@@ -431,6 +534,7 @@ export default function RectangleGrid() {
                 ))}
               </div>
             ))}
+
             {rectangles.map((rect, index) => (
               <div
                 key={index}
@@ -455,7 +559,7 @@ export default function RectangleGrid() {
       </div>
       <div
         style={{
-          width: 250,
+          width: 350,
           padding: 16,
           borderLeft: "1px solid #ccc",
           display: "flex",
@@ -472,216 +576,253 @@ export default function RectangleGrid() {
             borderRadius: 10,
             width: "100%",
           }}
+          onClick={nextStep}
         >
           Next Step
         </Button>
-        <h3>Select Rectangle</h3>
-        <>
-          <Button onClick={handleOpenDrawer}>Create new Chair's Type</Button>
-          <Drawer
-            title="Create New Chair's Type"
-            placement="right"
-            onClose={handleCloseDrawer}
-            visible={isDrawerVisible}
-            width={300}
-          >
-            <Form layout="vertical">
-              <Form.Item
-                label="Name"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please enter the chair type name!",
-                  },
-                ]}
-              >
-                <Input
-                  value={newRectangle.name}
-                  onChange={(e) =>
-                    setNewRectangle({ ...newRectangle, name: e.target.value })
-                  }
-                  placeholder="Enter chair type name"
-                />
-              </Form.Item>
-              <Form.Item label="Width">
-                <Input
-                  type="number"
-                  value={newRectangle.width}
-                  onChange={(e) =>
-                    setNewRectangle({
-                      ...newRectangle,
-                      width: Number(e.target.value),
-                    })
-                  }
-                  placeholder="Enter width"
-                />
-              </Form.Item>
-
-              <Form.Item label="Color">
-                <Input
-                  type="color"
-                  value={newRectangle.color}
-                  onChange={(e) =>
-                    setNewRectangle({ ...newRectangle, color: e.target.value })
-                  }
-                />
-              </Form.Item>
-              <Button type="primary" onClick={handleCreateChairType}>
-                Create
-              </Button>
-            </Form>
-          </Drawer>
-        </>
 
         <div
           style={{
             flex: 1,
             overflowY: "auto",
 
-            minHeight: "200px",
+            minHeight: "90vh",
+            maxHeight: "90vh",
             marginTop: 16,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "8px",
-            }}
-          >
-            {predefinedRectangles.map((rect) => (
-              <div
-                key={rect.name}
-                onClick={() => {
-                  setEditRow(null);
-                  setSelectedGridRectangle(null);
-                  setSelectedRectangle(rect);
-                }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  padding: 8,
-                  border:
-                    selectedRectangle?.name === rect.name
-                      ? "2px solid blue"
-                      : "1px solid #ccc",
-                }}
-              >
-                <div
-                  style={{
-                    width: 40,
-                    height: 40,
-                    backgroundColor: rect.color,
-                    marginRight: 8,
-                  }}
-                ></div>
-                <div>
-                  <div>{rect.name}</div>
-                  <div>{`W: ${rect.width}, H: ${rect.height}`}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+          <h3>Select Rectangle</h3>
+          <>
+            <Button onClick={handleOpenDrawer}>Create new Chair's Type</Button>
+            <Drawer
+              title="Create New Chair's Type"
+              placement="right"
+              onClose={handleCloseDrawer}
+              visible={isDrawerVisible}
+              width={300}
+            >
+              <Form layout="vertical">
+                <Form.Item
+                  label="Name"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter the chair type name!",
+                    },
+                  ]}
+                >
+                  <Input
+                    value={newRectangle.name}
+                    onChange={(e) =>
+                      setNewRectangle({ ...newRectangle, name: e.target.value })
+                    }
+                    placeholder="Enter chair type name"
+                  />
+                </Form.Item>
+                <Form.Item label="Width">
+                  <Input
+                    type="number"
+                    value={newRectangle.width}
+                    onChange={(e) =>
+                      setNewRectangle({
+                        ...newRectangle,
+                        width: Number(e.target.value),
+                      })
+                    }
+                    placeholder="Enter width"
+                  />
+                </Form.Item>
 
-        {selectedGridRectangle !== null && (
+                <Form.Item label="Color">
+                  <Input
+                    type="color"
+                    value={newRectangle.color}
+                    onChange={(e) =>
+                      setNewRectangle({
+                        ...newRectangle,
+                        color: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Item>
+                <Button type="primary" onClick={handleCreateChairType}>
+                  Create
+                </Button>
+              </Form>
+            </Drawer>
+          </>
+
           <div
             style={{
+              flex: 1,
+              overflowY: "auto",
+
+              minHeight: "200px",
               marginTop: 16,
-              flexShrink: 0,
-              display: "flex",
-              flexDirection: "column",
             }}
           >
-            <hr></hr>
-            <h3>Edit Chair</h3>
-
-            <Input
-              ref={nameInputRef}
-              placeholder="Name"
-              value={rectangles[selectedGridRectangle]?.name || ""}
-              onChange={handleNameChange}
-              style={{ marginBottom: 8 }}
-            />
-            <div>
-              <Button onClick={handleRightShift}>Right Shift </Button>
-              <Button
-                type="danger"
-                onClick={handleDeleteRectangle}
-                style={{
-                  backgroundColor: "red",
-                  color: "white",
-                  marginTop: 8,
-                  marginLeft: 8,
-                }}
-              >
-                Delete Chair
-              </Button>
-            </div>
-          </div>
-        )}
-        {editRow !== null && (
-          <div style={{ marginTop: 16, flexShrink: 0 }}>
-            <hr></hr>
-            <h3>Edit Row {editRow + 1}</h3>
-            <div>Reset Row Label</div>
-            <div style={{ display: "flex", marginTop: 8 }}>
-              {" "}
-              <Input
-                placeholder="Row Label"
-                value={rowLabel}
-                onChange={(e) => setRowLabel(e.target.value)}
-                style={{ marginBottom: 8, marginRight: 8 }}
-              />
-              <Button type="primary" onClick={handleApplyRowLabel}>
-                Apply
-              </Button>
-            </div>
-
-            <Button
-              type="primary"
-              onClick={handleDeleteAllRow}
+            <div
               style={{
-                backgroundColor: "red",
-                marginTop: 8,
-
-                color: "white",
+                display: "flex",
+                flexDirection: "column",
+                gap: "8px",
               }}
             >
-              Delete All Row
-            </Button>
-            <hr></hr>
-            <h3>Arrange Row</h3>
-            <div style={{ marginBottom: 8 }}>Row Label</div>
-            <Input
-              placeholder="Row Label for Arrange"
-              value={arrangeRowLabel}
-              onChange={(e) => setArrangeRowLabel(e.target.value)}
-              style={{ marginBottom: 8 }}
-            />
-            <div style={{ marginBottom: 8 }}>Chair's Type</div>
-            <Select
-              placeholder="Select Chair's Type"
-              value={selectedRectangleForRow?.name || null}
-              onChange={(value) =>
-                setSelectedRectangleForRow(
-                  predefinedRectangles.find((rect) => rect.name === value)
-                )
-              }
-              style={{ width: "100%", marginBottom: 8 }}
-            >
               {predefinedRectangles.map((rect) => (
-                <Select.Option key={rect.name} value={rect.name}>
-                  {rect.name} (W: {rect.width}, H: {rect.height})
-                </Select.Option>
+                <div
+                  key={rect.name}
+                  onClick={() => {
+                    setSelectedGridRectangle(null);
+                    setSelectedRectangle(rect);
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    padding: 8,
+                    border:
+                      selectedRectangle?.name === rect.name
+                        ? "2px solid blue"
+                        : "1px solid #ccc",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 40,
+                      height: 40,
+                      backgroundColor: rect.color,
+                      marginRight: 8,
+                    }}
+                  ></div>
+                  <div>
+                    <div>{rect.name}</div>
+                    <div>{`W: ${rect.width}, H: ${rect.height}`}</div>
+                  </div>
+                </div>
               ))}
-            </Select>
-            <Button type="primary" onClick={handleArrangeRow}>
-              Arrange Row
-            </Button>
+            </div>
           </div>
-        )}
+
+          {selectedGridRectangle !== null && (
+            <div
+              style={{
+                marginTop: 16,
+                flexShrink: 0,
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <hr></hr>
+              <h3>Edit Seat</h3>
+              <div style={{ fontSize: 15 }}>Name</div>
+
+              <Input
+                ref={nameInputRef}
+                placeholder="Name"
+                value={rectangles[selectedGridRectangle]?.name || ""}
+                onChange={handleNameChange}
+                style={{ marginBottom: 8 }}
+              />
+              <div>
+                <Button
+                  type="danger"
+                  onClick={handleDeleteRectangle}
+                  style={{
+                    backgroundColor: "red",
+                    color: "white",
+                    marginTop: 8,
+                    marginLeft: 8,
+                  }}
+                >
+                  Delete Chair
+                </Button>
+              </div>
+            </div>
+          )}
+          {editRows.length > 0 && ( // Kiểm tra nếu có ít nhất một hàng được chọn
+            <div style={{ marginTop: 16, flexShrink: 0 }}>
+              <hr></hr>
+              <h3>
+                Edit Rows {editRows.map((row) => row + 1).join(", ")}
+              </h3>{" "}
+              {/* Hiển thị danh sách các hàng được chọn */}
+              <div style={{ fontSize: 15 }}>Row Label</div>
+              <div style={{ display: "flex", marginTop: 8 }}>
+                <Input
+                  placeholder="Row Label"
+                  value={rowLabel}
+                  onChange={(e) => setRowLabel(e.target.value)}
+                  style={{ marginBottom: 8, marginRight: 8 }}
+                />
+                <Select
+                  placeholder="Select Mode"
+                  value={rowLabelMode}
+                  onChange={(value) => setRowLabelMode(value)}
+                  style={{ marginBottom: 8, marginRight: 8, width: 120 }}
+                >
+                  <Select.Option value="all">All</Select.Option>
+                  <Select.Option value="aToZ">A-Z</Select.Option>
+                </Select>
+                <Button type="primary" onClick={handleApplyRowLabel}>
+                  Apply
+                </Button>
+              </div>
+              <div style={{ fontSize: 15 }}>Delete Column</div>
+              <div style={{ display: "flex", marginTop: 8 }}>
+                <Input
+                  placeholder="(e.g., 1,2,3)"
+                  value={columnsToDelete}
+                  onChange={(e) => setColumnsToDelete(e.target.value)}
+                  style={{ marginBottom: 8, marginRight: 8 }}
+                />
+                <Button
+                  type="primary"
+                  onClick={handleDeleteColumns}
+                  style={{ backgroundColor: "red", color: "white" }}
+                >
+                  Delete Columns
+                </Button>
+              </div>
+              <div style={{ fontSize: 15 }}>Select Seat's Type</div>
+              <div style={{ display: "flex", marginTop: 8 }}>
+                <Select
+                  placeholder="Select Seat's Type"
+                  value={selectedRectangleForRow?.name || null}
+                  onChange={(value) =>
+                    setSelectedRectangleForRow(
+                      predefinedRectangles.find((rect) => rect.name === value)
+                    )
+                  }
+                  style={{ width: "100%", marginBottom: 8 }}
+                >
+                  {predefinedRectangles.map((rect) => (
+                    <Select.Option key={rect.name} value={rect.name}>
+                      {rect.name} (W: {rect.width}, H: {rect.height})
+                    </Select.Option>
+                  ))}
+                </Select>
+                <Button
+                  type="primary"
+                  onClick={handleArrangeRow}
+                  style={{ marginLeft: 8 }}
+                >
+                  Arrange Rows
+                </Button>
+              </div>
+              <Button
+                type="primary"
+                onClick={handleDeleteAllRow}
+                style={{
+                  backgroundColor: "red",
+                  marginTop: 8,
+                  color: "white",
+                }}
+              >
+                Delete All Rows
+              </Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

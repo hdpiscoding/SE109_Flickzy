@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "cinemaBrand")
 @Data
@@ -32,5 +34,6 @@ public class CinemaBrand {
     String description;
 
     @OneToMany(mappedBy = "cinemaBrand")
+    @JsonIgnore 
     List<Cinemas> cinemas;
 }

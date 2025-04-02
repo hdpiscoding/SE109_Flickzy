@@ -35,6 +35,11 @@
     <artifactId>postgresql</artifactId>
     <version>42.6.0</version> <!-- Use the latest version -->
 </dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-devtools</artifactId>
+    <scope>runtime</scope>
+</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
@@ -68,10 +73,19 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
 	</dependencies>
 
 	<build>
 		<plugins>
+		<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+            <configuration>
+                <encoding>UTF-8</encoding>
+            </configuration>
+        </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -86,6 +100,7 @@
 			</plugin>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
+
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<excludes>
