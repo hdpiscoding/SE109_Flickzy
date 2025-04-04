@@ -1,0 +1,67 @@
+/* Thanh taskbar */
+@import url("https://fonts.googleapis.com/css2?family=Aminute&display=swap");
+@import "./variables.css";
+.header {
+  font-family: "Aminute", sans-serif;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.594); /* Header trong suốt */
+  backdrop-filter: blur(3px); /* Làm mờ nền */
+  padding: 0px 20px;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 150vh;
+  margin: 0 auto;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--xanh-nhat);
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 20px;
+  font-family: "Aminute", sans-serif;
+}
+
+.nav-links li {
+  display: inline;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.nav-links a:hover {
+  color: lightgray;
+}
+
+/* Nội dung */
+.layout {
+  display: flex;
+  flex-direction: column; /* Sắp xếp theo chiều dọc */
+  min-height: 100vh; /* Chiều cao tối thiểu bằng chiều cao màn hình */
+}
+
+.content {
+  flex: 1; /* Chiếm toàn bộ không gian còn lại giữa Header và Footer */
+}
+
+footer {
+  background-color: #f0f0f0; /* Màu nền cho Footer */
+  text-align: center;
+  padding: 10px 0;
+}
