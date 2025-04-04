@@ -42,4 +42,5 @@ public class Users {
 
     @OneToMany(mappedBy = "user")
     List<Blogs> blogs;
+
 }
