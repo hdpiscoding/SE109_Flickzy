@@ -27,8 +27,8 @@
   left: 0;
   width: 100%;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.594); /* Header trong suốt */
-  backdrop-filter: blur(3px); /* Làm mờ nền */
+  background: rgba(0, 0, 0, 0.406); /* Header trong suốt */
+  backdrop-filter: blur(2px); /* Làm mờ nền */
   padding: 0px 20px;
 }
 
@@ -87,4 +87,44 @@ footer {
   background-color: #f0f0f0; /* Màu nền cho Footer */
   text-align: center;
   padding: 10px 0;
+}
+.search-container {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.search-input {
+  display: flex;
+  align-items: center;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.596);
+  border-radius: 16px;
+  padding: 8px 16px;
+  color: white;
+}
+.search-input:focus,
+:hover {
+  border-color: rgba(255, 255, 255, 0.874);
+  transition: 0.3s;
+}
+
+.search-icon {
+  color: rgba(255, 255, 255, 0.596);
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.search-input2 {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  color: white;
+  font-size: 16px;
+}
+
+.search-input2::placeholder {
+  color: white;
+  opacity: 0.7;
 }

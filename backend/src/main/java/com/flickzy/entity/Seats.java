@@ -20,17 +20,23 @@ public class Seats {
     @Column(columnDefinition = "uuid")
     UUID seatId;
 
-    Integer seatType;
+    @ManyToOne
+    @JoinColumn(name = "seat_type_id", referencedColumnName = "seatTypeId", nullable = false)
+    SeatType seatTypeId;
+
 
     @ManyToOne
-    @JoinColumn(name = "room_id")
+    @JoinColumn(name = "room_id" , referencedColumnName = "roomId", nullable = false)
     Room room;
 
-    @Column(columnDefinition = "text")
-    String row;
+    @Column
+    Integer row;
+    @Column
+    Integer columnn;
 
-    Integer number;
+    String name;
 
     @OneToMany(mappedBy = "seat")
     List<Booking> bookings;
+    
 }

@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Row, Input, Button, Col, message, Select, Form, Drawer } from "antd";
+import NewRoom2 from "./NewRoom2";
+import { addRoom, getAllSeatTypes } from "../../services/adminService";
 
 export default function RectangleGrid() {
   const [column, setColumn] = useState(0);
@@ -20,6 +22,7 @@ export default function RectangleGrid() {
   const handleOpenDrawer = () => {
     setIsDrawerVisible(true);
   };
+  const [all, setAll] = useState("All"); // Tên của ô đầu tiên
   const [columnsToDelete, setColumnsToDelete] = useState(""); // Lưu danh sách các cột cần xóa
 
   const handleDeleteColumns = () => {
@@ -117,23 +120,20 @@ export default function RectangleGrid() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  const [predefinedRectangles, setPredefinedRectangles] = useState([
-    {
-      name: "Ghế thường",
-      width: 1,
-      height: 1,
-      color: "rgb(68, 68, 68)",
-      id: 1,
-    },
-    { name: "Ghế Vip", width: 1, height: 1, color: "rgb(227, 182, 0)", id: 2 },
-    {
-      name: "Ghế Couple",
-      width: 2,
-      height: 1,
-      color: "rgb(253, 138, 255)",
-      id: 3,
-    },
-  ]);
+  const [predefinedRectangles, setPredefinedRectangles] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchSeatTypes = async () => {
+      const res = await getAllSeatTypes();
+      alert(JSON.stringify(res));
+
+      setPredefinedRectangles(res);
+    };
+
+    fetchSeatTypes();
+  }, []);
+
   const [selectedRectangleForRow, setSelectedRectangleForRow] = useState(null); // Trạng thái cho combobox
   const [arrangeRowLabel, setArrangeRowLabel] = useState(""); // State for row label during arrange
   const [editRows, setEditRows] = useState([]);
@@ -365,22 +365,20 @@ export default function RectangleGrid() {
       setRectangles(newRectangles);
     }
   };
-  const nextStep = () => {
-    if (rectangles.length === 0) {
-      message.warning("No rectangles have been drawn on the grid.");
-      return;
-    }
-
-    // Xuất danh sách các hình chữ nhật dưới dạng JSON
-    const rectanglesJSON = JSON.stringify(rectangles, null, 2);
-
-    // Hiển thị danh sách trong console
-    alert(rectanglesJSON);
-
-    // Hoặc hiển thị danh sách trong một thông báo
-    message.success("Rectangles exported successfully!");
+  const [step, setStep] = useState(1);
+  const nextStep = async () => {
+    setStep(2);
   };
-  return (
+  const handleAll = () => {
+    if (all === "All") {
+      setAll("Delete");
+      setEditRows(Array.from({ length: row }, (_, i) => i));
+    } else {
+      setAll("All");
+      setEditRows([]);
+    }
+  };
+  return step === 1 ? (
     <div style={{ display: "flex", height: "60vh" }}>
       <div style={{ flex: 1, padding: 16 }}>
         <Row>
@@ -441,6 +439,7 @@ export default function RectangleGrid() {
           >
             <div style={{ display: "flex" }}>
               <div
+                onClick={handleAll}
                 style={{
                   width: cellSize,
                   height: cellSize,
@@ -452,7 +451,7 @@ export default function RectangleGrid() {
                   fontWeight: "bold",
                 }}
               >
-                {/* Ô trống đầu tiên */}
+                {all}
               </div>
               {Array.from({ length: column }).map((_, colIndex) => (
                 <div
@@ -614,7 +613,10 @@ export default function RectangleGrid() {
                   <Input
                     value={newRectangle.name}
                     onChange={(e) =>
-                      setNewRectangle({ ...newRectangle, name: e.target.value })
+                      setNewRectangle({
+                        ...newRectangle,
+                        name: e.target.value,
+                      })
                     }
                     placeholder="Enter chair type name"
                   />
@@ -825,5 +827,9 @@ export default function RectangleGrid() {
         </div>
       </div>
     </div>
+  ) : (
+    <NewRoom2 rectangles={rectangles} height={row} width={column}>
+      {" "}
+    </NewRoom2>
   );
 }

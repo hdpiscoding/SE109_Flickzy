@@ -1,4 +1,6 @@
 import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"; // Import the icon
 import { Link } from "react-router-dom";
 import "./Header.css";
 export default function Header() {
@@ -7,6 +9,15 @@ export default function Header() {
       <header className="header">
         <nav className="nav">
           <h1 className="logo">FLICKZY</h1>
+
+          <div className="search-container search-input">
+            <FontAwesomeIcon className="search-icon" icon={faMagnifyingGlass} />
+            <input
+              type="text"
+              className="search-input2"
+              placeholder="Search..."
+            />
+          </div>
           <div className="right-con">
             <ul className="nav-links">
               <li>

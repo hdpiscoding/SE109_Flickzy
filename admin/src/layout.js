@@ -5,6 +5,7 @@ import Brands from "./components/Brands/Brands";
 import Rooms from "./components/Rooms/Rooms";
 import Schedules from "./components/Schedules/Schedules";
 import NewRoom from "./components/Rooms/NewRoom";
+import NewRoom2 from "./components/Rooms/NewRoom2";
 import App from "./App";
 
 const Layout = () => {
@@ -18,6 +19,8 @@ const Layout = () => {
           <Route path="schedules" element={<Schedules />} />
           <Route path="rooms" element={<Rooms />} />
           <Route path="new-room" element={<NewRoom />} />
+          <Route path="new-room2" element={<NewRoom2 />} />
+
           <Route path="*" element={<Navigate to="/" replace />} />
         </Route>
       </Routes>

@@ -28,10 +28,16 @@ public class Room {
     String roomName;
 
     String roomType;
+    int width;
+    int height;
 
     @OneToMany(mappedBy = "room")
     List<Seats> seats;
 
     @OneToMany(mappedBy = "room")
+
     List<Schedule> schedules;
+    Room(String id) {
+        this.roomId = UUID.fromString(id);
+    }
 }
