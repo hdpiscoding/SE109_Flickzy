@@ -13,9 +13,8 @@
   border-radius: 24px;
 }
 .signin_btn:hover {
-  border: #9cee69 2px solid;
-  color: #9cee69;
-  transition: 0.1s;
+  cursor: pointer;
+  color: #f0f0f0;
 }
 /* Thanh taskbar */
 @import url("https://fonts.googleapis.com/css2?family=Aminute&display=swap");
@@ -127,4 +126,25 @@ footer {
 .search-input2::placeholder {
   color: white;
   opacity: 0.7;
+}
+
+.booking_btn {
+  background-color: var(--xanh-nhat);
+  border: none;
+  color: black;
+  padding: 12px 30px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  font-family: "Aminute", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transform: translateX(10px);
+
+  border-radius: 8px;
+}
+.booking_btn:hover {
+  background-color: var(--xanh-dam);
+  transition: 0.3s;
 }
