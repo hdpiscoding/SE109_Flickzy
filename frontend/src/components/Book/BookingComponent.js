@@ -34,7 +34,7 @@ const times = [
   { label: "2D Phụ đề | CINE SUITE", slots: ["23:30 ~ 01:30"] },
 ];
 
-export default function BookingComponent({ parentCallback }) {
+export default function BookingComponent({ parentCallback, handleClose }) {
   const [selectedCinema, setSelectedCinema] = useState(cinemas[0]);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [provinces, setProvinces] = useState([]);
@@ -62,31 +62,58 @@ export default function BookingComponent({ parentCallback }) {
       style={{ maxWidth: 1400, margin: "0 auto", padding: 20, minWidth: 1000 }}
     >
       <Row align="middle" style={{ marginBottom: 16 }}>
-        <EnvironmentOutlined
-          style={{ color: "#6cc832", marginRight: 8, size: 36 }}
-        />
-        <select
-          onChange={(e) => console.log("Selected province:", e.target.value)}
+        <div
           style={{
-            padding: "8px",
-            borderRadius: "4px",
-            fontSize: "16px",
-            border: "1px solid #d9d9d9",
-            fontFamily: "'Aminute', sans-serif",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
           }}
         >
-          <option value="">Chọn tỉnh/thành phố</option>
-          {provinces.map((province) => (
-            <option key={province.code} value={province.name}>
-              {province.name}
-            </option>
-          ))}
-        </select>
-        <div className="neary">
-          Near You
-          <div>
-            <FaRegMap />
-          </div>{" "}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <EnvironmentOutlined
+              style={{ color: "#6cc832", marginRight: 8, fontSize: 24 }}
+            />
+            <select
+              onChange={(e) =>
+                console.log("Selected province:", e.target.value)
+              }
+              style={{
+                padding: "8px",
+                borderRadius: "4px",
+                fontSize: "16px",
+                border: "1px solid #d9d9d9",
+                fontFamily: "'Aminute', sans-serif",
+              }}
+            >
+              <option value="">Chọn tỉnh/thành phố</option>
+              {provinces.map((province) => (
+                <option key={province.code} value={province.name}>
+                  {province.name}
+                </option>
+              ))}
+            </select>
+            <div className="neary">
+              Near You
+              <div>
+                <FaRegMap />
+              </div>{" "}
+            </div>
+          </div>
+
+          <div
+            onClick={handleClose}
+            className="close_btn"
+            style={{
+              fontSize: 24,
+              color: "gray",
+              cursor: "pointer",
+              fontWeight: "bold",
+              marginLeft: "16 !important",
+            }}
+          >
+            ✕
+          </div>
         </div>
       </Row>
       <Row gutter={[16, 16]}>
@@ -265,6 +292,7 @@ export default function BookingComponent({ parentCallback }) {
                               border: "2px solid #9cee69",
                               color: "#4B8C22",
                               cursor: "pointer",
+
                               fontWeight: "bold",
 
                               borderRadius: 8,

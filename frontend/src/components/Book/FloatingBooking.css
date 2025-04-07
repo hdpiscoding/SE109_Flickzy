@@ -9,8 +9,12 @@
   padding: 0 !important;
   border-radius: 1rem;
   min-width: 1200px;
+  max-width: 98%;
+
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-  height: 85%;
+  max-height: 99%;
+
+  animation: fadeIn 0.5s ease-in-out;
 }
 @import "../../variables.css";
 .neary {
@@ -85,4 +89,13 @@
   cursor: pointer;
 
   transition: all 0.3s;
+}
+.back_btn:hover {
+  background-color: var(--xanh-nhat);
+  color: black !important;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.close_btn:hover {
+  color: #f52e2e !important;
 }

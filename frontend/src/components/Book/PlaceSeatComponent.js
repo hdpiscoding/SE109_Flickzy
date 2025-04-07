@@ -1,8 +1,31 @@
 import React, { useState } from "react";
+import Button from "../OtherComponents/Button";
+import { IoArrowBack } from "react-icons/io5";
+import "./FloatingBooking.css"; // Import CSS for styling
+import Snack from "./Snack";
+import PaymentForm from "./PaymentForm";
+export default function PlaceSeatComponent({ handleback, handleclose }) {
+  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị modal
+  const [isPayFormVisible, setIsPayFormVisible] = useState(false); // Trạng thái hiển thị form thanh toán
 
-export default function PlaceSeatComponent({ handleback }) {
-  const [width, setWidth] = useState(15);
-  const [height, setHeight] = useState(50);
+  const handleBuyNowClick = () => {
+    setIsModalVisible(true); // Hiển thị modal
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false); // Đóng modal
+  };
+  // hàm gọi  mở giao diện để thanh toán
+  const handlePay = () => {
+    setIsPayFormVisible(true); // Hiển thị form thanh toán
+  };
+
+  const handleClosePayForm = () => {
+    setIsPayFormVisible(false); // Đóng form thanh toán
+  };
+  const [width, setWidth] = useState(40);
+  const [height, setHeight] = useState(15);
+  const [screenLength, setScreenLength] = useState(0.7);
   const [seat, setSeat] = useState([
     {
       seat_id: 1,
@@ -84,6 +107,14 @@ export default function PlaceSeatComponent({ handleback }) {
       row: 2,
       columnn: 10,
     },
+    {
+      seat_id: 11,
+      room_id: "2",
+      seat_type_id: "2",
+      name: "B11",
+      row: 2,
+      columnn: 12,
+    },
   ]);
   const [seatType, setSeatType] = useState([
     {
@@ -101,44 +132,132 @@ export default function PlaceSeatComponent({ handleback }) {
       width: 2,
     },
   ]);
-
+  const schedule = [1, 2, 3];
+  const [selectedSeats, setSelectedSeats] = useState([]);
   const getSeatStyle = (seatItem) => {
     const type = seatType.find((type) => type.id === seatItem.seat_type_id);
+    const isUnavailable = schedule.includes(seatItem.seat_id);
+    const isSelected = selectedSeats.includes(seatItem.seat_id);
+
     return {
       gridRow: `${seatItem.row} / span ${type?.height || 1}`,
       gridColumn: `${seatItem.columnn} / span ${type?.width || 1}`,
-      backgroundColor: type?.color || "gray",
+      backgroundColor: isUnavailable ? "gray" : type?.color || "gray",
+
       borderRadius: "4px",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
+      cursor: isUnavailable ? "default" : "pointer",
+      opacity: isSelected ? 0.4 : 1,
     };
   };
 
+  const handleSeatClick = (seatItem) => {
+    if (schedule.includes(seatItem.seat_id)) return; // Do nothing if the seat is unavailable
+
+    if (selectedSeats.includes(seatItem.seat_id)) {
+      // Remove seat from selectedSeats if already selected
+      setSelectedSeats(selectedSeats.filter((id) => id !== seatItem.seat_id));
+    } else {
+      if (selectedSeats.length >= 8) {
+        alert("Bạn chỉ có thể chọn tối đa 8 ghế ngồi.");
+      } else {
+        // Add seat to selectedSeats
+        setSelectedSeats([...selectedSeats, seatItem.seat_id]);
+      }
+    }
+  };
   return (
     <div>
-      <div style={{ display: "flex", margin: 16 }}>
-        <button onClick={handleback}>Back to Step 1</button>
-        <div>Buy ticket</div>
-      </div>
+      {handleback && (
+        <div
+          style={{
+            display: "flex",
+            margin: 16,
+            alignContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div onClick={handleback}>
+            <IoArrowBack
+              className="back_btn"
+              style={{
+                fontSize: 26,
+                cursor: "pointer",
+                color: "gray",
+                padding: 6,
+                borderRadius: 20,
+              }}
+            />{" "}
+          </div>
+          <div
+            style={{
+              flex: 1,
+              textAlign: "center",
+              fontSize: 20,
+              fontWeight: "bold",
+            }}
+          >
+            {" "}
+            Buy ticket
+          </div>
+          <div
+            onClick={handleclose}
+            className="close_btn"
+            style={{
+              fontSize: 24,
+              color: "gray",
+              cursor: "pointer",
+              marginLeft: "16 !important",
+            }}
+          >
+            ✕
+          </div>
+        </div>
+      )}
       <div
         style={{
-          width: "100%",
+          backgroundColor: "#F4F4F4",
+
           padding: "10px",
           display: "flex",
           justifyContent: "center",
+
           height: "100%",
         }}
       >
         <div
           style={{
-            overflowY: "auto",
-            overflowX: "auto",
-            maxHeight: "54vh",
-            maxWidth: "76vw",
+            maxHeight: "100vh",
+            maxWidth: "100vw",
+            alignContent: "center",
+            minHeight: "54vh",
+            justifyContent: "center",
+            display: "flex",
+            flexDirection: "column",
+
+            alignItems: "center",
             // Adjust the height as needed
           }}
         >
+          <div
+            style={{
+              backgroundColor: "gray",
+              height: 5,
+              width: (40 * width + 6 * (width - 1) + 20) * screenLength,
+            }}
+          ></div>
+          <div
+            style={{
+              textAlign: "center",
+              margin: "8px 0px 16px 0px",
+              fontSize: 16,
+              color: "gray",
+            }}
+          >
+            Screen
+          </div>
           <div
             style={{
               display: "grid",
@@ -146,14 +265,26 @@ export default function PlaceSeatComponent({ handleback }) {
               gridTemplateRows: `repeat(${height}, 40px)`,
               gap: "6px",
               position: "relative",
-              background: "#eee",
+              background: "white",
+              color: "white",
+              fontWeight: "bold",
+              cursor: "pointer",
               padding: "10px",
-              border: "1px solid #ccc",
+              overflowY: "auto",
+              overflowX: "auto",
+              maxHeight: "60vh",
+              maxWidth: "90vw",
+
               width: "fit-content",
+              alignSelf: "center", // Center vertically
             }}
           >
             {seat.map((s) => (
-              <div key={s.seat_id} style={getSeatStyle(s)}>
+              <div
+                key={s.seat_id}
+                style={getSeatStyle(s)}
+                onClick={() => handleSeatClick(s)}
+              >
                 {s.name}
               </div>
             ))}
@@ -163,9 +294,12 @@ export default function PlaceSeatComponent({ handleback }) {
       <div
         style={{
           display: "flex",
-          width: "100%",
+          backgroundColor: "#F4F4F4",
+
           justifyContent: "center",
-          marginTop: 16,
+          padding: "16px",
+          color: "gray",
+          fontSize: 16,
         }}
       >
         <div
@@ -206,14 +340,12 @@ export default function PlaceSeatComponent({ handleback }) {
                 marginRight: 8,
               }}
             ></div>
-            <span>{type.name}</span>
+            <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+              {type.name}
+            </span>
           </div>
         ))}
       </div>{" "}
-      <br></br>
-      <hr
-        style={{ backgroundColor: "#CCCCCC", height: "1px", border: "none" }}
-      ></hr>
       <div
         style={{
           borderRadius: "0 0 16px 16px",
@@ -221,10 +353,26 @@ export default function PlaceSeatComponent({ handleback }) {
         }}
       >
         <div style={{ display: "flex", gap: 8 }}>
-          <div>C12</div>
           <div
             style={{
-              fontSize: 20,
+              fontSize: 12,
+              backgroundColor: "#6cc832",
+              color: "white",
+              padding: 1,
+              fontWeight: "bold",
+              borderRadius: 2,
+              width: 30,
+              lineHeight: "20px",
+              height: "fit-content",
+
+              textAlign: "center",
+            }}
+          >
+            C12
+          </div>
+          <div
+            style={{
+              fontSize: 24,
 
               fontWeight: "bold",
               fontFamily: '"Aminute", sans-serif',
@@ -254,10 +402,44 @@ export default function PlaceSeatComponent({ handleback }) {
           }}
         ></hr>
         <div
-          style={{ margin: "16px 0px", color: "#7B7B7B", fontWeight: "bold" }}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          Chỗ ngồi
+          {" "}
+          <div
+            style={{ margin: "8px 0px", color: "#7B7B7B", fontWeight: "bold" }}
+          >
+            Seats
+          </div>
+          <div
+            style={{
+              display: "flex",
+              gap: 8,
+            }}
+          >
+            {selectedSeats.map((id) => {
+              const seatItem = seat.find((s) => s.seat_id === id);
+              return (
+                <div
+                  style={{
+                    color: "#4B8C22",
+                    border: "1px solid #4B8C22",
+                    borderRadius: "4px",
+                    fontWeight: "bold",
+                    padding: "4px 8px",
+                  }}
+                  key={id}
+                >
+                  {seatItem?.name}
+                </div>
+              );
+            })}
+          </div>
         </div>
+
         <hr
           style={{
             backgroundColor: "#CCCCCC",
@@ -266,13 +448,16 @@ export default function PlaceSeatComponent({ handleback }) {
             marginBottom: 8,
           }}
         ></hr>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
           <div>
             {" "}
-            <div style={{ color: "#7B7B7B", fontWeight: "bold" }}>
-              {" "}
-              Tạm tính
-            </div>
+            <div style={{ color: "#7B7B7B", fontWeight: "bold" }}> Price</div>
             <div
               style={{
                 fontSize: 28,
@@ -283,9 +468,31 @@ export default function PlaceSeatComponent({ handleback }) {
               0 đ
             </div>
           </div>
-          <div>Mua vé</div>{" "}
+          <Button
+            text="Buy Now"
+            fontSize={17}
+            onClick={handleBuyNowClick}
+          ></Button>{" "}
         </div>
       </div>
+      {/* Modal */}
+      {isModalVisible && (
+        <Snack
+          handleClose={() => {
+            setIsModalVisible(false);
+          }}
+          handleOpenPaymentForm={() => {
+            setIsPayFormVisible(true);
+          }}
+        ></Snack>
+      )}
+      {isPayFormVisible && (
+        <PaymentForm
+          handleClose={() => {
+            setIsPayFormVisible(false);
+          }}
+        ></PaymentForm>
+      )}
     </div>
   );
 }

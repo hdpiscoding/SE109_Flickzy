@@ -42,7 +42,12 @@ const Layout = () => {
               className="overlay"
               onClick={() => setIsBookingVisible(false)}
             />
-            <FloatingBooking className="floating-booking" />
+            <FloatingBooking
+              className="floating-booking"
+              handleclose={() => {
+                setIsBookingVisible(false);
+              }}
+            />
           </>
         )}
       </div>
