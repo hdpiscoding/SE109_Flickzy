@@ -1,6 +1,12 @@
 import React from "react";
 
-export default function Button({ text, onClick, fontSize, isFullWidth }) {
+export default function Button({
+  text,
+  onClick,
+  fontSize,
+  isFullWidth,
+  boderRadius,
+}) {
   return (
     <button
       onClick={onClick}
@@ -8,7 +14,7 @@ export default function Button({ text, onClick, fontSize, isFullWidth }) {
         fontSize: fontSize || "16px",
         color: "black",
         backgroundColor: "#9cee69",
-        borderRadius: "8px",
+        borderRadius: boderRadius ?? "8px",
         border: "none",
         padding: "10px 20px",
         fontWeight: "bold",

@@ -5,7 +5,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Aminute", sans-serif;
 
   cursor: pointer;
@@ -40,7 +40,8 @@
 }
 
 .logo {
-  font-size: 24px;
+  font-family: "Antonio", sans-serif;
+  font-size: 26px;
   font-weight: bold;
   color: var(--xanh-nhat);
 }
@@ -63,7 +64,7 @@
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   transition: 0.3s;
 }
 
@@ -99,7 +100,7 @@ footer {
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.596);
   border-radius: 16px;
-  padding: 8px 16px;
+  padding: 6px 12px;
   color: white;
 }
 .search-input:focus,
@@ -110,7 +111,7 @@ footer {
 
 .search-icon {
   color: rgba(255, 255, 255, 0.596);
-  font-size: 18px;
+  font-size: 16px;
   margin-right: 10px;
 }
 
@@ -132,17 +133,18 @@ footer {
   background-color: var(--xanh-nhat);
   border: none;
   color: black;
-  padding: 12px 30px;
+  padding: 10px 24px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
   font-size: 18px;
-  font-family: "Aminute", sans-serif;
+  font-family: "Antonio", sans-serif;
   font-weight: 600;
   cursor: pointer;
   transform: translateX(10px);
 
-  border-radius: 8px;
+  border-radius: 0px;
+  border: 1px solid black;
 }
 .booking_btn:hover {
   background-color: var(--xanh-dam);

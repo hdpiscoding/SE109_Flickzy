@@ -34,7 +34,7 @@ export default function Header({ onBookingClick }) {
               </li>
             </ul>
             <div className="booking_btn" onClick={onBookingClick}>
-              Booking Now!
+              BOOKING NOW!
             </div>
             <div className="signin_btn">Sign In</div>
           </div>

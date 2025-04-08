@@ -4,7 +4,9 @@ import { IoArrowBack } from "react-icons/io5";
 import "./FloatingBooking.css"; // Import CSS for styling
 import Snack from "./Snack";
 import PaymentForm from "./PaymentForm";
-export default function PlaceSeatComponent({ handleback, handleclose }) {
+import { useGlobalContext } from "../../Layout";
+export default function PlaceSeatComponent() {
+  const { handleBack, handleNav, handleClose, step1 } = useGlobalContext();
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị modal
   const [isPayFormVisible, setIsPayFormVisible] = useState(false); // Trạng thái hiển thị form thanh toán
 
@@ -170,20 +172,21 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
   };
   return (
     <div>
-      {handleback && (
-        <div
-          style={{
-            display: "flex",
-            margin: 16,
-            alignContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div onClick={handleback}>
+      <div
+        style={{
+          display: "flex",
+          margin: 8,
+          alignContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {step1 ? (
+          <div onClick={handleBack}>
             <IoArrowBack
+              onClick={handleNav(0)}
               className="back_btn"
               style={{
-                fontSize: 26,
+                fontSize: 22,
                 cursor: "pointer",
                 color: "gray",
                 padding: 6,
@@ -191,31 +194,35 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
               }}
             />{" "}
           </div>
-          <div
-            style={{
-              flex: 1,
-              textAlign: "center",
-              fontSize: 20,
-              fontWeight: "bold",
-            }}
-          >
-            {" "}
-            Buy ticket
-          </div>
-          <div
-            onClick={handleclose}
-            className="close_btn"
-            style={{
-              fontSize: 24,
-              color: "gray",
-              cursor: "pointer",
-              marginLeft: "16 !important",
-            }}
-          >
-            ✕
-          </div>
+        ) : (
+          <></>
+        )}
+
+        <div
+          style={{
+            flex: 1,
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "bold",
+          }}
+        >
+          {" "}
+          Buy ticket
         </div>
-      )}
+        <div
+          onClick={handleClose}
+          className="close_btn"
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: "gray",
+            cursor: "pointer",
+            marginRight: 8,
+          }}
+        >
+          ✕
+        </div>
+      </div>
       <div
         style={{
           backgroundColor: "#F4F4F4",
@@ -229,7 +236,7 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
       >
         <div
           style={{
-            maxHeight: "100vh",
+            maxHeight: "70vh",
             maxWidth: "100vw",
             alignContent: "center",
             minHeight: "54vh",
@@ -245,7 +252,7 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
             style={{
               backgroundColor: "gray",
               height: 5,
-              width: (40 * width + 6 * (width - 1) + 20) * screenLength,
+              width: (35 * width + 6 * (width - 1) + 20) * screenLength,
             }}
           ></div>
           <div
@@ -261,8 +268,8 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: `repeat(${width}, 40px)`,
-              gridTemplateRows: `repeat(${height}, 40px)`,
+              gridTemplateColumns: `repeat(${width}, 30px)`,
+              gridTemplateRows: `repeat(${height}, 30px)`,
               gap: "6px",
               position: "relative",
               background: "white",
@@ -276,6 +283,8 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
               maxWidth: "90vw",
 
               width: "fit-content",
+              height: "fit-content",
+              borderRadius: "16px",
               alignSelf: "center", // Center vertically
             }}
           >
@@ -297,9 +306,10 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
           backgroundColor: "#F4F4F4",
 
           justifyContent: "center",
-          padding: "16px",
+          padding: "8px",
           color: "gray",
           fontSize: 16,
+          transform: "translateY(-8px)",
         }}
       >
         <div
@@ -372,7 +382,7 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
           </div>
           <div
             style={{
-              fontSize: 24,
+              fontSize: 20,
 
               fontWeight: "bold",
               fontFamily: '"Aminute", sans-serif',
@@ -460,7 +470,7 @@ export default function PlaceSeatComponent({ handleback, handleclose }) {
             <div style={{ color: "#7B7B7B", fontWeight: "bold" }}> Price</div>
             <div
               style={{
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: "bold",
                 marginTop: 8,
               }}

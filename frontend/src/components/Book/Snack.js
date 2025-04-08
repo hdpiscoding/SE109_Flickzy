@@ -101,7 +101,7 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
             style={{
               flex: 1,
               textAlign: "center",
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: "bold",
             }}
           >
@@ -112,11 +112,12 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
             onClick={handleClose}
             className="close_btn"
             style={{
-              fontSize: 24,
+              fontSize: 22,
               color: "gray",
               cursor: "pointer",
               fontWeight: "bold",
-              marginLeft: "16 !important",
+              marginLeft: "8 !important",
+              transform: "translateY(-5px)",
             }}
           >
             ✕
@@ -152,7 +153,7 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
             ))}
           </div>
 
-          <div className="footer">
+          <div className="pfooter">
             <div className="total">
               <span>Total amount</span>
               <span>{total.toLocaleString()}đ</span>

@@ -1,9 +1,12 @@
+// BookingComponent.jsx
 import React, { useState, useEffect } from "react";
-import { Card, List, Button, Typography, Tag, Image, Row, Col } from "antd";
+import { Card, List, Typography, Image, Row, Col } from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import { FaRegMap } from "react-icons/fa6";
-import "./FloatingBooking.css"; // Import your CSS file for styling
+import "./FloatingBooking.css";
 import Search from "antd/es/transfer/search";
+import { useGlobalContext } from "../../Layout";
+
 const { Title, Text } = Typography;
 
 const cinemas = [
@@ -18,13 +21,13 @@ const cinemas = [
 
 const dates = ["5", "6", "7", "8", "9", "10", "11"];
 const weekdays = [
-  "Hôm nay",
-  "Chủ nhật",
-  "Thứ 2",
-  "Thứ 3",
-  "Thứ 4",
-  "Thứ 5",
-  "Thứ 6",
+  "Today",
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
 ];
 
 const times = [
@@ -34,12 +37,15 @@ const times = [
   { label: "2D Phụ đề | CINE SUITE", slots: ["23:30 ~ 01:30"] },
 ];
 
-export default function BookingComponent({ parentCallback, handleClose }) {
+export default function BookingComponent({ haveclosebtn }) {
+  const context = useGlobalContext();
+
+  const { handleNav, handleClose } = context;
+
   const [selectedCinema, setSelectedCinema] = useState(cinemas[0]);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [provinces, setProvinces] = useState([]);
 
-  // Fetch provinces data
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
@@ -50,16 +56,22 @@ export default function BookingComponent({ parentCallback, handleClose }) {
         console.error("Error fetching provinces:", error);
       }
     };
-
     fetchProvinces();
   }, []);
+
   const handleNavigate = () => {
-    parentCallback();
+    handleNav(1);
   };
 
   return (
     <div
-      style={{ maxWidth: 1400, margin: "0 auto", padding: 20, minWidth: 1000 }}
+      style={{
+        maxWidth: 1400,
+        margin: "0 auto",
+        padding: 20,
+        minWidth: 1000,
+        backgroundColor: "transparent",
+      }}
     >
       <Row align="middle" style={{ marginBottom: 16 }}>
         <div
@@ -72,7 +84,7 @@ export default function BookingComponent({ parentCallback, handleClose }) {
         >
           <div style={{ display: "flex", alignItems: "center" }}>
             <EnvironmentOutlined
-              style={{ color: "#6cc832", marginRight: 8, fontSize: 24 }}
+              style={{ color: "#6cc832", marginRight: 8, fontSize: 22 }}
             />
             <select
               onChange={(e) =>
@@ -83,7 +95,6 @@ export default function BookingComponent({ parentCallback, handleClose }) {
                 borderRadius: "4px",
                 fontSize: "16px",
                 border: "1px solid #d9d9d9",
-                fontFamily: "'Aminute', sans-serif",
               }}
             >
               <option value="">Chọn tỉnh/thành phố</option>
@@ -94,141 +105,94 @@ export default function BookingComponent({ parentCallback, handleClose }) {
               ))}
             </select>
             <div className="neary">
-              Near You
-              <div>
-                <FaRegMap />
-              </div>{" "}
+              Near You <FaRegMap />
             </div>
           </div>
-
-          <div
-            onClick={handleClose}
-            className="close_btn"
-            style={{
-              fontSize: 24,
-              color: "gray",
-              cursor: "pointer",
-              fontWeight: "bold",
-              marginLeft: "16 !important",
-            }}
-          >
-            ✕
-          </div>
+          {haveclosebtn && (
+            <div
+              onClick={handleClose}
+              className="close_btn"
+              style={{
+                fontSize: 22,
+                color: "gray",
+                cursor: "pointer",
+                fontWeight: "bold",
+              }}
+            >
+              ✕
+            </div>
+          )}
         </div>
       </Row>
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
         {cinemas.map((cinema, index) => (
           <div className="cinema-card" key={index}></div>
         ))}
       </Row>
-      <hr
-        style={{
-          marginTop: 16,
-          color: "#d9d9d9",
-          transform: "translateX(-8px)",
-        }}
-      ></hr>
+      <hr style={{ color: "gray", margin: " 16px 0 24px 0" }}></hr>
 
-      <Row gutter={[16, 16]} style={{ transform: "translateX(-8px)" }}>
-        {/* Danh sách rạp */}
+      <Row gutter={[16, 16]}>
         <Col xs={24} md={8}>
-          <div style={{ margin: "12px 0px" }}>
-            <Search></Search>
-          </div>
-
-          <div>
-            <List
-              dataSource={cinemas}
-              renderItem={(cinema) => (
-                <List.Item
-                  className={`cinema-item ${
-                    cinema === selectedCinema ? "cinema-item-selected" : ""
-                  }`}
+          <Search />
+          <List
+            dataSource={cinemas}
+            renderItem={(cinema) => (
+              <List.Item
+                className={`cinema-item ${
+                  cinema === selectedCinema ? "cinema-item-selected" : ""
+                }`}
+                style={{
+                  cursor: "pointer",
+                  borderRadius: 8,
+                  padding: "8px 8px",
+                  marginTop: 8,
+                }}
+                onClick={() => setSelectedCinema(cinema)}
+              >
+                <Text
                   style={{
-                    cursor: "pointer",
-                    borderRadius: 8,
-                    padding: "8px 8px",
-                    marginTop: 8,
-                    transition: "background-color 0.3s ease",
+                    fontWeight: cinema === selectedCinema ? "bold" : "normal",
                   }}
-                  onClick={() => setSelectedCinema(cinema)}
                 >
-                  <div className="image-container"></div>
-                  <Text
-                    style={{
-                      fontWeight: cinema === selectedCinema ? "bold" : "normal",
-                    }}
-                  >
-                    {cinema}
-                  </Text>
-                </List.Item>
-              )}
-            />
-          </div>
+                  {cinema}
+                </Text>
+              </List.Item>
+            )}
+          />
         </Col>
 
-        {/* Chi tiết phim và lịch */}
-        <Col xs={24} md={16} style={{ padding: "0 32px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              margin: "16px 0 16px 0",
-            }}
-          >
-            <div className="image-container"></div>
-            <div style={{ marginLeft: 16 }}>
-              <div style={{ fontWeight: "bold", fontSize: 18 }}>
-                Lịch chiếu phim {selectedCinema}
-              </div>
-              <Text type="secondary">
-                Tầng 7 | {selectedCinema}, Hồ Chí Minh
-              </Text>
-              <Text
-                style={{
-                  color: "#6cc832",
-                  textDecoration: "underline",
-                  marginLeft: 8,
-                  cursor: "pointer",
-                }}
-              >
-                Map
-              </Text>
-            </div>
+        <Col
+          xs={24}
+          md={16}
+          style={{ padding: "0 32px", transform: "translateY(-32px)" }}
+        >
+          <div style={{ margin: "16px 0" }}>
+            <Title level={4}>Lịch chiếu phim {selectedCinema}</Title>
+            <Text type="secondary">Tầng 7 | {selectedCinema}, Hồ Chí Minh</Text>
+            <Text
+              style={{
+                color: "#6cc832",
+                textDecoration: "underline",
+                marginLeft: 8,
+                cursor: "pointer",
+              }}
+            >
+              Map
+            </Text>
           </div>
 
-          <div
-            style={{
-              margin: "0px 0",
-              overflowX: "auto",
-              display: "flex",
-              gap: 8,
-            }}
-          >
+          <div style={{ display: "flex", gap: 8, overflowX: "auto" }}>
             {dates.map((date, index) => (
               <div
+                key={index}
                 className={
                   index === selectedDateIndex ? "primarybtn" : "defaultbtn"
                 }
                 onClick={() => setSelectedDateIndex(index)}
               >
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontWeight: "bold",
-                      fontSize: index === selectedDateIndex ? 27 : 25,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {date}
-                  </span>
-                  <span style={{ fontSize: 14 }}>{weekdays[index]}</span>
+                <div style={{ textAlign: "center" }}>
+                  <div style={{ fontWeight: "bold", fontSize: 20 }}>{date}</div>
+                  <div>{weekdays[index]}</div>
                 </div>
               </div>
             ))}
@@ -255,27 +219,27 @@ export default function BookingComponent({ parentCallback, handleClose }) {
                     fontWeight: "bold",
                     borderRadius: 2,
                     width: 30,
-
                     textAlign: "center",
                   }}
                 >
                   16+
                 </div>
                 <div
-                  style={{
-                    fontWeight: "bold",
-                    fontSize: 18,
-                    marginBottom: 8,
-                    fontFamily: "'Aminute', sans-serif",
-                  }}
+                  style={{ fontWeight: "bold", fontSize: 16, marginBottom: 0 }}
                 >
                   Địa Đạo: Mặt Trời Trong Bóng Tối
                 </div>
                 <Text type="secondary">Lịch Sử, Chiến Tranh</Text>
                 <div style={{ marginTop: 16 }}>
                   {times.map((time) => (
-                    <div key={time.label} style={{ marginBottom: 16 }}>
-                      <div style={{ fontSize: 16, fontWeight: "bold" }}>
+                    <div key={time.label} style={{ marginBottom: 8 }}>
+                      <div
+                        style={{
+                          fontSize: 14,
+                          fontWeight: "bold",
+                          marginBottom: 4,
+                        }}
+                      >
                         {time.label}
                       </div>
                       <div
@@ -283,21 +247,18 @@ export default function BookingComponent({ parentCallback, handleClose }) {
                       >
                         {time.slots.map((slot) => (
                           <div
+                            key={slot}
                             className="slot-button"
                             onClick={handleNavigate}
                             style={{
-                              marginTop: 4,
-                              fontSize: 18,
-                              padding: "8px 24px",
+                              fontSize: 16,
+                              padding: "4px 16px",
                               border: "2px solid #9cee69",
                               color: "#4B8C22",
                               cursor: "pointer",
-
                               fontWeight: "bold",
-
                               borderRadius: 8,
                             }}
-                            key={slot}
                           >
                             {slot}
                           </div>
