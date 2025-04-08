@@ -19,8 +19,10 @@ export default function PaymentForm({ handleClose }) {
 
         backgroundColor: "rgba(0, 0, 0, 0.5)", // Làm tối nền
         display: "flex",
+        backdropFilter: "blur(8px)",
         justifyContent: "center",
         alignItems: "center",
+        transition: "all 0.3s ease-in-out",
         zIndex: 1000,
       }}
     >
