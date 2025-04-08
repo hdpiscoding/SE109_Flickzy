@@ -171,10 +171,17 @@ export default function PlaceSeatComponent() {
     }
   };
   return (
-    <div>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100vh", // Chiều cao toàn màn hình
+      }}
+    >
       <div
         style={{
           display: "flex",
+          flex: "0 0 auto",
           margin: 8,
           alignContent: "center",
           alignItems: "center",
@@ -225,115 +232,92 @@ export default function PlaceSeatComponent() {
       </div>
       <div
         style={{
-          backgroundColor: "#F4F4F4",
-
-          padding: "10px",
-          display: "flex",
-          justifyContent: "center",
-
-          height: "100%",
+          flex: "1 1 auto", // Phần này sẽ co giãn
+          overflowY: "auto", // Thêm cuộn dọc nếu nội dung quá lớn
         }}
       >
         <div
           style={{
-            maxHeight: "70vh",
-            maxWidth: "100vw",
-            alignContent: "center",
-            minHeight: "54vh",
+            backgroundColor: "#F4F4F4",
+
+            padding: "10px",
+            display: "flex",
             justifyContent: "center",
-            display: "flex",
-            flexDirection: "column",
-
-            alignItems: "center",
-            // Adjust the height as needed
           }}
         >
           <div
             style={{
-              backgroundColor: "gray",
-              height: 5,
-              width: (35 * width + 6 * (width - 1) + 20) * screenLength,
-            }}
-          ></div>
-          <div
-            style={{
-              textAlign: "center",
-              margin: "8px 0px 16px 0px",
-              fontSize: 16,
-              color: "gray",
-            }}
-          >
-            Screen
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: `repeat(${width}, 30px)`,
-              gridTemplateRows: `repeat(${height}, 30px)`,
-              gap: "6px",
-              position: "relative",
-              background: "white",
-              color: "white",
-              fontWeight: "bold",
-              cursor: "pointer",
-              padding: "10px",
-              overflowY: "auto",
-              overflowX: "auto",
-              maxHeight: "60vh",
-              maxWidth: "90vw",
+              alignContent: "center",
 
-              width: "fit-content",
-              height: "fit-content",
-              borderRadius: "16px",
-              alignSelf: "center", // Center vertically
+              justifyContent: "center",
+              display: "flex",
+              flexDirection: "column",
+
+              alignItems: "center",
+              // Adjust the height as needed
             }}
           >
-            {seat.map((s) => (
-              <div
-                key={s.seat_id}
-                style={getSeatStyle(s)}
-                onClick={() => handleSeatClick(s)}
-              >
-                {s.name}
-              </div>
-            ))}
+            <div
+              style={{
+                backgroundColor: "gray",
+                height: 5,
+                width: (35 * width + 6 * (width - 1) + 20) * screenLength,
+              }}
+            ></div>
+            <div
+              style={{
+                textAlign: "center",
+                margin: "8px 0px 16px 0px",
+                fontSize: 16,
+                color: "gray",
+              }}
+            >
+              Screen
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${width}, 30px)`,
+                gridTemplateRows: `repeat(${height}, 30px)`,
+                gap: "6px",
+                position: "relative",
+                background: "white",
+                color: "white",
+                fontWeight: "bold",
+                cursor: "pointer",
+                padding: "10px",
+
+                width: "fit-content",
+                height: "fit-content",
+                borderRadius: "16px",
+                alignSelf: "center", // Center vertically
+              }}
+            >
+              {seat.map((s) => (
+                <div
+                  key={s.seat_id}
+                  style={getSeatStyle(s)}
+                  onClick={() => handleSeatClick(s)}
+                >
+                  {s.name}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <div
-        style={{
-          display: "flex",
-          backgroundColor: "#F4F4F4",
-
-          justifyContent: "center",
-          padding: "8px",
-          color: "gray",
-          fontSize: 16,
-          transform: "translateY(-8px)",
-        }}
-      >
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            marginRight: 16,
+            backgroundColor: "#F4F4F4",
+
+            justifyContent: "center",
+            padding: "8px",
+            color: "gray",
+            fontSize: 16,
+            transform: "translateY(-8px)",
           }}
         >
           <div
-            style={{
-              width: 20,
-              height: 20,
-
-              backgroundColor: "gray",
-              borderRadius: "4px",
-              marginRight: 8,
-            }}
-          ></div>
-          <span>Unavailable</span>
-        </div>
-        {seatType.map((type) => (
-          <div
-            key={type.id}
             style={{
               display: "flex",
               alignItems: "center",
@@ -345,19 +329,45 @@ export default function PlaceSeatComponent() {
                 width: 20,
                 height: 20,
 
-                backgroundColor: type.color,
+                backgroundColor: "gray",
                 borderRadius: "4px",
                 marginRight: 8,
               }}
             ></div>
-            <span style={{ textDecoration: "underline", cursor: "pointer" }}>
-              {type.name}
-            </span>
+            <span>Unavailable</span>
           </div>
-        ))}
-      </div>{" "}
+          {seatType.map((type) => (
+            <div
+              key={type.id}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                marginRight: 16,
+              }}
+            >
+              <div
+                style={{
+                  width: 20,
+                  height: 20,
+
+                  backgroundColor: type.color,
+                  borderRadius: "4px",
+                  marginRight: 8,
+                }}
+              ></div>
+              <span style={{ textDecoration: "underline", cursor: "pointer" }}>
+                {type.name}
+              </span>
+            </div>
+          ))}
+        </div>{" "}
+      </div>
       <div
+        className="floating-booking-bottom"
         style={{
+          borderRadius: "0 0 16px 16px",
+          padding: "16px 16px",
+          flex: "0 0 auto", // Phần này cố định
           borderRadius: "0 0 16px 16px",
           padding: "16px 16px",
         }}
@@ -420,7 +430,11 @@ export default function PlaceSeatComponent() {
         >
           {" "}
           <div
-            style={{ margin: "8px 0px", color: "#7B7B7B", fontWeight: "bold" }}
+            style={{
+              margin: "8px 0px",
+              color: "#7B7B7B",
+              fontWeight: "bold",
+            }}
           >
             Seats
           </div>
