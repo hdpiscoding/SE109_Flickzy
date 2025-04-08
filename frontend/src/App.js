@@ -5,6 +5,7 @@ import Home from "./components/Home/Home";
 import Movies from "./components/Movies/Movies";
 import Cinema from "./components/Cinemas/Cinemas";
 import Blog from "./components/Blog/Blog";
+import DetailBlog from "./components/Blog/DetailBlog";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="movie" element={<Movies />} />
         <Route path="cinema" element={<Cinema />} />
         <Route path="blog" element={<Blog />} />
+        <Route path="blog/:id" element={<DetailBlog />} />
       </Route>
     </Routes>
   );

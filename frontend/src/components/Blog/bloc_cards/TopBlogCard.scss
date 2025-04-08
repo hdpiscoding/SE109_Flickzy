@@ -1,0 +1,18 @@
+.most-viewed-item {
+    .most-viewed-image {
+        height             : 80px;
+        width              : 140px;
+        background-image   : url("https://homepage.momocdn.net/blogscontents/momo-upload-api-211108155331-637719836118631788.jpg");
+        background-size    : cover;
+        background-repeat  : no-repeat;
+        border-radius      : 10px;
+        background-position: center;
+        margin-right       : 20px;
+    }
+
+    .most-viewed-title {
+        font-size  : 1rem;
+        font-weight: 700;
+        color      : var(--color-primary);
+    }
+}
