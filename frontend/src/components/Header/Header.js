@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"; // Import the icon
 import { Link } from "react-router-dom";
 import "./Header.css";
-export default function Header() {
+export default function Header({ onBookingClick }) {
   return (
     <div>
       <header className="header">
@@ -33,6 +33,9 @@ export default function Header() {
                 <Link to="/blog">Blog</Link>
               </li>
             </ul>
+            <div className="booking_btn" onClick={onBookingClick}>
+              BOOKING NOW!
+            </div>
             <div className="signin_btn">Sign In</div>
           </div>
         </nav>

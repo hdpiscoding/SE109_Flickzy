@@ -5,7 +5,7 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 18px;
+  font-size: 16px;
   font-family: "Aminute", sans-serif;
 
   cursor: pointer;
@@ -13,9 +13,8 @@
   border-radius: 24px;
 }
 .signin_btn:hover {
-  border: #9cee69 2px solid;
-  color: #9cee69;
-  transition: 0.1s;
+  cursor: pointer;
+  color: #f0f0f0;
 }
 /* Thanh taskbar */
 @import url("https://fonts.googleapis.com/css2?family=Aminute&display=swap");
@@ -41,7 +40,8 @@
 }
 
 .logo {
-  font-size: 24px;
+  font-family: "Antonio", sans-serif;
+  font-size: 26px;
   font-weight: bold;
   color: var(--xanh-nhat);
 }
@@ -64,7 +64,7 @@
 .nav-links a {
   color: white;
   text-decoration: none;
-  font-size: 18px;
+  font-size: 16px;
   transition: 0.3s;
 }
 
@@ -100,7 +100,7 @@ footer {
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.596);
   border-radius: 16px;
-  padding: 8px 16px;
+  padding: 6px 12px;
   color: white;
 }
 .search-input:focus,
@@ -111,7 +111,7 @@ footer {
 
 .search-icon {
   color: rgba(255, 255, 255, 0.596);
-  font-size: 18px;
+  font-size: 16px;
   margin-right: 10px;
 }
 
@@ -127,4 +127,26 @@ footer {
 .search-input2::placeholder {
   color: white;
   opacity: 0.7;
+}
+
+.booking_btn {
+  background-color: var(--xanh-nhat);
+  border: none;
+  color: black;
+  padding: 10px 24px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 18px;
+  font-family: "Antonio", sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transform: translateX(10px);
+
+  border-radius: 0px;
+  border: 1px solid black;
+}
+.booking_btn:hover {
+  background-color: var(--xanh-dam);
+  transition: 0.3s;
 }
