@@ -97,7 +97,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 border: "1px solid #d9d9d9",
               }}
             >
-              <option value="">Chọn tỉnh/thành phố</option>
+              <option value="">Select province/city</option>
               {provinces.map((province) => (
                 <option key={province.code} value={province.name}>
                   {province.name}
@@ -167,7 +167,7 @@ export default function BookingComponent({ haveclosebtn }) {
           style={{ padding: "0 32px", transform: "translateY(-32px)" }}
         >
           <div style={{ margin: "16px 0" }}>
-            <Title level={4}>Lịch chiếu phim {selectedCinema}</Title>
+            <Title level={4}>{selectedCinema} movie showtimes</Title>
             <Text type="secondary">Tầng 7 | {selectedCinema}, Hồ Chí Minh</Text>
             <Text
               style={{

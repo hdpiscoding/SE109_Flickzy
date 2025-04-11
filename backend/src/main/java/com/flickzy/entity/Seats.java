@@ -33,6 +33,8 @@ public class Seats {
     Integer row;
     @Column
     Integer columnn;
+    @Column
+    Integer price;
 
     String name;
 

@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import Button from "../OtherComponents/Button";
 import "./Snack.css"; // Import CSS for styling
-export default function Snack({ handleClose, handleOpenPaymentForm }) {
+
+export default function Snack({
+  handleClose,
+  handleOpenPaymentForm,
+  initAmount,
+}) {
   const initialItems = [
     {
       id: 1,
@@ -46,33 +51,31 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
   ];
   const [items, setItems] = useState(initialItems);
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = (id, value) => {
     setItems((prev) =>
       prev.map((item) =>
         item.id === id
-          ? { ...item, quantity: Math.max(0, item.quantity + delta) }
+          ? { ...item, quantity: Math.max(0, parseInt(value) || 0) }
           : item
       )
     );
   };
-  const total = items.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+
+  const total =
+    initAmount +
+    items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
     <div
-      // Gọi handleClose khi nhấp vào nền
       onClick={handleClose}
       style={{
         position: "fixed",
         top: "50%",
         left: "50%",
-        transform: "translate(-50%, -50%)", // Đặt vị trí cx là top left của màn hình
-        width: "100vw", // Chiều rộng bằng 100% màn hình
-        height: "100vh", // Chiều cao bằng 100% màn hình
-
-        backgroundColor: "rgba(0, 0, 0, 0.5)", // Làm tối nền
+        transform: "translate(-50%, -50%)",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
@@ -80,7 +83,7 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
       }}
     >
       <div
-        onClick={(e) => e.stopPropagation()} // Ngăn sự kiện click lan xuống nền
+        onClick={(e) => e.stopPropagation()}
         style={{
           backgroundColor: "white",
           padding: 16,
@@ -105,7 +108,6 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
               fontWeight: "bold",
             }}
           >
-            {" "}
             Popcorn & Drinks
           </div>
           <div
@@ -140,11 +142,25 @@ export default function Snack({ handleClose, handleOpenPaymentForm }) {
                     <div className="item-desc">{item.description}</div>
                   )}
                   <div className="quantity-control">
-                    <button onClick={() => updateQuantity(item.id, -1)}>
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    >
                       -
                     </button>
-                    <span>{item.quantity}</span>
-                    <button onClick={() => updateQuantity(item.id, 1)}>
+                    <input
+                      type="number"
+                      value={item.quantity}
+                      onChange={(e) => updateQuantity(item.id, e.target.value)}
+                      style={{
+                        width: "40px",
+                        height: "22px",
+                        textAlign: "center",
+                        margin: "0 5px",
+                      }}
+                    />
+                    <button
+                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    >
                       +
                     </button>
                   </div>

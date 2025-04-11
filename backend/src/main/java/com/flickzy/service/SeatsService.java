@@ -1,6 +1,7 @@
 package com.flickzy.service;
 
 import com.flickzy.entity.Seats;
+import com.flickzy.projection.SeatProjection;
 import com.flickzy.repository.SeatsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,4 +41,7 @@ public class SeatsService {
     public void deleteSeat(UUID seatId) {
         seatsRepository.deleteById(seatId);
     }
+    public List<SeatProjection> getSeatsByRoomId(UUID roomId) {
+    return seatsRepository.findByRoom_RoomId(roomId);
+}
 }

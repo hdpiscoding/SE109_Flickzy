@@ -27,6 +27,10 @@ public class SeatType {
 
     @Column(nullable = false)
     Integer height;
+     @Column
+    Integer price;
+     @Column
+    String description;
 
     @Column(nullable = false, length = 20)
     String color;

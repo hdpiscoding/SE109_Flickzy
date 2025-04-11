@@ -7,6 +7,8 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "room")
 @Data
@@ -32,6 +34,7 @@ public class Room {
     int height;
 
     @OneToMany(mappedBy = "room")
+    @JsonIgnore
     List<Seats> seats;
 
     @OneToMany(mappedBy = "room")

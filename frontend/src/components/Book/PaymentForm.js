@@ -78,22 +78,30 @@ export default function PaymentForm({ handleClose }) {
                   </span>
                 </div>
               </div>
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column  ",
+                  gap: 8,
+                  alignItems: "center",
+                }}
+              >
                 {" "}
-                <div>ROOM</div>
                 <div
                   style={{
                     backgroundColor: "#9cee69",
                     fontSize: 24,
-
+                    fontFamily: "'Antonio', sans-serif",
                     fontWeight: "bold",
                     height: "fit-content",
+                    transform: "translateY(-3px)",
                     width: "fit-content",
                     padding: "1px 5px",
                   }}
                 >
                   06
                 </div>
+                <div>ROOM</div>
               </div>
             </div>
             <div

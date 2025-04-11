@@ -1,6 +1,7 @@
 package com.flickzy.controller;
 
 import com.flickzy.entity.Seats;
+import com.flickzy.projection.SeatProjection;
 import com.flickzy.service.SeatsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/seats")
-@CrossOrigin(origins = "http://localhost:3002") 
+@CrossOrigin(origins ={ "http://localhost:3000","http://localhost:3001", "http://localhost:3002","http://localhost:3003","http://localhost:3004","http://localhost:3005"}) 
 @RequiredArgsConstructor
 public class SeatsController {
 
@@ -42,4 +43,8 @@ public class SeatsController {
         seatsService.deleteSeat(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/room/{roomId}")
+public ResponseEntity<List<SeatProjection>> getSeatsByRoomId(@PathVariable UUID roomId) {
+    return ResponseEntity.ok(seatsService.getSeatsByRoomId(roomId));
+}
 }
