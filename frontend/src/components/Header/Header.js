@@ -6,7 +6,10 @@ import "./Header.css";
 export default function Header({ onBookingClick }) {
   return (
     <div>
-      <header className="header">
+      <header
+        className="header"
+        style={{ alignItems: "center", alignContent: "center" }}
+      >
         <nav className="nav">
           <h1 className="logo">FLICKZY</h1>
 
@@ -18,20 +21,29 @@ export default function Header({ onBookingClick }) {
               placeholder="Search..."
             />
           </div>
+
           <div className="right-con">
             <ul className="nav-links">
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <Link to="/movie">Movies</Link>
-              </li>
-              <li>
-                <Link to="/cinema">Cinema</Link>
-              </li>
-              <li>
-                <Link to="/blog">Blog</Link>
-              </li>
+              <div>
+                <Link className="link" to="/">
+                  Home
+                </Link>
+              </div>
+              <div>
+                <Link className="link" to="/movie">
+                  Movies
+                </Link>
+              </div>
+              <div>
+                <Link className="link" to="/cinema">
+                  Cinema
+                </Link>
+              </div>
+              <div>
+                <Link className="link" to="/blog">
+                  Blog
+                </Link>
+              </div>
             </ul>
             <div className="booking_btn" onClick={onBookingClick}>
               BOOKING NOW!

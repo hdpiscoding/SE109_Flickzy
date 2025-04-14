@@ -93,11 +93,12 @@ const App = () => {
           }}
         >
           {isShowLogo && (
-            <Image
-              src={require("./assets/images/TaskMate.png")}
-              width={120}
-              style={{ margin: 27 }}
-            />
+            // <Image
+            //   src={require("./assets/images/TaskMate.png")}
+            //   width={120}
+            //   style={{ margin: 27 }}
+            // />
+            <div></div>
           )}
 
           <Menu

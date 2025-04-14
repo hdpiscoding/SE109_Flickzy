@@ -53,6 +53,24 @@ body {
 
   animation: fadeIn 0.5s ease-in-out;
 }
+.floating-booking-transperant {
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Thêm style tùy chỉnh cho box */
+  background: transparent;
+  padding: 0 !important;
+  border-radius: 1rem;
+  min-width: 1200px;
+  max-width: 98%;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-height: 99%;
+
+  animation: fadeIn 0.5s ease-in-out;
+}
 @import "./variables.css";
 .neary {
   padding: 8px;

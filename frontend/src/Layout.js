@@ -1,13 +1,13 @@
 // Layout.jsx
-import React, { useState, createContext, useContext } from "react";
+import React, { useState, createContext, useContext, useEffect } from "react";
 import { ConfigProvider } from "antd";
 import { Outlet } from "react-router-dom";
 import "./Layout.css";
-
 import Header from "./components/Header/Header";
 import Footer from "./components/Footer/Footer";
 import PlaceSeatComponent from "./components/Book/PlaceSeatComponent";
 import BookingComponent from "./components/Book/BookingComponent";
+import Trailer from "./components/OtherComponents/Trailer";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -16,6 +16,7 @@ const Layout = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [type, setType] = useState(0);
   const [step1, setStep1] = useState(0);
+  const [trailerlink, setTrailerlink] = useState("");
 
   const handleOpen = () => {
     setIsVisible(true);
@@ -35,12 +36,20 @@ const Layout = () => {
   const handleBack = () => {
     setType(0);
   };
+  const handleTrailer = () => {
+    setIsVisible(true);
+    setType(2);
+  };
 
   const sharedProps = {
     handleOpen,
     handleClose,
     handleNav,
     handleBack,
+    handleTrailer,
+    setType,
+    setIsVisible,
+    setTrailerlink,
     step1,
   };
 
@@ -72,6 +81,9 @@ const Layout = () => {
                     <PlaceSeatComponent handleback={() => setType(0)} />
                   </div>
                 )}
+              </div>
+              <div className="floating-booking-transperant ">
+                {type === 2 && <Trailer trailer={trailerlink}></Trailer>}
               </div>
             </>
           )}

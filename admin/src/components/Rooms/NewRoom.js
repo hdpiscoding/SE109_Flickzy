@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef } from "react";
 import { Row, Input, Button, Col, message, Select, Form, Drawer } from "antd";
 import NewRoom2 from "./NewRoom2";
-import { addRoom, getAllSeatTypes } from "../../services/adminService";
+import {
+  addRoom,
+  addSeatType,
+  deleteSeatType,
+  getAllSeatTypes,
+} from "../../services/adminService";
 
 export default function RectangleGrid() {
   const [column, setColumn] = useState(0);
@@ -100,15 +105,47 @@ export default function RectangleGrid() {
       message.error("Please select rows and enter a label.");
     }
   };
-  const handleCreateChairType = () => {
-    if (!newRectangle.name || newRectangle.width <= 0 || !newRectangle.color) {
+  const handleDeleteSeatType = async (id) => {
+    try {
+      await deleteSeatType(id); // Gọi API xóa loại ghế
+    } catch (error) {
+      console.error("Error deleting seat type:", error);
+      message.error("An error occurred while deleting the seat type.");
+    }
+    setPredefinedRectangles((prev) =>
+      prev.filter((rect) => rect.seatTypeId !== id)
+    );
+  };
+  const handleCreateChairType = async () => {
+    if (
+      !newRectangle.name ||
+      newRectangle.width <= 0 ||
+      !newRectangle.color ||
+      newRectangle.price <= 0
+    ) {
       alert("Please fill in all fields correctly.");
       return;
     }
+    try {
+      // Gọi API addSeatType
+      const response = await addSeatType({
+        name: newRectangle.name,
+        width: newRectangle.width,
+        height: 1,
+        color: newRectangle.color,
+        price: newRectangle.price,
+        description: newRectangle.description,
+      });
+
+      // Thêm vào danh sách predefinedRectangles
+      setPredefinedRectangles((prev) => [...prev, newRectangle]);
+      message.success("New chair type created successfully!");
+      handleCloseDrawer();
+    } catch (error) {
+      console.error("Error creating chair type:", error);
+      message.error("An error occurred while creating the chair type.");
+    }
     // Add the new chair type to predefinedRectangles (assuming you have this state)
-    setPredefinedRectangles((prev) => [...prev, newRectangle]);
-    message.success("New chair type created successfully!");
-    handleCloseDrawer();
   };
   const [selectedGridRectangle, setSelectedGridRectangle] = useState(null);
   const containerRef = useRef(null);
@@ -126,7 +163,6 @@ export default function RectangleGrid() {
   useEffect(() => {
     const fetchSeatTypes = async () => {
       const res = await getAllSeatTypes();
-      alert(JSON.stringify(res));
 
       setPredefinedRectangles(res);
     };
@@ -634,18 +670,67 @@ export default function RectangleGrid() {
                     placeholder="Enter width"
                   />
                 </Form.Item>
-
-                <Form.Item label="Color">
+                <Form.Item label="Price">
                   <Input
-                    type="color"
-                    value={newRectangle.color}
+                    type="number"
+                    value={newRectangle.price}
                     onChange={(e) =>
                       setNewRectangle({
                         ...newRectangle,
-                        color: e.target.value,
+                        price: Number(e.target.value),
                       })
                     }
+                    placeholder="Enter price"
                   />
+                </Form.Item>
+                <Form.Item label="Description">
+                  <Input.TextArea
+                    value={newRectangle.description}
+                    onChange={(e) =>
+                      setNewRectangle({
+                        ...newRectangle,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="Enter description"
+                    rows={3}
+                  />
+                </Form.Item>
+                <Form.Item label="Color">
+                  <div
+                    style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}
+                  >
+                    {[
+                      "#FF5733", // Red
+                      "#33FF57", // Green
+                      "#3357FF", // Blue
+                      "#FFD700", // Yellow
+                      "#800080", // Purple
+                      "#FF33FF", // Pink
+                      "#00FFFF", // Cyan
+                      "#FFA500", // Orange
+                    ].map((color) => (
+                      <div
+                        key={color}
+                        onClick={() =>
+                          setNewRectangle({
+                            ...newRectangle,
+                            color: color,
+                          })
+                        }
+                        style={{
+                          width: "40px",
+                          height: "40px",
+                          backgroundColor: color,
+                          border:
+                            newRectangle.color === color
+                              ? "3px solid black"
+                              : "1px solid #ccc",
+                          cursor: "pointer",
+                        }}
+                      ></div>
+                    ))}
+                  </div>
                 </Form.Item>
                 <Button type="primary" onClick={handleCreateChairType}>
                   Create
@@ -653,7 +738,6 @@ export default function RectangleGrid() {
               </Form>
             </Drawer>
           </>
-
           <div
             style={{
               flex: 1,
@@ -672,7 +756,7 @@ export default function RectangleGrid() {
             >
               {predefinedRectangles.map((rect) => (
                 <div
-                  key={rect.name}
+                  key={rect.seatTypeId}
                   onClick={() => {
                     setSelectedGridRectangle(null);
                     setSelectedRectangle(rect);
@@ -681,9 +765,10 @@ export default function RectangleGrid() {
                     display: "flex",
                     alignItems: "center",
                     cursor: "pointer",
+                    justifyContent: "space-between",
                     padding: 8,
                     border:
-                      selectedRectangle?.name === rect.name
+                      selectedRectangle?.seatTypeId === rect.seatTypeId
                         ? "2px solid blue"
                         : "1px solid #ccc",
                   }}
@@ -697,8 +782,27 @@ export default function RectangleGrid() {
                     }}
                   ></div>
                   <div>
-                    <div>{rect.name}</div>
-                    <div>{`W: ${rect.width}, H: ${rect.height}`}</div>
+                    <div style={{ fontWeight: "bold" }}>{rect.name} </div>
+                    <div>{rect.description} </div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        gap: 20,
+                      }}
+                    >
+                      {" "}
+                      <div>{`W: ${rect.width}, H: ${rect.height}`}</div>
+                      <div>{rect.price} đ</div>
+                    </div>
+                  </div>
+                  <div
+                    onClick={() => {
+                      handleDeleteSeatType(rect.seatTypeId);
+                    }}
+                    style={{ fontSize: 20, marginRight: 8 }}
+                  >
+                    X
                   </div>
                 </div>
               ))}

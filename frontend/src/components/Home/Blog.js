@@ -79,7 +79,7 @@ const BlogHome = () => {
           </Col>
         ))}
       </Row>
-      <div style={{ textAlign: "center", marginTop: 24 }}>
+      <div style={{ textAlign: "center", marginTop: 40, marginBottom: 12 }}>
         <Button text={"See more"}></Button>
       </div>
     </div>

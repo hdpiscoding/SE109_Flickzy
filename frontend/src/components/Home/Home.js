@@ -22,6 +22,7 @@ const movies = [
     rating: 8.5,
     genres: "Action, Adventure, Fantasy",
     time: "2h 10m",
+    trailerlink: "https://www.youtube.com/watch?v=JfVOs4VSpmA",
   },
   {
     tag: "18+",
@@ -38,6 +39,7 @@ const movies = [
     rating: 8.5,
     genres: "Action, Adventure, Fantasy",
     time: "2h 10m",
+    trailerlink: "https://www.youtube.com/watch?v=TcMBFSGVi1c",
   },
   {
     tag: "18+",
@@ -55,11 +57,13 @@ const movies = [
     rating: 8.5,
     genres: "Action, Adventure, Fantasy",
     time: "2h 10m",
+    trailerlink: "https://www.youtube.com/watch?v=aWzlQ2N6qqg",
   },
 ];
 
 export default function Home() {
-  const { handleBookingToggle } = useOutletContext();
+  const { handleBookingToggle, setType, setIsVisible, setTrailerlink } =
+    useOutletContext();
   const [index, setIndex] = useState(0);
 
   useEffect(() => {
@@ -152,7 +156,12 @@ export default function Home() {
             <Button text="Book Ticket" fontSize={16}></Button>
 
             <button
-              className="btn btn-secondary"
+              onClick={() => {
+                setType(2);
+                setIsVisible(true);
+                setTrailerlink(current.trailerlink);
+              }}
+              className="btnn btn-secondary"
               style={{
                 alignContent: "center",
                 alignItems: "center",
@@ -162,7 +171,7 @@ export default function Home() {
               <IoPlayCircleOutline
                 style={{
                   fontSize: 16,
-                  transform: "translateY(3.5px)",
+
                   marginRight: 5,
                 }}
               />
