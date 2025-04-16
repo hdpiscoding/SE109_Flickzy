@@ -1,5 +1,6 @@
 package com.flickzy.entity;
 
+import com.flickzy.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,12 +9,13 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "seat_types")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SeatType {
+public class SeatType extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid")
