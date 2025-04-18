@@ -1,5 +1,6 @@
 package com.flickzy.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,17 +16,36 @@ import java.util.UUID;
 @Builder
 public class MovieDTO {
     private UUID id;
+
     private String movieName;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieDescription;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieContent;
+
     private String movieTrailer;
+
     private String genres;
+
     private LocalDate movieRelease;
+
     private String moviePoster;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieNation;
+
     private Integer movieLength;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieActors;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieDirector;
+
     private String ageRating;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Set<ReviewDTO> reviews;
 }
