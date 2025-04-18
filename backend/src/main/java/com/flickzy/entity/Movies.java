@@ -20,37 +20,43 @@ import java.util.UUID;
 public class Movies extends BaseEntity {
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "uuid")
+    @Column(name="id", columnDefinition = "uuid")
     UUID id;
 
+    @Column(name = "movie_name", nullable = false)
     String movieName;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "movie_description")
     String movieDescription;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "movie_content")
     String movieContent;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "movie_trailer")
     String movieTrailer;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "json", name = "genres")
     String genres;
 
+    @Column(name = "movie_release")
     LocalDate movieRelease;
 
+    @Column(name = "movie_length")
     Integer movieLength;
 
+    @Column(name = "movie_nation")
     String movieNation;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "movie_poster")
     String moviePoster;
 
+    @Column(name = "movie_director")
     String movieDirector;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "movie_actors")
     String movieActors;
 
+    @Column(name = "age_rating")
     String ageRating;
 
     @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)

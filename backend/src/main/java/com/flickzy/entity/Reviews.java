@@ -20,7 +20,8 @@ import java.util.UUID;
 public class Reviews extends BaseEntity {
     @Id
     @GeneratedValue
-    Long id;
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
+    UUID id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -31,8 +32,9 @@ public class Reviews extends BaseEntity {
     @OnDelete(action = OnDeleteAction.CASCADE)
     Movies movie;
 
+    @Column(name = "star")
     Integer star;
 
-    @Column(columnDefinition = "text")
+    @Column(columnDefinition = "text", name = "content")
     String content;
 }

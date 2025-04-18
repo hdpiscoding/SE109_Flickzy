@@ -34,6 +34,9 @@ public class Users extends BaseEntity implements UserDetails {
 
     String fullname;
 
+    @Column(name = "avatar", columnDefinition = "text")
+    String avatar;
+
     LocalDate birthday;
 
     Boolean gender;

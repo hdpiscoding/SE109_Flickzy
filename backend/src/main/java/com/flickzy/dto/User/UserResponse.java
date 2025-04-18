@@ -17,5 +17,6 @@ public class UserResponse {
     private Boolean gender;
     private String email;
     private String phone;
+    private String avatar;
     // getters and setters
 }
