@@ -35,8 +35,10 @@ public class Movies extends BaseEntity {
     @Column(columnDefinition = "text", name = "movie_trailer")
     String movieTrailer;
 
-    @Column(columnDefinition = "json", name = "genres")
-    String genres;
+    @Column(name = "genres")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "genres")
+    Genres genres;
 
     @Column(name = "movie_release")
     LocalDate movieRelease;
