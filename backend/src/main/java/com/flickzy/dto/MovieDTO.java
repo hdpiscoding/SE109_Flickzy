@@ -1,12 +1,14 @@
 package com.flickzy.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.flickzy.entity.Genres;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +29,7 @@ public class MovieDTO {
 
     private String movieTrailer;
 
-    private String genres;
+    private List<Genres> genres;
 
     private LocalDate movieRelease;
 

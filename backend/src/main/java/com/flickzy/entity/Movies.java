@@ -6,7 +6,9 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -35,10 +37,12 @@ public class Movies extends BaseEntity {
     @Column(columnDefinition = "text", name = "movie_trailer")
     String movieTrailer;
 
-    @Column(name = "genres")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genres")
-    Genres genres;
+    @ManyToMany
+    @JoinTable(
+            name = "movie_genre",
+            joinColumns = @JoinColumn(name = "movie_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    List<Genres> genres;
 
     @Column(name = "movie_release")
     LocalDate movieRelease;

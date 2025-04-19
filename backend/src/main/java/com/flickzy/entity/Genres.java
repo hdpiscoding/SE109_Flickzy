@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,6 +26,6 @@ public class Genres extends BaseEntity {
     @Column(name = "name", unique = true)
     String name;
 
-    @OneToMany(mappedBy = "genres", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    Set<Movies> movies;
+    @ManyToMany(mappedBy = "genres")
+    Set<Movies> movies = new HashSet<>();
 }

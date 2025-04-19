@@ -1,8 +1,10 @@
 package com.flickzy.service.implemetations;
 
 import com.flickzy.dto.MovieDTO;
+import com.flickzy.entity.Genres;
 import com.flickzy.entity.Movies;
 import com.flickzy.mapper.MovieMapper;
+import com.flickzy.repository.GenreRepository;
 import com.flickzy.repository.MovieRepository;
 import com.flickzy.service.interfaces.MovieService;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,23 +14,26 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
+    private final GenreRepository genreRepository;
     private final MovieMapper movieMapper;
 
     @Override
     public MovieDTO createMovie(MovieDTO movieDTO) {
+        List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(Genres::getId).toList());
         Movies movie = Movies
                 .builder()
                 .movieName(movieDTO.getMovieName())
                 .movieDescription(movieDTO.getMovieDescription())
                 .movieContent(movieDTO.getMovieContent())
                 .movieTrailer(movieDTO.getMovieTrailer())
-                .genres(movieDTO.getGenres())
+                .genres(genres)
                 .movieRelease(movieDTO.getMovieRelease())
                 .moviePoster(movieDTO.getMoviePoster())
                 .movieNation(movieDTO.getMovieNation())
@@ -56,7 +61,8 @@ public class MovieServiceImpl implements MovieService {
             movie.setMovieTrailer(movieDTO.getMovieTrailer());
         }
         if (movieDTO.getGenres() != null) {
-            movie.setGenres(movieDTO.getGenres());
+            List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(Genres::getId).toList());
+            movie.setGenres(genres);
         }
         if (movieDTO.getMovieRelease() != null) {
             movie.setMovieRelease(movieDTO.getMovieRelease());
