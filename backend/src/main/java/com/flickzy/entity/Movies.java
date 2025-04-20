@@ -6,9 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -70,4 +68,7 @@ public class Movies extends BaseEntity {
 
     @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Reviews> reviews;
+
+    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    List<MovieShowing> showings;
 }
