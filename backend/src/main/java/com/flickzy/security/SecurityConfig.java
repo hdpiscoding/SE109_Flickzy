@@ -34,14 +34,17 @@ public class SecurityConfig {
                         // Public APIs
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/genres").permitAll()
+
 
 //                        // User APIs
 //                        .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
 //                        .requestMatchers("/api/v1/rank").hasAuthority("USER")
 //                        .requestMatchers(HttpMethod.GET, "/api/v1/reels/{id}").hasAuthority("USER")
 //
-//                        // Admin APIs
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}").hasAuthority("ADMIN")
+                        // Admin APIs
+                        .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
+                        .requestMatchers( "/api/v1/genres/**").hasAuthority("ADMIN")
 //                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}/analysis").hasAuthority("ADMIN")
 //                        .requestMatchers(HttpMethod.POST, "/api/v1/lessons").hasAuthority("ADMIN")
 //                        .requestMatchers(HttpMethod.PUT, "/api/v1/lessons/{id}").hasAuthority("ADMIN")
@@ -52,8 +55,8 @@ public class SecurityConfig {
 //                        .requestMatchers(HttpMethod.POST, "/api/v1/reels").hasAuthority("ADMIN")
 //                        .requestMatchers(HttpMethod.PUT, "/api/v1/reels/{id}").hasAuthority("ADMIN")
 //                        .requestMatchers(HttpMethod.DELETE, "/api/v1/reels/{id}").hasAuthority("ADMIN")
-//
-//                        // default APIs
+
+                        // default APIs
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,15 +1,21 @@
 package com.flickzy.service.implemetations;
 
 import com.flickzy.dto.MovieDTO;
+import com.flickzy.dto.PaginatedResponse;
+import com.flickzy.dto.filters.MovieFilter;
 import com.flickzy.entity.Genres;
 import com.flickzy.entity.Movies;
 import com.flickzy.mapper.MovieMapper;
 import com.flickzy.repository.GenreRepository;
 import com.flickzy.repository.MovieRepository;
 import com.flickzy.service.interfaces.MovieService;
+import com.flickzy.utils.specifications.MovieSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -94,8 +100,24 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public List<MovieDTO> getAllMovies(Map<String, Object> filters) {
-        return List.of();
+    public PaginatedResponse<MovieDTO> getAllMovies(MovieFilter filters) {
+        int page = filters.getPage() == null ? 1 : filters.getPage();
+        int limit = filters.getLimit() == null ? 10 : filters.getLimit();
+        Specification<Movies> spec = Specification
+                .where(MovieSpecification.hasGenre(filters.getGenres().toString()))
+                .and(MovieSpecification.hasYear(filters.getYear_release()))
+                .and(MovieSpecification.hasName(filters.getName()))
+                .and(MovieSpecification.isCurrentlyShowing(filters.isShowing()));
+        PageRequest pageRequest = PageRequest.of(page - 1, limit);
+        Page<Movies> movies = movieRepository.findAll(spec, pageRequest);
+        return new PaginatedResponse<>(
+                movieMapper.toDtoList(movies.getContent()),
+                movies.getNumber() + 1,
+                movies.getSize(),
+                movies.getTotalElements(),
+                movies.getTotalPages(),
+                movies.isLast()
+        );
     }
 
     @Override

@@ -12,10 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Builder
 public class MovieFilter {
-    private int page;
-    private int limit;
+    private Integer page;
+    private Integer limit;
     private UUID genres;
     private boolean isShowing;
     private String name;
-    private int year_release;
+    private Integer year_release;
 }

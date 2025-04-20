@@ -15,12 +15,12 @@ public class MovieSpecification {
                 name == null ? null : cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
 
-    public static Specification<Movies> hasGenreName(String genreName) {
+    public static Specification<Movies> hasGenre(String genreId) {
         return (root, query, cb) -> {
-            if (genreName == null || genreName.isEmpty()) return null;
+            if (genreId == null || genreId.isEmpty()) return null;
 
             Join<Movies, Genres> genres = root.join("genres");
-            return cb.equal(cb.lower(genres.get("name")), genreName.toLowerCase());
+            return cb.equal(genres.get("id"), genreId);
         };
     }
 

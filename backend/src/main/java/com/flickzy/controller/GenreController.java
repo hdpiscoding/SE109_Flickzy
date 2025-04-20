@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/genre")
+@RequestMapping("/api/v1/genres")
 @RequiredArgsConstructor
 public class GenreController extends BaseController {
     private final GenreService genreService;
@@ -24,7 +24,7 @@ public class GenreController extends BaseController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Object> updateGenre(@PathVariable UUID id, @RequestBody GenreDTO genre) {
         return buildResponse(genreService.updateGenre(id, genre), HttpStatus.OK,"Genre updated successfully");
     }
