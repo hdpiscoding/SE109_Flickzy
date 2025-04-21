@@ -31,10 +31,15 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        // Public APIs
+                        // Public APIs (unauthenticated)
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/genres").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/movies/filter").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/movies/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings/movies/{movieId}").permitAll()
+
 
 
 //                        // User APIs
@@ -44,17 +49,10 @@ public class SecurityConfig {
 //
                         // Admin APIs
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
+                        .requestMatchers( "/api/v1/movies").hasAuthority("ADMIN")
                         .requestMatchers( "/api/v1/genres/**").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/users/{id}/analysis").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/lessons").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.PUT, "/api/v1/lessons/{id}").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/api/v1/lessons/{id}").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/topics").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.PUT, "/api/v1/topics/{id}").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/api/v1/topics/{id}").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.POST, "/api/v1/reels").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.PUT, "/api/v1/reels/{id}").hasAuthority("ADMIN")
-//                        .requestMatchers(HttpMethod.DELETE, "/api/v1/reels/{id}").hasAuthority("ADMIN")
+                        .requestMatchers( "/api/v1/movies/**").hasAuthority("ADMIN")
+                        .requestMatchers( "/api/v1/movie-showings/**").hasAuthority("ADMIN")
 
                         // default APIs
                         .anyRequest().authenticated()

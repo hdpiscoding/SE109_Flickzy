@@ -29,7 +29,7 @@ public class MovieDTO {
 
     private String movieTrailer;
 
-    private List<Genres> genres;
+    private List<GenreDTO> genres;
 
     private LocalDate movieRelease;
 

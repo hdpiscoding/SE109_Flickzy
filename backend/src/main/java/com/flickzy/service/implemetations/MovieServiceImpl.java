@@ -1,5 +1,6 @@
 package com.flickzy.service.implemetations;
 
+import com.flickzy.dto.GenreDTO;
 import com.flickzy.dto.MovieDTO;
 import com.flickzy.dto.PaginatedResponse;
 import com.flickzy.dto.filters.MovieFilter;
@@ -9,6 +10,7 @@ import com.flickzy.mapper.MovieMapper;
 import com.flickzy.repository.GenreRepository;
 import com.flickzy.repository.MovieRepository;
 import com.flickzy.service.interfaces.MovieService;
+import com.flickzy.utils.dates.DateUtils;
 import com.flickzy.utils.specifications.MovieSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
@@ -32,7 +32,7 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     public MovieDTO createMovie(MovieDTO movieDTO) {
-        List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(Genres::getId).toList());
+        List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(GenreDTO::getId).toList());
         Movies movie = Movies
                 .builder()
                 .movieName(movieDTO.getMovieName())
@@ -40,7 +40,7 @@ public class MovieServiceImpl implements MovieService {
                 .movieContent(movieDTO.getMovieContent())
                 .movieTrailer(movieDTO.getMovieTrailer())
                 .genres(genres)
-                .movieRelease(movieDTO.getMovieRelease())
+                .movieRelease(DateUtils.parseToLocalDate(movieDTO.getMovieRelease().toString()))
                 .moviePoster(movieDTO.getMoviePoster())
                 .movieNation(movieDTO.getMovieNation())
                 .movieLength(movieDTO.getMovieLength())
@@ -48,7 +48,8 @@ public class MovieServiceImpl implements MovieService {
                 .movieDirector(movieDTO.getMovieDirector())
                 .ageRating(movieDTO.getAgeRating())
                 .build();
-        return movieMapper.toDto(movieRepository.save(movie));
+        MovieDTO new_movie = movieMapper.toDto(movieRepository.save(movie));
+        return new_movie;
     }
 
     @Override
@@ -67,11 +68,11 @@ public class MovieServiceImpl implements MovieService {
             movie.setMovieTrailer(movieDTO.getMovieTrailer());
         }
         if (movieDTO.getGenres() != null) {
-            List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(Genres::getId).toList());
+            List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(GenreDTO::getId).toList());
             movie.setGenres(genres);
         }
         if (movieDTO.getMovieRelease() != null) {
-            movie.setMovieRelease(movieDTO.getMovieRelease());
+            movie.setMovieRelease(DateUtils.parseToLocalDate(movieDTO.getMovieRelease().toString()));
         }
         if (movieDTO.getMoviePoster() != null) {
             movie.setMoviePoster(movieDTO.getMoviePoster());
@@ -91,7 +92,11 @@ public class MovieServiceImpl implements MovieService {
         if (movieDTO.getAgeRating() != null) {
             movie.setAgeRating(movieDTO.getAgeRating());
         }
-        return movieMapper.toDto(movieRepository.save(movie));
+
+        Movies m = movieRepository.save(movie);
+        m.setReviews(null);
+
+        return movieMapper.toDto(m);
     }
 
     @Override
@@ -103,15 +108,40 @@ public class MovieServiceImpl implements MovieService {
     public PaginatedResponse<MovieDTO> getAllMovies(MovieFilter filters) {
         int page = filters.getPage() == null ? 1 : filters.getPage();
         int limit = filters.getLimit() == null ? 10 : filters.getLimit();
-        Specification<Movies> spec = Specification
-                .where(MovieSpecification.hasGenre(filters.getGenres().toString()))
-                .and(MovieSpecification.hasYear(filters.getYear_release()))
-                .and(MovieSpecification.hasName(filters.getName()))
-                .and(MovieSpecification.isCurrentlyShowing(filters.isShowing()));
+        String genre = filters.getGenres() == null ? null : filters.getGenres().toString();
+        Specification<Movies> spec = Specification.where(null);
+
+        if (genre != null && !genre.isEmpty()){
+            spec = spec.and(MovieSpecification.hasGenre(genre));
+        }
+
+        if (filters.getYearRelease() != null) {
+            spec = spec.and(MovieSpecification.hasYear(filters.getYearRelease()));
+        }
+
+        if (filters.getName() != null && !filters.getName().isEmpty()) {
+            spec = spec.and(MovieSpecification.hasName(filters.getName()));
+        }
+
+        if (filters.getIsShowing() != null) {
+            spec = spec.and(MovieSpecification.isCurrentlyShowing(filters.getIsShowing()));
+        }
+
         PageRequest pageRequest = PageRequest.of(page - 1, limit);
         Page<Movies> movies = movieRepository.findAll(spec, pageRequest);
+        List<MovieDTO> movieDTOs = movieMapper.toDtoList(movies.getContent()
+                .stream()
+                .peek(movieDTO -> {
+                    movieDTO.setMovieDescription(null);
+                    movieDTO.setMovieContent(null);
+                    movieDTO.setMovieNation(null);
+                    movieDTO.setMovieActors(null);
+                    movieDTO.setMovieDirector(null);
+                    movieDTO.setReviews(null);
+                })
+                .toList());
         return new PaginatedResponse<>(
-                movieMapper.toDtoList(movies.getContent()),
+                movieDTOs,
                 movies.getNumber() + 1,
                 movies.getSize(),
                 movies.getTotalElements(),

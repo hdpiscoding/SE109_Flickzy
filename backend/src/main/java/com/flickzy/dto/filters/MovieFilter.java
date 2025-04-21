@@ -15,7 +15,7 @@ public class MovieFilter {
     private Integer page;
     private Integer limit;
     private UUID genres;
-    private boolean isShowing;
+    private Boolean isShowing;
     private String name;
-    private Integer year_release;
+    private Integer yearRelease;
 }

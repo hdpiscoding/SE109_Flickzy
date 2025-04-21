@@ -12,7 +12,7 @@ import java.time.LocalDate;
 public class MovieSpecification {
     public static Specification<Movies> hasName(String name) {
         return (root, query, cb) ->
-                name == null ? null : cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");
+                name == null ? null : cb.like(cb.lower(root.get("movieName")), "%" + name.toLowerCase() + "%");
     }
 
     public static Specification<Movies> hasGenre(String genreId) {
