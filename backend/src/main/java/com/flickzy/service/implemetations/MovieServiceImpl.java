@@ -112,7 +112,7 @@ public class MovieServiceImpl implements MovieService {
         Specification<Movies> spec = Specification.where(null);
 
         if (genre != null && !genre.isEmpty()){
-            spec = spec.and(MovieSpecification.hasGenre(genre));
+            spec = spec.and(MovieSpecification.hasGenre(UUID.fromString(genre)));
         }
 
         if (filters.getYearRelease() != null) {

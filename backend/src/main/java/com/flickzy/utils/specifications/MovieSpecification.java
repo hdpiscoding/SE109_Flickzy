@@ -8,6 +8,7 @@ import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class MovieSpecification {
     public static Specification<Movies> hasName(String name) {
@@ -15,9 +16,9 @@ public class MovieSpecification {
                 name == null ? null : cb.like(cb.lower(root.get("movieName")), "%" + name.toLowerCase() + "%");
     }
 
-    public static Specification<Movies> hasGenre(String genreId) {
+    public static Specification<Movies> hasGenre(UUID genreId) {
         return (root, query, cb) -> {
-            if (genreId == null || genreId.isEmpty()) return null;
+            if (genreId == null) return null;
 
             Join<Movies, Genres> genres = root.join("genres");
             return cb.equal(genres.get("id"), genreId);
