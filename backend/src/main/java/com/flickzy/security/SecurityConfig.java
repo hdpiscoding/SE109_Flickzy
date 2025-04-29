@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/movies/filter").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movies/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/reviews/{movieId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings/movies/{movieId}").permitAll()
 
 
@@ -49,6 +50,7 @@ public class SecurityConfig {
 //
                         // Admin APIs
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/{id}").hasAuthority("ADMIN")
                         .requestMatchers( "/api/v1/movies").hasAuthority("ADMIN")
                         .requestMatchers( "/api/v1/genres/**").hasAuthority("ADMIN")
                         .requestMatchers( "/api/v1/movies/**").hasAuthority("ADMIN")

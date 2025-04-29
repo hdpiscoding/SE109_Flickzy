@@ -1,5 +1,6 @@
 package com.flickzy.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.flickzy.dto.User.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
