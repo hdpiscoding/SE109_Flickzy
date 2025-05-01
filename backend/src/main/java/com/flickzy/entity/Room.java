@@ -1,5 +1,6 @@
 package com.flickzy.entity;
 
+import com.flickzy.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,12 +12,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "room")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Room {
+public class Room extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid")

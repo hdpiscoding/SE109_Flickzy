@@ -1,5 +1,6 @@
 package com.flickzy.entity;
 
+import com.flickzy.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,12 +9,13 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "booking")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Booking {
+public class Booking extends BaseEntity {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid")
