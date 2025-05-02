@@ -1,6 +1,7 @@
 package com.flickzy.mapper;
 
 import com.flickzy.base.BaseMapper;
+import com.flickzy.dto.UpdateUserDTO;
 import com.flickzy.dto.User.UserResponse;
 import com.flickzy.entity.Users;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,24 @@ public class UserMapper implements BaseMapper<Users, UserResponse> {
     @Override
     public Users toEntity(UserResponse dto) {
         return modelMapper.map(dto, Users.class);
+    }
+
+    public void updateEntityFromDto(UpdateUserDTO dto, Users entity) {
+        if (dto.getFullname() != null) {
+            entity.setFullname(dto.getFullname());
+        }
+        if (dto.getAvatar() != null) {
+            entity.setAvatar(dto.getAvatar());
+        }
+        if (dto.getBirthday() != null) {
+            entity.setBirthday(dto.getBirthday());
+        }
+        if (dto.getGender() != null) {
+            entity.setGender(dto.getGender());
+        }
+        if (dto.getPhone() != null) {
+            entity.setPhone(dto.getPhone());
+        }
     }
 
     @Override
