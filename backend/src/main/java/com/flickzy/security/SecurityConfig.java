@@ -44,6 +44,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-movie").permitAll()
                         // User APIs
                         .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/bookings/me").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/booking").hasAnyAuthority("USER", "ADMIN")
                         // Admin APIs
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/{id}").hasAuthority("ADMIN")
