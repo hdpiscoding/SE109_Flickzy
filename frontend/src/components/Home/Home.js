@@ -161,7 +161,7 @@ export default function Home() {
                 setIsVisible(true);
                 setTrailerlink(current.trailerlink);
               }}
-              className="btn btn-secondary"
+              className="btnn btn-secondary"
               style={{
                 alignContent: "center",
                 alignItems: "center",
@@ -171,7 +171,7 @@ export default function Home() {
               <IoPlayCircleOutline
                 style={{
                   fontSize: 16,
-                  transform: "translateY(3.5px)",
+
                   marginRight: 5,
                 }}
               />

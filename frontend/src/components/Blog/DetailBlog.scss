@@ -1,0 +1,150 @@
+.detail-blog {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color      : #333;
+
+    .load-more {
+        display         : block;
+        margin          : 20px auto;
+        padding         : 10px 20px;
+        background-color: #ff4081;
+        color           : white;
+        border          : none;
+        border-radius   : 5px;
+        cursor          : pointer;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        color : #d32f2f;
+        margin: 1rem 0;
+    }
+
+    p {
+        margin: 0.5rem 0;
+    }
+
+    ul {
+        margin      : 1rem 0;
+        padding-left: 1.5rem;
+
+        li {
+            margin: 0.5rem 0;
+        }
+    }
+
+    a {
+        color          : #1976d2;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .image-container {
+        text-align: center;
+        margin    : 1.5rem 0;
+
+        img {
+            max-width    : 100%;
+            height       : auto;
+            border-radius: 8px;
+        }
+
+        figcaption {
+            font-size : 0.9rem;
+            color     : #666;
+            margin-top: 0.5rem;
+        }
+    }
+
+    /* filepath: c:\Users\PC\Desktop\SE109_Flickzy\frontend\src\components\Blog\DetailBlog.scss */
+    .blog-info {
+        font-size    : 14px;
+        color        : #888;
+        margin-bottom: 16px;
+    }
+
+    .table-of-contents {
+        margin          : 20px 0;
+        padding         : 10px;
+        background-color: #f9f9f9;
+        border          : 1px solid #ddd;
+        border-radius   : 5px;
+    }
+
+    .table-of-contents h3 {
+        margin-bottom: 10px;
+        font-size    : 18px;
+    }
+
+    .table-of-contents ul {
+        list-style: none;
+        padding   : 0;
+    }
+
+    .table-of-contents li {
+        margin-bottom: 8px;
+    }
+
+    .table-of-contents a {
+        text-decoration: none;
+        color          : #007bff;
+    }
+
+    .table-of-contents a:hover {
+        text-decoration: underline;
+    }
+}
+
+/* filepath: c:\Users\PC\Desktop\SE109_Flickzy\frontend\src\components\Blog\DetailBlog.scss */
+.detail-blog {
+    margin-top: 20px;
+}
+
+.blog-info {
+    font-size    : 14px;
+    color        : #888;
+    margin-bottom: 16px;
+}
+
+/* filepath: c:\Users\PC\Desktop\SE109_Flickzy\frontend\src\components\Blog\DetailBlog.scss */
+.table-of-contents {
+    position        : sticky;
+    top             : 20px;
+    /* Khoảng cách từ đỉnh trang */
+    background-color: #f9f9f9;
+    padding         : 15px;
+    border          : 1px solid #ddd;
+    border-radius   : 5px;
+    max-height      : calc(100vh - 40px);
+    overflow-y      : auto;
+}
+
+.table-of-contents h3 {
+    font-size    : 18px;
+    margin-bottom: 10px;
+}
+
+.table-of-contents ul {
+    list-style: none;
+    padding   : 0;
+}
+
+.table-of-contents li {
+    margin-bottom: 8px;
+}
+
+.table-of-contents a {
+    text-decoration: none;
+    color          : #007bff;
+}
+
+.table-of-contents a:hover {
+    text-decoration: underline;
+}

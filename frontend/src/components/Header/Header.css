@@ -29,6 +29,8 @@
   background: rgba(0, 0, 0, 0.406); /* Header trong suốt */
   backdrop-filter: blur(2px); /* Làm mờ nền */
   padding: 0px 20px;
+  display: flex;
+  justify-content: space-between;
 }
 
 .nav {
@@ -36,7 +38,10 @@
   justify-content: space-between;
   align-items: center;
   max-width: 150vh;
+  width: 100%;
   margin: 0 auto;
+  align-content: center;
+  align-self: center;
 }
 
 .logo {
@@ -50,6 +55,9 @@
   list-style: none;
   display: flex;
   gap: 20px;
+  align-content: center;
+  align-self: center;
+  align-items: center;
 
   margin-right: 20px;
 }
@@ -60,18 +68,17 @@
 .right-con {
   display: flex;
   align-items: center;
+  align-content: center;
+  padding: 5px;
 }
-.nav-links a {
+
+.link {
   color: white;
   text-decoration: none;
-  font-size: 16px;
-  transition: 0.3s;
 }
-
-.nav-links a:hover {
-  color: lightgray;
+.nav-links {
+  transform: translateY(8px);
 }
-
 /* Nội dung */
 .layout {
   display: flex;
@@ -90,7 +97,7 @@ footer {
 }
 .search-container {
   position: relative;
-  width: 100%;
+  width: 40%;
   max-width: 400px;
 }
 
@@ -100,7 +107,7 @@ footer {
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.596);
   border-radius: 16px;
-  padding: 6px 12px;
+  padding: 4px 12px;
   color: white;
 }
 .search-input:focus,

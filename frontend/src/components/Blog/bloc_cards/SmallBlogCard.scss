@@ -1,0 +1,37 @@
+.article-item {
+    .article-image {
+        height             : 120px;
+        width              : 350px;
+        background-image   : url("https://homepage.momocdn.net/blogscontents/momo-upload-api-210326143727-637523662479216901.jpg");
+        background-size    : cover;
+        background-repeat  : no-repeat;
+        border-radius      : 10px;
+        background-position: center;
+        margin-right       : 20px;
+    }
+
+    .article-content {
+
+        .article-title {
+            font-size    : 1rem;
+            font-weight  : 700;
+            color        : var(--color-primary);
+            margin-bottom: 5px;
+        }
+
+        .article-description {
+            font-size    : 1rem;
+            font-weight  : 400;
+            color        : var(--color-secondary);
+            margin-bottom: 5px;
+        }
+
+        .article-view {
+            font-size    : 0.8rem;
+            margin-bottom: 5px;
+            font-weight  : 400;
+            color        : var(--color-secondary);
+        }
+    }
+
+}

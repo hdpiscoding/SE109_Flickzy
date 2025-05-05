@@ -1,0 +1,34 @@
+.highlight-item {
+
+    .titlee {
+        font-size  : 1.3rem;
+        font-weight: 600;
+        color      : var(--color-primary);
+        text-align : left;
+    }
+
+    .description {
+        font-size  : 1.2rem;
+        font-weight: 400;
+        color      : var(--color-secondary);
+        text-align : left;
+    }
+
+    .views {
+        font-size  : 1.2rem;
+        font-weight: 400;
+        color      : var(--color-secondary);
+        text-align : left;
+    }
+
+    .highlight-image {
+        height             : 250px;
+        width              : auto;
+        border-radius      : 10px;
+        background-image   : url("https://homepage.momocdn.net/blogscontents/momo-upload-api-210419171227-637544491479614449.jpg");
+        background-size    : cover;
+        background-repeat  : no-repeat;
+        background-position: center;
+    }
+
+}
