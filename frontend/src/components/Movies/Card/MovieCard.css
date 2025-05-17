@@ -1,5 +1,5 @@
 .title {
-    transition: color 0.3s ease !important;
+    transition: color 0.2s ease !important;
 }
 .title:hover {
     color: #9CEE69 !important; /* Màu sắc khi hover */

@@ -82,3 +82,26 @@
 .movie-grid-item.fadeIn {
     animation: fadeIn 0.2s ease-in forwards;
 }
+
+.button-container:hover {
+    background-color: #6cc832 !important;
+    border-color: #6cc832 !important;
+}
+
+.schedule-card:hover {
+    background-color: #6cc832 !important;
+}
+
+.schedule-card:hover .schedule-span {
+    color: #fff !important;
+}
+
+.my-carousel .slick-prev,
+.my-carousel .slick-next {
+    color: #333 !important;
+}
+
+.my-carousel .slick-prev::before,
+.my-carousel .slick-next::before {
+    content: '' !important;
+}

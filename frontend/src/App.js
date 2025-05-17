@@ -6,18 +6,24 @@ import Movies from "./components/Movies/Movies";
 import Cinema from "./components/Cinemas/Cinemas";
 import Blog from "./components/Blog/Blog";
 import DetailBlog from "./components/Blog/DetailBlog";
+import MovieDetail from "./components/Movies/MovieDetail";
+import Header from "./components/Header/Header";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="movie" element={<Movies />} />
-        <Route path="cinema" element={<Cinema />} />
-        <Route path="blog" element={<Blog />} />
-        <Route path="blog/:id" element={<DetailBlog />} />
-      </Route>
-    </Routes>
+    // <Routes>
+    //   <Route path="/" element={<Layout />}>
+    //     <Route index element={<Home />} />
+    //     <Route path="movie" element={<Movies />} />
+    //     <Route path="cinema" element={<Cinema />} />
+    //     <Route path="blog" element={<Blog />} />
+    //     <Route path="blog/:id" element={<DetailBlog />} />
+    //   </Route>
+    // </Routes>
+      <div>
+          <Header></Header>
+          <MovieDetail></MovieDetail>
+      </div>
   );
 }
 
