@@ -4,6 +4,7 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"; // Import
 import { Link } from "react-router-dom";
 import "./Header.css";
 export default function Header({ onBookingClick }) {
+  const [isLogin, setIsLogin] = React.useState(false);
   return (
     <div>
       <header
@@ -48,7 +49,14 @@ export default function Header({ onBookingClick }) {
             <div className="booking_btn" onClick={onBookingClick}>
               BOOKING NOW!
             </div>
-            <div className="signin_btn">Sign In</div>
+            {isLogin
+                ?
+                <Link to={"/user/profile"}>
+                  <div>Profile</div>
+                </Link>
+                :
+                <div className="signin_btn">Sign In</div>
+            }
           </div>
         </nav>
       </header>
