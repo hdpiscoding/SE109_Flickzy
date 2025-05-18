@@ -13,16 +13,25 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MovieScheduleResponseDTO {
-    private UUID cinemaId;
-    private String cinemaName;
-    private String cinemaAddress;
-    private String province;
-    private List<ScheduleDetailDTO> schedules;
+    private String brandName;
+    private String avatar;
+    private List<CinemaDTO> cinemas;
 
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class ScheduleDetailDTO {
+    public static class CinemaDTO {
+        private UUID cinemaId;
+        private String cinemaName;
+        private String cinemaAddress;
+        private String province;
+        private List<ScheduleDTO> schedules;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ScheduleDTO {
         private UUID scheduleId;
         private LocalDate scheduleDate;
         private LocalTime scheduleStart;

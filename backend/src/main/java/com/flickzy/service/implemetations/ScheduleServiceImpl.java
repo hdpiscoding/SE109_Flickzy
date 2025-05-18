@@ -45,15 +45,18 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public List<MovieScheduleResponseDTO> getSchedulesByMovie(MovieScheduleFilterDTO filterDTO) {
-        logger.info("Fetching schedules by movie: movieId={}, date={}, province={}",
-                filterDTO.getMovieId(), filterDTO.getDate(), filterDTO.getProvince());
+        logger.info("Fetching schedules for movie: movieId={}, date={}, cinemaBrandId={}, province={}",
+                filterDTO.getMovieId(), filterDTO.getDate(), filterDTO.getCinemaBrandId(), filterDTO.getProvince());
+
         List<Schedule> schedules = scheduleRepository.findAll(
-                ScheduleSpecifications.byMovieAndDateAndProvince(
+                ScheduleSpecifications.byMovieAndDateAndBrandAndProvince(
                         filterDTO.getMovieId(),
                         filterDTO.getDate(),
+                        filterDTO.getCinemaBrandId(),
                         filterDTO.getProvince()
                 )
         );
+
         return scheduleMapper.toMovieScheduleResponseDTOs(schedules);
     }
 

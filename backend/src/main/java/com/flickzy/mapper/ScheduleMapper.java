@@ -4,6 +4,8 @@ import com.flickzy.base.BaseMapper;
 import com.flickzy.dto.Schedule.CinemaScheduleResponseDTO;
 import com.flickzy.dto.Schedule.MovieScheduleResponseDTO;
 import com.flickzy.dto.Schedule.ScheduleDTO;
+import com.flickzy.entity.CinemaBrand;
+import com.flickzy.entity.Cinemas;
 import com.flickzy.entity.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -60,30 +62,52 @@ public class ScheduleMapper implements BaseMapper<Schedule, CinemaScheduleRespon
                 .toList();
     }
 
-    public List<MovieScheduleResponseDTO> toMovieScheduleResponseDTOs(List<Schedule> schedules) {
-        Map<UUID, List<Schedule>> groupedByCinema = schedules.stream()
-                .collect(Collectors.groupingBy(s -> s.getRoom().getCinema().getId()));
+    public List<MovieScheduleResponseDTO> toMovieScheduleResponseDTOs(List<Schedule> entities) {
+// Nhóm schedules theo CinemaBrand
+        Map<CinemaBrand, List<Schedule>> groupedByBrand = entities.stream()
+                .collect(Collectors.groupingBy(
+                        schedule -> schedule.getRoom().getCinema().getCinemaBrand()
+                ));
 
-        return groupedByCinema.entrySet().stream()
+        return groupedByBrand.entrySet().stream()
                 .map(entry -> {
-                    Schedule firstSchedule = entry.getValue().get(0);
-                    List<MovieScheduleResponseDTO.ScheduleDetailDTO> scheduleDetails = entry.getValue().stream()
-                            .map(s -> new MovieScheduleResponseDTO.ScheduleDetailDTO(
-                                    s.getScheduleId(),
-                                    s.getScheduleDate(),
-                                    s.getScheduleStart(),
-                                    s.getScheduleEnd(),
-                                    s.getRoom().getRoomId(),
-                                    s.getRoom().getRoomType()
-                            ))
+                    CinemaBrand brand = entry.getKey();
+                    List<Schedule> schedules = entry.getValue();
+
+                    // Nhóm schedules theo Cinema
+                    Map<Cinemas, List<Schedule>> groupedByCinema = schedules.stream()
+                            .collect(Collectors.groupingBy(
+                                    schedule -> schedule.getRoom().getCinema()
+                            ));
+
+                    List<MovieScheduleResponseDTO.CinemaDTO> cinemaDtos = groupedByCinema.entrySet().stream()
+                            .map(cinemaEntry -> {
+                                Cinemas cinema = cinemaEntry.getKey();
+                                List<MovieScheduleResponseDTO.ScheduleDTO> scheduleDtos = cinemaEntry.getValue().stream()
+                                        .map(schedule -> new MovieScheduleResponseDTO.ScheduleDTO(
+                                                schedule.getScheduleId(),
+                                                schedule.getScheduleDate(),
+                                                schedule.getScheduleStart(),
+                                                schedule.getScheduleEnd(),
+                                                schedule.getRoom().getRoomId(),
+                                                schedule.getRoom().getRoomType()
+                                        ))
+                                        .toList();
+
+                                return new MovieScheduleResponseDTO.CinemaDTO(
+                                        cinema.getId(),
+                                        cinema.getCinemaName(),
+                                        cinema.getCinemaAddress(),
+                                        cinema.getProvince(),
+                                        scheduleDtos
+                                );
+                            })
                             .toList();
 
                     return new MovieScheduleResponseDTO(
-                            firstSchedule.getRoom().getCinema().getId(),
-                            firstSchedule.getRoom().getCinema().getCinemaName(),
-                            firstSchedule.getRoom().getCinema().getCinemaAddress(),
-                            firstSchedule.getRoom().getCinema().getProvince(),
-                            scheduleDetails
+                            brand.getBrandName(),
+                            brand.getAvatar(),
+                            cinemaDtos
                     );
                 })
                 .toList();

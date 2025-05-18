@@ -19,6 +19,7 @@ public class MovieScheduleFilterDTO {
     @NotNull(message = "Date is required")
     private LocalDate date;
 
-    @NotBlank(message = "Province is required")
+    private UUID cinemaBrandId;
+
     private String province;
 }
