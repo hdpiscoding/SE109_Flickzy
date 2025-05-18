@@ -8,6 +8,7 @@ import Blog from "./components/Blog/Blog";
 import DetailBlog from "./components/Blog/DetailBlog";
 import MovieDetail from "./components/Movies/MovieDetail";
 import Header from "./components/Header/Header";
+import Footer from "./components/Footer/Footer";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
       <div>
           <Header></Header>
           <MovieDetail></MovieDetail>
+          <Footer></Footer>
       </div>
   );
 }

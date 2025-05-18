@@ -8,6 +8,7 @@ import ScheduleCard from "./Card/ScheduleCard";
 import ReviewCard from "./Card/ReviewCard";
 import { AiFillStar } from "react-icons/ai";
 import MovieHorizontalCard from "./Card/MovieHorizontalCard";
+import ReviewInput from "./ReviewInput";
 
 export const vietnamProvinces = [
     { value: "Hà Nội", label: "Hà Nội" },
@@ -252,6 +253,9 @@ const ScheduleContainer = (props) => {
 
 
 export default function MovieDetail() {
+    const [isUserReviewed, setIsUserReviewed] = useState(false);
+    const [canUserReview, setCanUserReview] = useState(false);
+
     const [openTrailer, setOpenTrailer] = useState(false);
     const handleViewTrailer = () => {
         setOpenTrailer(true);
@@ -281,12 +285,16 @@ export default function MovieDetail() {
     }, [])
 
     const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 2; // Number of reviews per page
+    const pageSize = 5; // Number of reviews per page
 
     const paginatedReviews = sampleReviews.slice(
         (currentPage - 1) * pageSize,
         currentPage * pageSize
     );
+
+    const handleRating = ({ rating, content }) => {
+        alert(rating + content);
+    }
 
     const backgroundImage = "https://cinema.momocdn.net/img/80187507856383526-co-gi-moi-o-phim-zombie-dau-tien-tai-viet-nam-lost-in-mekong-delta-9dd-6275603.png";
     return (
@@ -440,7 +448,7 @@ export default function MovieDetail() {
                                         <ReviewCard key={index} avatar={review.avatar} content={review.content} username={review.username} date={review.date} rating={review.rating}/>
                                     ))}
 
-                                    <Flex style={{width: '100%'}} align="center">
+                                    <Flex style={{width: '100%', marginBottom: '20px'}} align="center">
                                         <Pagination
                                             current={currentPage}
                                             pageSize={pageSize}
@@ -450,9 +458,9 @@ export default function MovieDetail() {
                                         />
                                     </Flex>
 
-                                </Flex>
+                                    {isUserReviewed && canUserReview ? <ReviewInput onSubmit={handleRating} /> : <div/>}
 
-                                <Divider style={{backgroundColor: '#d6d1d4'}}/>
+                                </Flex>
                             </Flex>
 
                             <div style={{ position: 'sticky', top: 100, alignSelf: 'start', gridColumnStart: 3}}>
