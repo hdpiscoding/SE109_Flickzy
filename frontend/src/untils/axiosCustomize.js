@@ -1,29 +1,27 @@
 import axios from "axios";
+import useAuthStore from "../store/useAuthStore";
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: "http://localhost:8386/api/",
   timeout: 1000000,
   headers: {
     "Content-Type": "application/json; charset=utf-8",
   },
 });
 
+
 // Add a request interceptor
 instance.interceptors.request.use(
-  function (config) {
-    // Do something before request is sent
-    // Temporary solution for token (Neu chua lam login thi vao postman call API login de lay token roi quang no vao localStorage voi key la: 'token')
-    // const token = localStorage.getItem("jwt");
-    // if (token) {
-    //   console.log("token", token);
-
-    // }
-    return config;
-  },
-  function (error) {
-    // Do something with request error
-    return Promise.reject(error);
-  }
+    (config) => {
+      const { token } = useAuthStore();
+      if (token) {
+        config.headers['Authorization'] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
 );
 
 // Add a response interceptor

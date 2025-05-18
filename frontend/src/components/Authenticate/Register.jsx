@@ -2,7 +2,7 @@ import React from 'react';
 import {Button, ConfigProvider, Form, Input, Modal} from "antd";
 import './Auth.css'
 
-export default function Register() {
+export default function Register({ open, onClose, onShowLogin }) {
     const [form] = Form.useForm();
 
     const onFinish = (values) => {
@@ -30,7 +30,7 @@ export default function Register() {
                     },
                 },
             }}>
-            <Modal open={true} footer={null} centered={true}>
+            <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div className="flickzy-modal">
                     <div>
                         <h1 className="flickzy-header">Sign Up</h1>
@@ -83,7 +83,7 @@ export default function Register() {
                     <div>
                         <span className="end-text">Already have an account?</span>
                         &nbsp;
-                        <span className="end-texttext">Log in here</span>
+                        <span className="end-texttext" onClick={onShowLogin}>Log in here</span>
                     </div>
                 </div>
             </Modal>

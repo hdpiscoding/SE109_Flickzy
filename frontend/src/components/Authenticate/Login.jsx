@@ -1,12 +1,28 @@
-import React from "react"
-import {Button, ConfigProvider, Form, Input, Modal} from "antd";
+import React, {useState} from "react"
+import {Button, ConfigProvider, Form, Input, message, Modal} from "antd";
 import './Auth.css'
+import axios from "axios";
+import {login} from "../../services/AuthService";
 
-export default function Login() {
+export default function Login({ open, onClose, onLoginSuccess, onShowRegister, onShowForgot }) {
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
-    const onFinish = (values) => {
-        console.log("Success:", values);
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            const res = await login(values.email, values.password);
+            if (res.status === 200) {
+                message.success("Login successful!");
+                onLoginSuccess({ user: res.data.user, token: res.data.token });
+                form.resetFields();
+            }
+        } catch (err) {
+            message.error("Login failed. Please check your credentials.");
+            console.log("Login failed:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -30,7 +46,7 @@ export default function Login() {
                     },
                 },
         }}>
-            <Modal open={true} footer={null} centered={true}>
+            <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div className="flickzy-modal">
                     <div>
                         <h1 className="flickzy-header">Login</h1>
@@ -64,13 +80,14 @@ export default function Login() {
                         </Form.Item>
 
                         <div className="forgot-password-container">
-                            <span className="forgot-password">Forgot your password?</span>
+                            <span className="forgot-password" onClick={onShowForgot}>Forgot your password?</span>
                         </div>
 
                         <Form.Item>
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                loading={loading}
                                 style={{
                                     width: "350px",
                                     height: "50px",
@@ -86,7 +103,7 @@ export default function Login() {
                     <div>
                         <span className="end-text">Don't have an account?</span>
                         &nbsp;
-                        <span className="end-texttext">Sign up here</span>
+                        <span className="end-texttext" onClick={onShowRegister}>Sign up here</span>
                     </div>
                 </div>
             </Modal>

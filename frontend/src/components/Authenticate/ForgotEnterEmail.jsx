@@ -3,7 +3,7 @@ import {Button, ConfigProvider, Form, Input, Modal} from "antd";
 import { ArrowLeft } from 'lucide-react';
 import './Auth.css'
 
-export default function ForgotEnterEmail() {
+export default function ForgotEnterEmail({ open, onClose, onShowLogin }) {
     const [form] = Form.useForm();
 
     const onFinish = (values) => {
@@ -31,9 +31,9 @@ export default function ForgotEnterEmail() {
                     },
                 },
             }}>
-            <Modal open={true} footer={null} centered={true}>
+            <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div style={{ display: "flex", alignItems: "center", gap: '63px', marginTop: '20px' }}>
-                    <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}}/>
+                    <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}} onClick={onShowLogin}/>
                     <h1 className="flickzy-header">Reset Password</h1>
                 </div>
 
