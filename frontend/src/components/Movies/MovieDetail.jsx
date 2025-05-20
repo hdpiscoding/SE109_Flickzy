@@ -9,6 +9,8 @@ import ReviewCard from "./Card/ReviewCard";
 import { AiFillStar } from "react-icons/ai";
 import MovieHorizontalCard from "./Card/MovieHorizontalCard";
 import ReviewInput from "./ReviewInput";
+import {getAllCinemaBrands, getMovieDetail} from "../../services/MovieService";
+import {useParams} from "react-router-dom";
 
 export const vietnamProvinces = [
     { value: "Hà Nội", label: "Hà Nội" },
@@ -114,27 +116,6 @@ const sampleReviews = [
     },
 ];
 
-
-const movie = {
-    id: "1",
-    movieName: "Cù Lao Xác Sống",
-    movieDescription: "Đại dịch zombie đã tới miền Tây!",
-    movieContent: "Một cù lao yên bình bỗng một ngày đối diện với sinh tử. Những con người miền Tây sông nước chân chất thật thà sẽ ra sao trước đại dịch kì lạ biến người ta thành… xác sống? Hãy chờ xem những bất ngờ tiếp theo từ phim nhé!",
-    movieTrailer: "https://www.youtube.com/watch?v=_VcQTQVackE",
-    genres: [
-        { id: 1, name: "Hành động" },
-        { id: 2, name: "Kinh dị" }
-    ],
-    movieRelease: "2023-10-20",
-    moviePoster: "https://cinema.momocdn.net/img/80187360509592732-1.jpg",
-    movieNation: "Việt Nam",
-    movieLength: 120,
-    movieDirector: "Nguyễn Hữu Hoàng",
-    movieActors: "Huỳnh Đông, Ốc Thanh Vân, Trần Phong",
-    movieRating: 2.5,
-    ageRating: "18+"
-}
-
 const sampleMovies = [
     {
         image: 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg',
@@ -188,14 +169,6 @@ const sampleMovies = [
     }
 ];
 
-const cinemaBrands = [
-    {id: "1", name: "Tất cả", image: "https://homepage.momocdn.net/next-js/_next/static/public/cinema/dexuat-icon.svg"},
-    {id: "2", name: "CGV", image: "https://homepage.momocdn.net/cinema/momo-amazone-s3-api-240829164527-638605467276820522.png"},
-    {id: "3", name: "Lotte Cinema", image: "https://homepage.momocdn.net/blogscontents/momo-upload-api-210604170617-637584231772974269.png"},
-    {id: "4", name: "Galaxy Cinema", image: "https://homepage.momocdn.net/cinema/momo-upload-api-211123095138-637732578984425272.png"},
-    {id: "5", name: "BHD Star", image: "https://homepage.momocdn.net/blogscontents/momo-upload-api-210604170453-637584230934981809.png"},
-]
-
 const cinemas = [
     {id: "1", name: "CGV Vincom Đồng Khởi", address: "Tầng 5, Vincom Center, 171 Đ. Đồng Khởi, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh", image: "https://homepage.momocdn.net/cinema/momo-amazone-s3-api-240829164527-638605467276820522.png", schedules: [{id: "1", scheduleStart: "09:00:00", scheduleEnd: "11:00:00"}, {id: "2", scheduleStart: "12:00:00", scheduleEnd: "14:00:00"}, {id: "3", scheduleStart: "15:00:00", scheduleEnd: "17:00:00"}, {id: "4", scheduleStart: "18:00:00", scheduleEnd: "20:00:00"}, {id: "5", scheduleStart: "21:00:00", scheduleEnd: "23:00:00"}, {id: "6", scheduleStart: "00:00:00", scheduleEnd: "02:00:00"}]},
     {id: "2", name: "CGV Vincom Thảo Điền", address: "Tầng 3, Vincom Center Thảo Điền, 161 Đ. Quốc Hương, Thảo Điền, Quận 2, Thành phố Hồ Chí Minh", image: "https://homepage.momocdn.net/cinema/momo-amazone-s3-api-240829164527-638605467276820522.png", schedules: [{id: "1", scheduleStart: "09:00:00", scheduleEnd: "11:00:00"}, {id: "2", scheduleStart: "12:00:00", scheduleEnd: "14:00:00"}, {id: "3", scheduleStart: "15:00:00", scheduleEnd: "17:00:00"}, {id: "4", scheduleStart: "18:00:00", scheduleEnd: "20:00:00"}, {id: "5", scheduleStart: "21:00:00", scheduleEnd: "23:00:00"}, {id: "6", scheduleStart: "00:00:00", scheduleEnd: "02:00:00"}]},
@@ -236,14 +209,14 @@ const formatTime = (time) => {
 }
 
 function genresToString(genres) {
-    return genres.map(g => g.name).join(', ');
+    return genres?.map(g => g.name).join(', ');
 }
 
 const ScheduleContainer = (props) => {
     return (
         <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', maxWidth: '700px'}}>
             {
-                props.schedules.map((item, index) => (
+                props.schedules?.map((item, index) => (
                     <ScheduleCard key={index} from={formatTime(item.scheduleStart)} to={formatTime(item.scheduleEnd)} />
                 ))
             }
@@ -253,6 +226,23 @@ const ScheduleContainer = (props) => {
 
 
 export default function MovieDetail() {
+    const {movieId} = useParams();
+    const [movie, setMovie] = useState({});
+    const [cinemaBrands, setCinemaBrands] = useState([]);
+    useEffect(() => {
+        fetchData()
+    }, []);
+
+    const fetchData = async () => {
+        try {
+            const response = await getMovieDetail(movieId);
+            setMovie(response);
+            setCinemaBrands(await getAllCinemaBrands());
+
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
     const [isUserReviewed, setIsUserReviewed] = useState(false);
     const [canUserReview, setCanUserReview] = useState(false);
 
@@ -272,14 +262,14 @@ export default function MovieDetail() {
     };
     const [dateItems, setDateItems] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13])
 
-    const [focusedCinema, setFocusedCinema] = useState(0);
+    const [focusedCinema, setFocusedCinema] = useState(-1);
     const handleCinemaChange = (item) => {
         setFocusedCinema(item);
     };
 
     const [collapseItems, setCollapseItems] = useState([]);
     useEffect(() => {
-        setCollapseItems(cinemas.map((item, index) => (
+        setCollapseItems(cinemas?.map((item, index) => (
             {key: index, label: (<CollapsePanel image={item.image} cinemaName={item.name} address={item.address}/>), children: (<ScheduleContainer schedules={item.schedules}/>)}
         )))
     }, [])
@@ -296,7 +286,6 @@ export default function MovieDetail() {
         alert(rating + content);
     }
 
-    const backgroundImage = "https://cinema.momocdn.net/img/80187507856383526-co-gi-moi-o-phim-zombie-dau-tien-tai-viet-nam-lost-in-mekong-delta-9dd-6275603.png";
     return (
         <ConfigProvider theme={{
             components: {
@@ -320,7 +309,7 @@ export default function MovieDetail() {
         }}>
             <main>
                 <Flex vertical>
-                    <div style={{position: 'relative', backgroundSize: 'cover', backgroundPosition: 'center', height: "fit-content", backgroundImage: `url(${backgroundImage})`, paddingTop: '20px', paddingBottom: '20px'}}>
+                    <div style={{position: 'relative', backgroundSize: 'cover', backgroundPosition: 'center', height: "fit-content", backgroundImage: `url(${movie.movieBackground})`, paddingTop: '20px', paddingBottom: '20px'}}>
                         <div style={{position: 'absolute', top: '0', left: '0', width: "100%", height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 1}} />
 
                         <div style={{position: 'relative', zIndex: 2, display: "grid", gridTemplateColumns: '1.5fr 9fr 1.5fr', paddingTop: '100px', paddingBottom: '100px'}}>
@@ -405,7 +394,7 @@ export default function MovieDetail() {
 
                                 <div style={{ width: "750px", marginTop: '10px', marginBottom: '10px'}}>
                                     <Carousel className="my-carousel" arrows={true} dots={false} slidesToShow={10} initialSlide={0}>
-                                        {dateItems.map((item) => (
+                                        {dateItems?.map((item) => (
                                             <div key={item} onClick={() => handleDateChange(item)}>
                                                 <DateCard key={item} date={new Date(Date.now() + item * 24 * 60 * 60 * 1000)} isFocus={focusedDate === item}></DateCard>
                                             </div>
@@ -415,9 +404,12 @@ export default function MovieDetail() {
 
 
                                 <Flex style={{ width: "600px", marginTop: '10px', marginBottom: '10px'}} gap={20}>
-                                    {cinemaBrands.map((cinema, index) => (
+                                    <div onClick={() => setFocusedCinema(-1)}>
+                                        <CinemaCard cinemaName={"Tất cả"} cinemaIcon={"https://homepage.momocdn.net/next-js/_next/static/public/cinema/dexuat-icon.svg"} isFocus={focusedCinema === -1}/>
+                                    </div>
+                                    {cinemaBrands?.map((cinema, index) => (
                                         <div key={index} onClick={() => handleCinemaChange(index)}>
-                                            <CinemaCard cinemaIcon={cinema.image} cinemaName={cinema.name} isFocus={focusedCinema === index}></CinemaCard>
+                                            <CinemaCard cinemaIcon={cinema.avatar} cinemaName={cinema.brandName} isFocus={focusedCinema === index}></CinemaCard>
                                         </div>
                                     ))}
                                 </Flex>
@@ -439,12 +431,12 @@ export default function MovieDetail() {
                                     <Flex align='center' gap={10}>
                                         <AiFillStar style={{height: '50px', width: '50px', color: '#fadb14'}}/>
                                         <div>
-                                            <span style={{fontSize: '40px', fontWeight: 'bold', color: '#333'}}>{movie.movieRating}</span>
-                                            <span style={{fontSize: '18px', color: '#333'}}>/5.0    ({sampleReviews.length} đánh giá)</span>
+                                            <span style={{fontSize: '40px', fontWeight: 'bold', color: '#333'}}>{movie.movieRating ?? "0.0"}</span>
+                                            <span style={{fontSize: '18px', color: '#333'}}>/5.0    ({sampleReviews.length ?? "0"} đánh giá)</span>
                                         </div>
                                     </Flex>
 
-                                    {paginatedReviews.map((review, index) => (
+                                    {paginatedReviews?.map((review, index) => (
                                         <ReviewCard key={index} avatar={review.avatar} content={review.content} username={review.username} date={review.date} rating={review.rating}/>
                                     ))}
 
@@ -466,7 +458,7 @@ export default function MovieDetail() {
                             <div style={{ position: 'sticky', top: 100, alignSelf: 'start', gridColumnStart: 3}}>
                                 <Flex vertical gap={10}>
                                     <h3 style={{color: '#333'}}>Phim đang chiếu</h3>
-                                    {sampleMovies.map((item, index) => (
+                                    {sampleMovies?.map((item, index) => (
                                         <div>
                                             <MovieHorizontalCard key={index} image={item.image} title={item.title} genres={genresToString(item.genres)} rating={item.rating} ageRating={item.ageRating}/>
                                             <Divider style={{backgroundColor: '#d6d1d4'}}/>

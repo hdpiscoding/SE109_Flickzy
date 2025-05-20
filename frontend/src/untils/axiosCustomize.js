@@ -1,6 +1,12 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
+
+const getToken = () => {
+    // useAuthStore.getState() gives you the current state
+    return useAuthStore.getState().token;
+};
+
 const instance = axios.create({
   baseURL: "http://localhost:8386/api/",
   timeout: 1000000,
@@ -9,12 +15,11 @@ const instance = axios.create({
   },
 });
 
-
 // Add a request interceptor
 instance.interceptors.request.use(
     (config) => {
-      const { token } = useAuthStore();
-      if (token) {
+        const token = getToken();
+        if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
       }
       return config;
