@@ -2,8 +2,8 @@ import React, {useState} from "react";
 import {Card, Flex} from "antd";
 import { FaStar } from "react-icons/fa";
 import { Typography } from 'antd';
-const { Text } = Typography;
 import './MovieCard.css'
+const { Text } = Typography;
 
 
 const sampleMovie = {

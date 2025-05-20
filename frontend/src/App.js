@@ -1,11 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./Layout";
-import Home from "./components/Home/Home";
-import Movies from "./components/Movies/Movies";
-import Cinema from "./components/Cinemas/Cinemas";
-import Blog from "./components/Blog/Blog";
-import DetailBlog from "./components/Blog/DetailBlog";
 const Layout = React.lazy(() => import("./Layout"));
 const Home = React.lazy(() => import("./components/Home/Home"));
 const Movies = React.lazy(() => import("./components/Movies/Movies"));

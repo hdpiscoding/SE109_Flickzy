@@ -56,6 +56,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/schedule").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/schedule/**").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/schedule/**").hasAuthority("ADMIN")
+                        // Thêm vào phần authorizeHttpRequests
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blogs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blog/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/blog").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/blog/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/blog/{id}").hasAuthority("ADMIN")
                         // Default APIs
                         .anyRequest().authenticated()
                 )
