@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users/me")
-@CrossOrigin(origins = "*") // Cho phép gọi từ frontend
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
     @Autowired

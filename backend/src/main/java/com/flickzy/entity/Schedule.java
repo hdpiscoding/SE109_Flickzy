@@ -1,6 +1,5 @@
 package com.flickzy.entity;
 
-import com.flickzy.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,13 +11,12 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "schedule")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Schedule extends BaseEntity {
+public class Schedule {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid")
