@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,6 +21,7 @@ public class GenreServiceImpl implements GenreService {
     private final GenreMapper genreMapper;
 
     @Override
+    @Transactional
     public GenreDTO createGenre(GenreDTO genreDTO) {
         Genres genres = Genres
                 .builder()
@@ -29,6 +31,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public GenreDTO updateGenre(UUID id, GenreDTO genreDTO) {
         Genres genre = genreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Genre not found!"));
         if (genre.getName().equals("Others")){
@@ -40,6 +43,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
     public void deleteGenre(UUID id) {
         Genres genre = genreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Genre not found!"));
         if (genre.getName().equals("Others")){
@@ -50,6 +54,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GenreDTO> getAllGenres() {
         return genreMapper.toDtoList(genreRepository.findAll());
     }

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ReviewDTO createReview(UUID userId, UUID movieId, ReviewDTO review) {
         if (reviewRepository.existsByMovie_IdAndUser_Id(movieId, userId)) {
             throw new IllegalArgumentException("You have already reviewed this movie!");
@@ -48,6 +50,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public ReviewDTO updateReview(UUID id, ReviewDTO review) {
         Reviews r = reviewRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Review not found!"));
@@ -61,11 +64,13 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
+    @Transactional
     public void deleteReview(UUID id) {
         reviewRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaginatedResponse<ReviewDTO> getAllReviewsByMovie(UUID movieId, int page, int limit) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit);
         Page<Reviews> reviews = reviewRepository.findByMovie_Id(movieId, pageRequest);

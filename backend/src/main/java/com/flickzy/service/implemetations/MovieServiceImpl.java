@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ public class MovieServiceImpl implements MovieService {
     private final MovieMapper movieMapper;
 
     @Override
+    @Transactional
     public MovieDTO createMovie(MovieDTO movieDTO) {
         List<Genres> genres = genreRepository.findAllById(movieDTO.getGenres().stream().map(GenreDTO::getId).toList());
         Movies movie = Movies
@@ -53,6 +55,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    @Transactional
     public MovieDTO updateMovie(UUID id, MovieDTO movieDTO) {
         Movies movie = movieRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Movie not found!"));
         if (movieDTO.getMovieName() != null) {
@@ -100,11 +103,13 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    @Transactional
     public void deleteMovie(UUID id) {
         movieRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PaginatedResponse<MovieDTO> getAllMovies(MovieFilter filters) {
         int page = filters.getPage() == null ? 1 : filters.getPage();
         int limit = filters.getLimit() == null ? 10 : filters.getLimit();
@@ -151,6 +156,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public MovieDTO getMovieDetail(UUID id) {
         Movies movie = movieRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Movie not found!"));
         return movieMapper.toDto(movie);

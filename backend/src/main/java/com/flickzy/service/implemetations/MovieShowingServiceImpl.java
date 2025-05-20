@@ -12,6 +12,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,6 +26,7 @@ public class MovieShowingServiceImpl implements MovieShowingService {
     private final MovieRepository movieRepository;
 
     @Override
+    @Transactional
     public MovieShowingDTO createMovieShowing(UUID movieId, MovieShowingDTO movieShowingDTO) {
         Movies movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new EntityNotFoundException("Movie not found!"));
@@ -47,6 +49,7 @@ public class MovieShowingServiceImpl implements MovieShowingService {
     }
 
     @Override
+    @Transactional
     public MovieShowingDTO updateMovieShowing(UUID id, MovieShowingDTO movieShowingDTO) {
         MovieShowing movieShowing = movieShowingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Movie showing not found!"));
@@ -74,11 +77,13 @@ public class MovieShowingServiceImpl implements MovieShowingService {
     }
 
     @Override
+    @Transactional
     public void deleteMovieShowing(UUID id) {
         movieShowingRepository.deleteById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovieShowingDTO> getAllMovieShowingsByMovie(UUID movieId) {
         List<MovieShowing> movieShowing = movieShowingRepository.findByMovieId(movieId);
 
@@ -91,6 +96,7 @@ public class MovieShowingServiceImpl implements MovieShowingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<MovieShowingDTO> getAllMovieShowings() {
         return movieShowingMapper.toDtoList(movieShowingRepository.findAll());
     }

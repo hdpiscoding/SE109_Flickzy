@@ -1,0 +1,73 @@
+.flickzy-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 20px;
+    padding: 0 20px;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.flickzy-header {
+    color: #333;
+}
+
+.input-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.flickzy-input.ant-input:focus,
+.flickzy-input.ant-input-focused {
+    border-color: #9CEE69;
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2);
+}
+.flickzy-input.ant-input:hover {
+    border-color: #9CEE69;
+}
+
+.flickzy-input.ant-input-password:hover {
+    border-color: #9CEE69 !important;
+}
+
+.flickzy-input.ant-input-password:focus,
+.flickzy-input.ant-input-password-focused {
+    border-color: #9CEE69 !important;
+    box-shadow: 0 0 0 2px rgba(82, 196, 26, 0.2) !important;
+}
+
+.forgot-password-container {
+    width: 350px;
+    text-align: right;
+    margin-bottom: 20px;
+}
+
+.forgot-password {
+    color: #333;
+    font-size: 14px;
+    margin-top: 10px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.forgot-password:hover {
+    color: #9CEE69;
+}
+
+.end-text {
+    color: #333;
+    font-size: 14px;
+}
+
+.end-texttext {
+    color: #9CEE69;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.end-texttext:hover {
+    color: #85D94F;
+}

@@ -1,9 +1,55 @@
-import React from "react";
+import React, {useState} from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"; // Import the icon
-import { Link } from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import "./Header.css";
+import {FaUser} from "react-icons/fa";
+import { Dropdown, Menu } from 'antd';
+import {LogoutOutlined, UserOutlined} from "@ant-design/icons";
+import useAuthStore from "../../store/useAuthStore";
+import Login from "../Authenticate/Login";
+import Register from "../Authenticate/Register";
+import ForgotEnterEmail from "../Authenticate/ForgotEnterEmail";
+
+
 export default function Header({ onBookingClick }) {
+  const { user, isLoggedIn, logout, login } = useAuthStore();
+  const navigate = useNavigate();
+  const [showLogin, setShowLogin] = useState(false);
+  const [showRegister, setShowRegister] = useState(false);
+  const [showForgot, setShowForgot] = useState(false);
+  const handleLoginSuccess = ({ user, token }) => {
+    login({ user, token });
+    setShowLogin(false);
+  };
+
+  const handleMenuClick = ({ key }) => {
+    if (key === "profile") {
+      navigate("/user/profile");
+    } else if (key === "signout") {
+      logout();
+      // Add your sign out logic here
+    }
+  };
+
+  const menu = (
+      <Menu
+          onClick={handleMenuClick}
+          items={[
+            {
+              key: "profile",
+              icon: <UserOutlined />,
+              label: "View Profile",
+            },
+            {
+              key: "signout",
+              icon: <LogoutOutlined />,
+              danger: true,
+              label: "Sign Out",
+            },
+          ]}
+      />
+  );
   return (
     <div>
       <header
@@ -48,10 +94,61 @@ export default function Header({ onBookingClick }) {
             <div className="booking_btn" onClick={onBookingClick}>
               BOOKING NOW!
             </div>
-            <div className="signin_btn">Sign In</div>
+            {isLoggedIn ? (
+                <Dropdown overlay={menu} trigger={['click']}>
+                  <div style={{ marginLeft: '40px', cursor: 'pointer' }}>
+                    {user?.avatar ? (
+                        <img
+                            src={user.avatar}
+                            alt="avatar"
+                            style={{ width: '30px', height: '30px', borderRadius: '50%' }}
+                        />
+                    ) : (
+                        <div
+                            style={{
+                              height: '40px',
+                              width: '40px',
+                              borderRadius: '50%',
+                              backgroundColor: '#ddd',
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                            }}
+                        >
+                          <FaUser style={{ height: '20px', width: '20px', color: '#fff' }} />
+                        </div>
+                    )}
+                  </div>
+                </Dropdown>
+            ) : (
+                <div className="signin_btn" onClick={() => setShowLogin(true)}>Sign In</div>
+            )}
           </div>
         </nav>
       </header>
+      {showLogin && (
+          <Login
+              open={showLogin}
+              onClose={() => setShowLogin(false)}
+              onLoginSuccess={handleLoginSuccess}
+              onShowRegister={() => { setShowLogin(false); setShowRegister(true); }}
+              onShowForgot={() => { setShowLogin(false); setShowForgot(true); }}
+          />
+      )}
+      {showRegister && (
+          <Register
+              open={showRegister}
+              onClose={() => setShowRegister(false)}
+              onShowLogin={() => { setShowRegister(false); setShowLogin(true); }}
+          />
+      )}
+      {showForgot && (
+          <ForgotEnterEmail
+              open={showForgot}
+              onClose={() => setShowForgot(false)}
+              onShowLogin={() => { setShowForgot(false); setShowLogin(true); }}
+          />
+      )}
     </div>
   );
 }

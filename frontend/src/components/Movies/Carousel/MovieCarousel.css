@@ -1,0 +1,19 @@
+.horizontal-scroll-wrapper {
+    display: flex;
+    overflow-x: auto;
+    padding: 16px;
+    gap: 16px;
+    scroll-snap-type: x mandatory;
+    width: 400px;
+    scrollbar-width: none;
+}
+
+.horizontal-scroll-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.scroll-card {
+    flex: 0 0 auto;
+    width: 200px;
+    scroll-snap-align: start;
+}
