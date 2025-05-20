@@ -10,6 +10,7 @@ import useAuthStore from "../../store/useAuthStore";
 import Login from "../Authenticate/Login";
 import Register from "../Authenticate/Register";
 import ForgotEnterEmail from "../Authenticate/ForgotEnterEmail";
+import {toast} from "react-toastify";
 
 
 export default function Header({ onBookingClick }) {
@@ -18,9 +19,15 @@ export default function Header({ onBookingClick }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+
   const handleLoginSuccess = ({ user, token }) => {
     login({ user, token });
     setShowLogin(false);
+  };
+
+  const handleRegisterSuccess = ({ user, token }) => {
+    login({ user, token });
+    setShowRegister(false);
   };
 
   const handleMenuClick = ({ key }) => {
@@ -28,6 +35,7 @@ export default function Header({ onBookingClick }) {
       navigate("/user/profile");
     } else if (key === "signout") {
       logout();
+      toast.success("Log out successfully!");
       // Add your sign out logic here
     }
   };
@@ -139,6 +147,7 @@ export default function Header({ onBookingClick }) {
           <Register
               open={showRegister}
               onClose={() => setShowRegister(false)}
+              onRegisterSuccess={handleRegisterSuccess}
               onShowLogin={() => { setShowRegister(false); setShowLogin(true); }}
           />
       )}

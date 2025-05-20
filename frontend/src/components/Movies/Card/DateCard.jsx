@@ -19,7 +19,7 @@ const isToday = (dateStr) => {
 
 export default function DateCard(props) {
     return (
-        <div style={{transition: 'all 0.3s ease', width: "62px", height: "62px", border: `1px solid ${props.isFocus ? "#6cc832" : "#d6d1d4"}`, borderRadius: "5px", backgroundColor: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyItems: "center", cursor: "pointer"}}>
+        <div style={{transition: 'all 0.3s ease', width: "62px", height: "62px", border: `1px solid ${props.isFocus ? "#6cc832" : "#d6d1d4"}`, borderRadius: "5px", backgroundColor: "#fff", display: "flex", flexDirection: "column", alignItems: "center", justifyItems: "center", cursor: "pointer", marginBottom: '5px'}}>
             <div style={{backgroundColor: `${props.isFocus ? "#6cc832" : "#f5f4f5"}`, width: "100%", textAlign: "center", borderTopLeftRadius: "5px", borderTopRightRadius: "5px"}}>
                 <span style={{color: `${props.isFocus ? "#fff" : "#333"}`, fontWeight: "bold", fontSize: "20px"}}>{new Date(props.date).getDate()}</span>
             </div>

@@ -1,8 +1,8 @@
 import React, {useState} from "react"
 import {Button, ConfigProvider, Form, Input, message, Modal} from "antd";
 import './Auth.css'
-import axios from "axios";
 import {login} from "../../services/AuthService";
+import {toast} from "react-toastify";
 
 export default function Login({ open, onClose, onLoginSuccess, onShowRegister, onShowForgot }) {
     const [form] = Form.useForm();
@@ -16,9 +16,18 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
                 message.success("Login successful!");
                 onLoginSuccess({ user: res.data.user, token: res.data.token });
                 form.resetFields();
+                toast.success("Log in successfully!");
             }
         } catch (err) {
-            message.error("Login failed. Please check your credentials.");
+            if (
+                err.response &&
+                err.response.status === 401 &&
+                err.response.data?.error === "Unauthorized"
+            ) {
+                toast.error("Incorrect login information.");
+            } else {
+                toast.error("Login failed. Please check your credentials.");
+            }
             console.log("Login failed:", err);
         } finally {
             setLoading(false);

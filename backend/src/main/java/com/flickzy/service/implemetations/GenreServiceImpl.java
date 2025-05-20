@@ -34,7 +34,7 @@ public class GenreServiceImpl implements GenreService {
     @Transactional
     public GenreDTO updateGenre(UUID id, GenreDTO genreDTO) {
         Genres genre = genreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Genre not found!"));
-        if (genre.getName().equals("Others")){
+        if (genre.getName().equals("Others") || genre.getName().equals("Khác")){
             throw new IllegalArgumentException("You cannot update the Others genre!");
         } else {
             genre.setName(genreDTO.getName());
@@ -46,7 +46,7 @@ public class GenreServiceImpl implements GenreService {
     @Transactional
     public void deleteGenre(UUID id) {
         Genres genre = genreRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Genre not found!"));
-        if (genre.getName().equals("Others")){
+        if (genre.getName().equals("Others") || genre.getName().equals("Khác")) {
             throw new IllegalArgumentException("You cannot delete the Others genre!");
         } else {
             genreRepository.delete(genre);

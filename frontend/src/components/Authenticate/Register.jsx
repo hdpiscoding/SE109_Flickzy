@@ -1,12 +1,37 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, ConfigProvider, Form, Input, Modal} from "antd";
 import './Auth.css'
+import {toast} from "react-toastify";
+import {register} from "../../services/AuthService";
 
-export default function Register({ open, onClose, onShowLogin }) {
+export default function Register({ open, onClose, onShowLogin, onRegisterSuccess }) {
     const [form] = Form.useForm();
-
-    const onFinish = (values) => {
-        console.log("Success:", values);
+    const [loading, setLoading] = useState(false);
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            const res = await register(values.email, values.password);
+            if (res.status === 201) {
+                toast.success("Registration successful!");
+                onRegisterSuccess({ user: res.user, token: res.token });
+                form.resetFields();
+            }
+        } catch (err) {
+            if (
+                err.response &&
+                err.response.status === 400 &&
+                err.response.data?.message === "Email already exists"
+            ) {
+                form.setFields([{
+                    name: "email",
+                    errors: ["Email already exists"],
+                }]);
+            } else {
+                toast.error("Registration failed. Please try again.");
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -67,6 +92,7 @@ export default function Register({ open, onClose, onShowLogin }) {
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                loading={loading}
                                 style={{
                                     width: "350px",
                                     height: "50px",
