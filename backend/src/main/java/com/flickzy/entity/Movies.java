@@ -1,11 +1,8 @@
 package com.flickzy.entity;
 
-import com.flickzy.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,64 +10,50 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "movies")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Movies extends BaseEntity {
+public class Movies {
     @Id
     @GeneratedValue
-    @Column(name="id", columnDefinition = "uuid")
+    @Column(columnDefinition = "uuid")
     UUID id;
 
-    @Column(name = "movie_name", nullable = false)
     String movieName;
 
-    @Column(columnDefinition = "text", name = "movie_description")
+    @Column(columnDefinition = "text")
     String movieDescription;
 
-    @Column(columnDefinition = "text", name = "movie_content")
+    @Column(columnDefinition = "text")
     String movieContent;
 
-    @Column(columnDefinition = "text", name = "movie_trailer")
+    @Column(columnDefinition = "text")
     String movieTrailer;
 
-    @ManyToMany
-    @JoinTable(
-            name = "movie_genre",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    List<Genres> genres;
+    @Column(columnDefinition = "json")
+    String genres;
 
-    @Column(name = "movie_release")
     LocalDate movieRelease;
 
-    @Column(name = "movie_length")
     Integer movieLength;
 
-    @Column(name = "movie_nation")
     String movieNation;
 
-    @Column(columnDefinition = "text", name = "movie_poster")
+    @Column(columnDefinition = "text")
     String moviePoster;
 
-    @Column(name = "movie_director")
     String movieDirector;
 
-    @Column(columnDefinition = "text", name = "movie_actors")
+    @Column(columnDefinition = "text")
     String movieActors;
 
-    @Column(name = "age_rating")
     String ageRating;
 
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie")
     List<Schedule> schedules;
 
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie")
     List<Reviews> reviews;
-
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-    List<MovieShowing> showings;
 }

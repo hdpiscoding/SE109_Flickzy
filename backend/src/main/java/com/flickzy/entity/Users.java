@@ -1,27 +1,20 @@
 package com.flickzy.entity;
-import com.flickzy.base.BaseEntity;
-import com.flickzy.utils.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Users extends BaseEntity implements UserDetails {
+public class Users {
     @Id
     @GeneratedValue
     @Column(columnDefinition = "uuid")
@@ -29,60 +22,25 @@ public class Users extends BaseEntity implements UserDetails {
 
     String password;
 
-    @Enumerated(EnumType.STRING)
-    Role role;
-
     String fullname;
-
-    @Column(name = "avatar", columnDefinition = "text")
-    String avatar;
 
     LocalDate birthday;
 
     Boolean gender;
 
-    @Column(columnDefinition = "text", unique = true)
+    @Column(columnDefinition = "text")
     String email;
 
     @Column(columnDefinition = "text")
     String phone;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     List<Booking> bookings;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user")
     List<Blogs> blogs;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
-    }
 }

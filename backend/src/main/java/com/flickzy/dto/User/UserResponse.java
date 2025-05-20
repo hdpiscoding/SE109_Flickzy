@@ -1,8 +1,5 @@
 package com.flickzy.dto.User;
 
-import com.flickzy.utils.enums.Role;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,6 +18,3 @@ public class UserResponse {
     private String email;
     private String phone;
     private String avatar;
-
-    // getters and setters
-}

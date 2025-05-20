@@ -1,91 +1,9 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import './Movie.css'
 import MovieCarousel from "./Carousel/MovieCarousel";
 import {Flex, Select, Input, Col, Row, Pagination} from "antd";
 import MovieCard from "./Card/MovieCard";
-
-const movieList = [
-    {
-        title: "Disaster Squad",
-        genres: [{ id: 1, name: "Action" }, { id: 4, name: "Thriller" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Disaster+Squad",
-        rating: 4.2,
-        ageRating: "16+"
-    },
-    {
-        title: "Love Fails",
-        genres: [{ id: 3, name: "Romance" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Love+Fails",
-        rating: 3.8,
-        ageRating: "13+"
-    },
-    {
-        title: "Haunted Subway",
-        genres: [{ id: 2, name: "Horror" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Haunted+Subway",
-        rating: 5.0,
-        ageRating: "18+"
-    },
-    {
-        title: "Robot Trouble",
-        genres: [{ id: 1, name: "Action" }, { id: 6, name: "Sci-Fi" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Robot+Trouble",
-        rating: 4.5,
-        ageRating: "13+"
-    },
-    {
-        title: "The Lost Banana",
-        genres: [{ id: 5, name: "Comedy" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Lost+Banana",
-        rating: 2.9,
-        ageRating: "P"
-    },
-    {
-        title: "Ghosting Grandma",
-        genres: [{ id: 2, name: "Horror" }, { id: 5, name: "Comedy" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Ghosting+Grandma",
-        rating: 3.2,
-        ageRating: "16+"
-    },
-    {
-        title: "Apocalypse Noodle",
-        genres: [{ id: 1, name: "Action" }, { id: 6, name: "Sci-Fi" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Apocalypse+Noodle",
-        rating: 4.7,
-        ageRating: "16+"
-    },
-    {
-        title: "Love Calculator",
-        genres: [{ id: 3, name: "Romance" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Love+Calculator",
-        rating: 4.0,
-        ageRating: "13+"
-    },
-    {
-        title: "Midnight Clown",
-        genres: [{ id: 2, name: "Horror" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Midnight+Clown",
-        rating: 3.5,
-        ageRating: "18+"
-    },
-    {
-        title: "Boring Life",
-        genres: [{ id: 5, name: "Comedy" }, { id: 3, name: "Romance" }],
-        imageUrl: "https://via.placeholder.com/220x300?text=Boring+Life",
-        rating: 2.4,
-        ageRating: "P"
-    }
-];
-
-
-const genreList = [
-    { id: 1, name: "Action" },
-    { id: 2, name: "Horror" },
-    { id: 3, name: "Romance" },
-    { id: 4, name: "Thriller" },
-    { id: 5, name: "Comedy" },
-    { id: 6, name: "Sci-Fi" }
-];
+import {getAllGenres, getAllMovies} from "../../services/MovieService";
 
 const yearList = [
     {value: 2025, label: "2025"},
@@ -100,17 +18,63 @@ const yearList = [
 
 
 export default function Movies() {
-    const [genre, setGenre] = React.useState(genreList.map((genre) => {
-        return {
-            value: genre.id,
-            label: genre.name
+    const [movies, setMovies] = React.useState([]);
+    const [showingMovies, setShowingMovies] = React.useState([]);
+    const [genreList, setGenreList] = React.useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalElements, setTotalElements] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState({
+        genres: undefined,
+        yearRelease: undefined,
+        name: undefined,
+    });
+
+    useEffect(() => {
+        // Fetch genres
+        getAllGenres()
+            .then((data) => setGenreList(data))
+            .catch((err) => console.error("Error fetching genres:", err));
+        // // Fetch showing movies
+        // getAllMovies({ page: 1, limit: 10, isShowing: true })
+        //     .then((data) => setShowingMovies(data.data || []))
+        //     .catch((err) => console.error("Error fetching showing movies:", err));
+    }, []);
+
+    useEffect(() => {
+        fetchMovies(currentPage, pageSize, filters);
+    }, [currentPage, pageSize, filters]);
+
+    const fetchMovies = async (page, limit, filterObj) => {
+        setLoading(true);
+        try {
+            const res = await getAllMovies({
+                page,
+                limit,
+                genres: filterObj.genres,
+                yearRelease: filterObj.yearRelease,
+                name: filterObj.name,
+            });
+            setMovies(res.data);
+            setTotalElements(res.totalElements);
+        } catch (err) {
+            setMovies([]);
+            setTotalElements(0);
+        } finally {
+            setLoading(false);
         }
+    };
+
+    const genreOptions = genreList.map((genre) => ({
+        value: genre.id,
+        label: genre.name,
     }));
 
-    const [currentPage, setCurrentPage] = React.useState(1);
-    const [pageSize, setPageSize] = React.useState(5);
     const [transitionState, setTransitionState] = React.useState("fadeIn");
     const handlePageChange = (page, pageSize) => {
+        setCurrentPage(page);
+        setPageSize(pageSize);
         setTransitionState("fadeOut");
         setTimeout(() => {
             setCurrentPage(page);
@@ -118,19 +82,29 @@ export default function Movies() {
             setTransitionState("fadeIn");
         }, 200);
     };
-    const startIndex = (currentPage - 1) * pageSize;
-    const currentMovies = movieList.slice(startIndex, startIndex + pageSize);
 
-    const handleGenreChange = (value, label) => {
-        console.log(value, label.label);
+    const handleGenreChange = (value) => {
+        setFilters((prev) => ({
+            ...prev,
+            genres: value,
+        }));
+        setCurrentPage(1);
     }
 
     const handleYearChange = (value, label) => {
-        console.log(value, label.label);
+        setFilters((prev) => ({
+            ...prev,
+            yearRelease: value,
+        }));
+        setCurrentPage(1);
     }
 
     const onSearch = (value) => {
-        console.log(value);
+        setFilters((prev) => ({
+            ...prev,
+            name: value,
+        }));
+        setCurrentPage(1);
     }
 
     return (
@@ -141,11 +115,11 @@ export default function Movies() {
 
                     <div className="content">
                         <div style={{textAlign: "center", fontWeight: "bold"}}>
-                          <h1>Phim đang chiếu</h1>
+                          <h1>Showing Movies</h1>
                         </div>
 
                         <div style={{margin: "0 100px"}}>
-                            <MovieCarousel movieList={movieList} />
+                            <MovieCarousel movieList={movies} />
                         </div>
                     </div>
                 </div>
@@ -153,20 +127,20 @@ export default function Movies() {
                 <div style={{backgroundColor: "#faf9fa", display: "flex", flexDirection: "column"}}>
                     <div style={{marginLeft: "clamp(16px, 10%, 230px)", marginRight: "clamp(16px, 10%, 230px)", marginTop: "100px", display: "flex", flexDirection: "column"}}>
                         <div style={{display: "flex", justifyContent: "space-between"}}>
-                            <span style={{color: '#333', fontWeight: "bold", fontSize: 20}}>Tìm kiếm phim chiếu rạp trên Flickzy</span>
+                            <span style={{color: '#333', fontWeight: "bold", fontSize: 20}}>Find movies on Flickzy</span>
 
                             <Flex gap={20}>
-                                <Select placeholder="Thể loại" options={genre} style={{width:'100px'}} onChange={handleGenreChange}/>
+                                <Select placeholder="Genre" options={genreOptions} style={{width:'100px'}} onChange={handleGenreChange} allowClear/>
 
-                                <Select placeholder="Năm" options={yearList} style={{width:'100px'}} onChange={handleYearChange}/>
+                                <Select placeholder="Year" options={yearList} style={{width:'100px'}} onChange={handleYearChange} allowClear/>
 
-                                <Input.Search placeholder="Tên phim" onSearch={onSearch} enterButton/>
+                                <Input.Search placeholder="Movie name..." onSearch={onSearch} enterButton allowClear/>
                             </Flex>
                         </div>
 
                         <div className="movie-grid" key={currentPage}>
-                            {currentMovies.map((movie, idx) => (
-                                <div className={`movie-grid-item ${transitionState}`} key={idx}>
+                            {movies?.map((movie) => (
+                                <div className={`movie-grid-item ${transitionState}`} key={movie.id}>
                                     <MovieCard movie={movie} type="MEDIUM" />
                                 </div>
                             ))}
@@ -176,7 +150,7 @@ export default function Movies() {
                             <Pagination
                                 current={currentPage}
                                 pageSize={pageSize}
-                                total={movieList.length}
+                                total={totalElements}
                                 onChange={handlePageChange}
                             />
                         </div>

@@ -9,6 +9,7 @@ import com.flickzy.entity.Movies;
 import com.flickzy.mapper.MovieMapper;
 import com.flickzy.repository.GenreRepository;
 import com.flickzy.repository.MovieRepository;
+import com.flickzy.repository.ReviewRepository;
 import com.flickzy.service.interfaces.MovieService;
 import com.flickzy.utils.dates.DateUtils;
 import com.flickzy.utils.specifications.MovieSpecification;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 public class MovieServiceImpl implements MovieService {
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
+    private final ReviewRepository reviewRepository;
     private final MovieMapper movieMapper;
 
     @Override
@@ -44,6 +46,7 @@ public class MovieServiceImpl implements MovieService {
                 .genres(genres)
                 .movieRelease(DateUtils.parseToLocalDate(movieDTO.getMovieRelease().toString()))
                 .moviePoster(movieDTO.getMoviePoster())
+                .movieBackground(movieDTO.getMovieBackground())
                 .movieNation(movieDTO.getMovieNation())
                 .movieLength(movieDTO.getMovieLength())
                 .movieActors(movieDTO.getMovieActors())
@@ -79,6 +82,9 @@ public class MovieServiceImpl implements MovieService {
         }
         if (movieDTO.getMoviePoster() != null) {
             movie.setMoviePoster(movieDTO.getMoviePoster());
+        }
+        if (movieDTO.getMovieBackground() != null) {
+            movie.setMovieBackground(movieDTO.getMovieBackground());
         }
         if (movieDTO.getMovieNation() != null) {
             movie.setMovieNation(movieDTO.getMovieNation());
@@ -136,15 +142,20 @@ public class MovieServiceImpl implements MovieService {
         Page<Movies> movies = movieRepository.findAll(spec, pageRequest);
         List<MovieDTO> movieDTOs = movieMapper.toDtoList(movies.getContent()
                 .stream()
-                .peek(movieDTO -> {
-                    movieDTO.setMovieDescription(null);
-                    movieDTO.setMovieContent(null);
-                    movieDTO.setMovieNation(null);
-                    movieDTO.setMovieActors(null);
-                    movieDTO.setMovieDirector(null);
-                    movieDTO.setReviews(null);
+                .peek(movie -> {
+                    movie.setMovieDescription(null);
+                    movie.setMovieContent(null);
+                    movie.setMovieNation(null);
+                    movie.setMovieActors(null);
+                    movie.setMovieDirector(null);
+                    movie.setReviews(null);
                 })
-                .toList());
+                .toList())
+                .stream()
+                .peek(movieDTO -> {
+                    movieDTO.setMovieRating(reviewRepository.findAverageRatingByMovie_Id(movieDTO.getId()));
+                })
+                .toList();
         return new PaginatedResponse<>(
                 movieDTOs,
                 movies.getNumber() + 1,
@@ -159,6 +170,8 @@ public class MovieServiceImpl implements MovieService {
     @Transactional(readOnly = true)
     public MovieDTO getMovieDetail(UUID id) {
         Movies movie = movieRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Movie not found!"));
-        return movieMapper.toDto(movie);
+        MovieDTO movieDTO = movieMapper.toDto(movie);
+        movieDTO.setMovieRating(reviewRepository.findAverageRatingByMovie_Id(movieDTO.getId()));
+        return movieDTO;
     }
 }
