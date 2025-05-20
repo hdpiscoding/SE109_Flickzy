@@ -21,7 +21,6 @@ public class UserResponse {
     private String email;
     private String phone;
     private String avatar;
-    @Enumerated(EnumType.STRING)
-    private Role role;
+
     // getters and setters
 }

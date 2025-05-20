@@ -45,24 +45,32 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/reviews/{movieId}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings/movies/{movieId}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-cinema").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-movie").permitAll()
+                        // User APIs
+                        .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/bookings/me").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/booking").hasAnyAuthority("USER", "ADMIN")
+
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
 
-
-
-//                        // User APIs
-//                        .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
-//                        .requestMatchers("/api/v1/rank").hasAuthority("USER")
-//                        .requestMatchers(HttpMethod.GET, "/api/v1/reels/{id}").hasAuthority("USER")
-//
                         // Admin APIs
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/{id}").hasAuthority("ADMIN")
-                        .requestMatchers( "/api/v1/movies").hasAuthority("ADMIN")
-                        .requestMatchers( "/api/v1/genres/**").hasAuthority("ADMIN")
-                        .requestMatchers( "/api/v1/movies/**").hasAuthority("ADMIN")
-                        .requestMatchers( "/api/v1/movie-showings/**").hasAuthority("ADMIN")
-
-                        // default APIs
+                        .requestMatchers("/api/v1/movies").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/genres/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/movies/**").hasAuthority("ADMIN")
+                        .requestMatchers("/api/v1/movie-showings/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/schedule").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/schedule/**").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/schedule/**").hasAuthority("ADMIN")
+                        // Thêm vào phần authorizeHttpRequests
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blogs").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/blog/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/blog").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/blog/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/blog/{id}").hasAuthority("ADMIN")
+                        // Default APIs
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -83,6 +91,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+}
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
