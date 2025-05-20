@@ -18,7 +18,8 @@ import java.util.UUID;
 public class Blogs extends BaseEntity {
     @Id
     @GeneratedValue
-    Long id;
+    @Column(columnDefinition = "uuid")
+    UUID id;
 
     @Column(columnDefinition = "text")
     String content;

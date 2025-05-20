@@ -112,6 +112,7 @@ public class BlogServiceImpl implements BlogService {
         List<BlogDTO> blogDTOs = blogMapper.toDtoList(blogs.getContent())
                 .stream()
                 .map(dto -> BlogDTO.builder()
+                        .id(dto.getId())
                         .cover(dto.getCover())
                         .views(dto.getViews())
                         .title(dto.getTitle())

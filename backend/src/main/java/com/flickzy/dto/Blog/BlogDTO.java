@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BlogDTO {
-    private Long id;
+    private UUID id;
     private String title;
     private String content;
     private String description;
