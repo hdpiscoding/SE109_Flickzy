@@ -1,7 +1,6 @@
 package com.flickzy.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.flickzy.entity.Genres;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +34,8 @@ public class MovieDTO {
 
     private String moviePoster;
 
+    private String movieBackground;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String movieNation;
 
@@ -47,6 +48,8 @@ public class MovieDTO {
     private String movieDirector;
 
     private String ageRating;
+
+    private Double movieRating = 0.0;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Set<ReviewDTO> reviews;

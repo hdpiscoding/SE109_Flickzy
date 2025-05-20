@@ -12,6 +12,7 @@ import com.flickzy.service.interfaces.JwtService;
 import com.flickzy.utils.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,6 +30,9 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponseDTO register(RegisterDTO request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new DataIntegrityViolationException("Email already exists");
+        }
         Users user = new Users();
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));

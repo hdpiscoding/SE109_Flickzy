@@ -56,6 +56,9 @@ public class Movies extends BaseEntity {
     @Column(columnDefinition = "text", name = "movie_poster")
     String moviePoster;
 
+    @Column(columnDefinition = "text", name = "movie_background")
+    String movieBackground;
+
     @Column(name = "movie_director")
     String movieDirector;
 
@@ -63,7 +66,7 @@ public class Movies extends BaseEntity {
     String movieActors;
 
     @Column(name = "age_rating")
-    String ageRating;
+    String ageRating; // ["P", "13+", "16+", "18+"]
 
     @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     List<Schedule> schedules;
