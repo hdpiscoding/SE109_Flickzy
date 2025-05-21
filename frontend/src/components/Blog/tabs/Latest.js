@@ -11,10 +11,12 @@ export default function Latest() {
   const [topBlogList, setTopBlogList] = React.useState([]);
   useEffect(() => {
     // Fetch genres
-    getAllBlog({})
+    getAllBlog({
+      categoryId: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b",
+    })
       .then((data) => setBlogList(Array.isArray(data.data) ? data.data : []))
       .catch((err) => console.error("Error fetching genres:", err));
-    getAllBlog({ top: 2 })
+    getAllBlog({ top: 5, categoryId: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b" })
       .then((data) => setTopBlogList(Array.isArray(data.data) ? data.data : []))
       .catch((err) => console.error("Error fetching genres:", err));
   }, []);
@@ -22,15 +24,21 @@ export default function Latest() {
     <div className="theatrical-movie-container">
       <div className="highlight-section">
         <Row gutter={[16, 16]} justify="center">
-          <Col xs={24} sm={24} md={12} lg={8}>
-            <LargeBlogCard blog={blogList[0]} />
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={8}>
-            <LargeBlogCard blog={blogList[1]} />
-          </Col>
-          <Col xs={24} sm={24} md={12} lg={8}>
-            <LargeBlogCard blog={blogList[2]} />
-          </Col>
+          {blogList.slice(0, 3).map((blog, idx, arr) => {
+            let colProps;
+            if (arr.length === 1) {
+              colProps = { xs: 24, sm: 24, md: 24, lg: 24 };
+            } else if (arr.length === 2) {
+              colProps = { xs: 24, sm: 24, md: 12, lg: 12 };
+            } else {
+              colProps = { xs: 24, sm: 24, md: 8, lg: 8 };
+            }
+            return (
+              <Col {...colProps} key={idx}>
+                <LargeBlogCard blog={blog} />
+              </Col>
+            );
+          })}
         </Row>
       </div>
       <hr />
@@ -39,8 +47,8 @@ export default function Latest() {
         <Row gutter={[16, 16]} justify="center" wrap>
           <Col lg={16} md={16} xs={24} sm={24} className="latest-articles">
             <h4>Bài viết mới nhất</h4>
-            {blogList.map((blog, index) => (
-              <SmallBlogCard key={index} blog={blog} />
+            {blogList.slice(3).map((blog, index) => (
+              <SmallBlogCard key={index + 3} blog={blog} />
             ))}
             <hr />
             <button className="load-more">Xem thêm</button>

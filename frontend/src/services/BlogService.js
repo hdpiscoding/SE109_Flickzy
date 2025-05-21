@@ -1,7 +1,9 @@
 import axios from "../untils/axiosCustomize";
 
 export const getAllBlog = async (filter) => {
-  const response = await axios.get("/v1/blogs", filter);
+  // Dùng POST để gửi body đúng chuẩn
+  const response = await axios.post("/v1/blogs", filter);
+  console.log("filter", filter);
   console.log("response", response);
   return response.data;
 };

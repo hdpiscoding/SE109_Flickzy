@@ -3,34 +3,42 @@ import ReactMarkdown from "react-markdown";
 import "./DetailBlog.scss";
 import SmallBlogCard from "./bloc_cards/SmallBlogCard";
 import { Col, Image, Row } from "antd";
+import { useParams } from "react-router-dom";
+import { getABlog } from "../../services/BlogService";
 
-const markdownContent = `
-# Những bộ phim kinh dị 2021 đáng sợ được mong chờ
-
-Tháng này có rất nhiều phim kinh dị ra rạp để chiêu đãi lòng các tín đồ cuồng phim, đặc biệt là thể loại này. Hãy cùng MoMo điểm qua các phim kinh dị đáng mong đợi nhất trong tháng này nhé.
-
-## Tổng hợp phim kinh dị hay nhất
-- **Top 20 phim bảo tủ đáng xem nhất thời đại**
-- [Review Light Shop (2024): Siêu Phẩm Kinh Dị Hàn Quốc Trên Disney+](#)
-- Top phim hay nhất của Stephen King bạn nên xem ngay
-- Những bộ phim về quỷ Satan nhất định phải xem
-- Những bộ phim về cá sấu đáng sợ nhất trên màn ảnh
-`;
 export default function DetailBlog() {
+  const [blog, setBlog] = React.useState({});
+  let blogId = useParams().id;
+  React.useEffect(() => {
+    // Fetch genres
+    getABlog(blogId)
+      .then((data) => setBlog(data))
+      .catch((err) => console.error("Error fetching genres:", err));
+  }, []);
   return (
     <div className="container">
       <div className="detail-blog">
         <Image
           height={400}
           className="cinema-logo"
-          src="https://homepage.momocdn.net/blogscontents/momo-upload-api-211108155331-637719836118631788.jpg"></Image>
+          src={blog && blog.cover ? blog.cover : ""}></Image>
         <div className="blog-info">
-          <span>8 phút đọc</span> · <span>121.1K lượt xem</span>
+          <span>
+            {blog.timeToRead ? `${blog.timeToRead} phút đọc` : "Đang tải..."}
+          </span>{" "}
+          ·{" "}
+          <span>
+            {blog.views !== undefined
+              ? `${blog.views} lượt xem`
+              : "Đang tải..."}
+          </span>
         </div>
         <Row gutter={24}>
           {" "}
           <Col xs={24} sm={16} md={18}>
-            <ReactMarkdown>{markdownContent}</ReactMarkdown>
+            <ReactMarkdown>
+              {blog.content ? blog.content : "Đang tải nội dung..."}
+            </ReactMarkdown>
             <div>
               <div>Bài viết có liên quan</div>
               <SmallBlogCard />

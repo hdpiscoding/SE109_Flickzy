@@ -134,6 +134,8 @@ public class BlogServiceImpl implements BlogService {
     public BlogDTO getBlogDetail(UUID id) {
         Blogs blog = blogRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Blog not found!"));
+        blog.setViews(blog.getViews() + 1);
+        blogRepository.save(blog);
         return blogMapper.toDto(blog);
     }
 }

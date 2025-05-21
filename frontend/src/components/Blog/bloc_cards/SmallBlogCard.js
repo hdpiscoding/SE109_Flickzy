@@ -1,13 +1,19 @@
 import React from "react";
 import "./SmallBlogCard.scss";
+import { useNavigate } from "react-router-dom";
 
 export default function SmallBlogCard({ blog }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/blog/" + blog.id);
+  };
   return (
-    <div className="article-item">
+    <div className="article-item" onClick={handleClick}>
       <img
         className="article-image"
-        src={blog.cover}
-        alt={blog.title || "blog cover"}
+        alt={blog ? blog.title : "N/A"}
+        src={blog && blog.cover ? blog.cover : ""}
       />
       <div className="article-content">
         <div className="article-title">{blog ? blog.title : "N/A"}</div>
