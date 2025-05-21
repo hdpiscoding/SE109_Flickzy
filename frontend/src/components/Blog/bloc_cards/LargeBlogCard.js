@@ -2,21 +2,23 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./LargeBlogCard.scss";
 
-export default function LargeBlogCard() {
+export default function LargeBlogCard({ blog }) {
   const navigate = useNavigate();
   const handleClick = () => {
-    navigate("/blog/1");
+    navigate("/blog/" + blog.id);
   };
   return (
     <div className="highlight-item" onClick={handleClick}>
-      <div className="highlight-image" />
-      <div className="titlee">
-        Phim chiếu rạp 2025 đáng mong đợi dành cho fan cine
+      <img
+        className="highlight-image"
+        src={blog && blog.cover ? blog.cover : ""}
+      />
+      <div className="titlee">{blog ? blog.title : "N/A"}</div>
+      <div className="view">
+        {blog && blog.views ? blog.views : "N/A"} lượt xem
       </div>
-      <div className="view">32.7K lượt xem</div>
       <div className="description">
-        Phim chiếu rạp 2025 đáng mong đợi dành cho fan cine. Hãy cùng Flickzy
-        điểm qua...
+        {blog && blog.description ? blog.description : "N/A"}
       </div>
     </div>
   );

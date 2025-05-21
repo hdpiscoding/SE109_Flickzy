@@ -91,7 +91,7 @@ public class SecurityConfig {
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
-}
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
