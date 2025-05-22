@@ -39,6 +39,13 @@ public class SecurityConfig {
                         // Public APIs (unauthenticated)
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/rooms").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/rooms/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/rooms").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/rooms").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/brands/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/brands").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/genres").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/movies/filter").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/movies/{id}").permitAll()
@@ -47,6 +54,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/movie-showings/movies/{movieId}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-cinema").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-movie").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/cinemas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/cinemas/{id}").permitAll()
                         // User APIs
                         .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/bookings/me").hasAnyAuthority("USER", "ADMIN")
@@ -55,6 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
 
                         // Admin APIs
+                        .requestMatchers( "/api/v1/**").permitAll()
+                 
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/{id}").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/movies").hasAuthority("ADMIN")
