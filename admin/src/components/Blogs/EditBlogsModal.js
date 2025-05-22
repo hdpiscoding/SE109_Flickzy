@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Form,
   Input,
@@ -15,6 +15,7 @@ import "./EditBlogsModal.scss";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
+import { editABlog } from "../../services/blogService";
 
 const { Option } = Select;
 
@@ -25,9 +26,23 @@ const dummyCategories = [
 
 const mdParser = new MarkdownIt();
 
-const EditBlogsModal = () => {
+const EditBlogsModal = ({ blog }) => {
   const [content, setContent] = useState("");
   const [coverFile, setCoverFile] = useState(null);
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (blog) {
+      form.setFieldsValue({
+        title: blog.title,
+        timeToRead: blog.timeToRead,
+        description: blog.description,
+        categoryId: blog.categoryId,
+      });
+      setContent(blog.content || "");
+      setCoverFile(blog.cover || null);
+    }
+  }, [blog, form]);
 
   const getBase64 = (file, cb) => {
     const reader = new FileReader();
@@ -50,12 +65,22 @@ const EditBlogsModal = () => {
     }
   };
 
-  const [form] = Form.useForm();
-
-  const onFinish = (values) => {
-    const blogData = { ...values, content, cover: coverFile };
-    // handle submit logic here
-    console.log(blogData);
+  const onFinish = async (values) => {
+    const blogData = {
+      title: values.title,
+      content: content,
+      description: values.description,
+      //cover: coverFile,
+      timeToRead: values.timeToRead,
+      categoryId: values.categoryId,
+    };
+    try {
+      await editABlog(blog.id, blogData);
+      console.log("Edit blog success", blogData);
+    } catch (error) {
+      // message.error("Update failed");
+      console.error("Edit blog failed", error);
+    }
   };
 
   return (

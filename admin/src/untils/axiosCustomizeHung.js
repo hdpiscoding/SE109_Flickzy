@@ -1,11 +1,11 @@
 import axios from "axios";
-import useAuthStore from "../store/useAuthStore";
 
 const instance = axios.create({
   baseURL: "http://localhost:8386/api/",
   timeout: 1000000,
   headers: {
     "Content-Type": "application/json; charset=utf-8",
+    Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
   },
 });
 

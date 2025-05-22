@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Space, Popconfirm, Tooltip } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import AddBlogsModal from "./AddBlogsModal";
 import EditBlogsModal from "./EditBlogsModal";
 import "./Blog.scss";
+import { getAllBlog, getABlog, deleteABlog } from "../../services/blogService";
 
 const initialBlogs = [
   {
@@ -29,13 +30,38 @@ const Blog = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
 
-  const handleDelete = (id) => {
-    setBlogs((prev) => prev.filter((blog) => blog.id !== id));
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await getAllBlog({});
+        setBlogs(res.data || []);
+      } catch (error) {
+        // message.error("Failed to load blogs");
+        setBlogs([]);
+      }
+    };
+    fetchBlogs();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteABlog(id);
+      setBlogs((prev) => prev.filter((blog) => blog.id !== id));
+      //   message.success("Deleted successfully");
+    } catch (error) {
+      // message.error("Delete failed");
+    }
   };
 
-  const handleEdit = (record) => {
-    setEditingBlog(record);
-    setIsEditModalOpen(true);
+  const handleEdit = async (record) => {
+    try {
+      const blogDetail = await getABlog(record.id);
+      setEditingBlog(blogDetail.data || blogDetail); // tuỳ backend trả về
+      setIsEditModalOpen(true);
+    } catch (error) {
+      setEditingBlog(null);
+      setIsEditModalOpen(false);
+    }
   };
 
   const columns = [
