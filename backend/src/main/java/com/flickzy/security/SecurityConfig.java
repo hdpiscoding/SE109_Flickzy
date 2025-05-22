@@ -41,8 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/{id}").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/rooms").hasAuthority("ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/rooms").hasAuthority("ADMIN")
+                      
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands/{id}").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/brands").permitAll()
@@ -65,7 +64,9 @@ public class SecurityConfig {
 
                         // Admin APIs
                         .requestMatchers( "/api/v1/**").permitAll()
-                 
+                        .requestMatchers(HttpMethod.POST, "/api/v1/rooms").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/rooms").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/rooms").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/genres").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/reviews/{id}").hasAuthority("ADMIN")
                         .requestMatchers("/api/v1/movies").hasAuthority("ADMIN")

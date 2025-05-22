@@ -58,10 +58,18 @@ public class RoomServiceImpl implements RoomService {
     public RoomDTO updateRoom(@NotNull UUID roomId, @Valid RoomDTO roomDTO) {
         return roomRepository.findById(roomId)
                 .map(room -> {
-                    room.setRoomName(roomDTO.getRoomName());
-                    room.setRoomType(roomDTO.getRoomType());
-                    room.setWidth(roomDTO.getWidth());
-                    room.setHeight(roomDTO.getHeight());
+                    if (roomDTO.getRoomName() != null) {
+                        room.setRoomName(roomDTO.getRoomName());
+                    }
+                    if (roomDTO.getRoomType() != null) {
+                        room.setRoomType(roomDTO.getRoomType());
+                    }
+                    if (roomDTO.getWidth() != 0) {
+                        room.setWidth(roomDTO.getWidth());
+                    }
+                    if (roomDTO.getHeight() != 0) {
+                        room.setHeight(roomDTO.getHeight());
+                    }
                     if (roomDTO.getCinemaId() != null) {
                         Cinemas cinema = cinemaRepository.findById(roomDTO.getCinemaId())
                                 .orElseThrow(() -> new IllegalArgumentException("Cinema not found with id: " + roomDTO.getCinemaId()));

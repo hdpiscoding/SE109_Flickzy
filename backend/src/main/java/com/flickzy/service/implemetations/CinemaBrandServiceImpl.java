@@ -41,15 +41,22 @@ public class CinemaBrandServiceImpl implements CinemaBrandService {
     public CinemaBrandDTO updateCinemaBrand(@NotNull UUID id, @Valid CinemaBrandDTO cinemaBrandDTO) {
         return cinemaBrandRepository.findById(id)
                 .map(existingBrand -> {
-                    existingBrand.setBrandName(cinemaBrandDTO.getBrandName());
-                    existingBrand.setAvatar(cinemaBrandDTO.getAvatar());
-                    existingBrand.setCover(cinemaBrandDTO.getCover());
-                    existingBrand.setDescription(cinemaBrandDTO.getDescription());
+                    if (cinemaBrandDTO.getBrandName() != null) {
+                        existingBrand.setBrandName(cinemaBrandDTO.getBrandName());
+                    }
+                    if (cinemaBrandDTO.getAvatar() != null) {
+                        existingBrand.setAvatar(cinemaBrandDTO.getAvatar());
+                    }
+                    if (cinemaBrandDTO.getCover() != null) {
+                        existingBrand.setCover(cinemaBrandDTO.getCover());
+                    }
+                    if (cinemaBrandDTO.getDescription() != null) {
+                        existingBrand.setDescription(cinemaBrandDTO.getDescription());
+                    }
                     return toDTO(cinemaBrandRepository.save(existingBrand));
                 })
                 .orElseThrow(() -> new CinemaBrandNotFoundException(id));
     }
-
     @Override
     @Transactional
     public void deleteCinemaBrand(@NotNull UUID id) {

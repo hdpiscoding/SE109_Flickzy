@@ -1,51 +1,92 @@
 package com.flickzy.controller;
 
-import com.flickzy.entity.SeatType;
-import com.flickzy.service.SeatTypeService;
+import com.flickzy.base.BaseController;
+import com.flickzy.dto.PaginatedResponse;
+import com.flickzy.dto.SeatTypeDTO;
+import com.flickzy.service.interfaces.SeatTypeService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
+/**
+ * REST controller for managing seat types.
+ */
 @RestController
-@RequestMapping("/api/seat-types")
+@RequestMapping("/api/v1/seat-types")
 @RequiredArgsConstructor
-@CrossOrigin(origins ={ "http://localhost:3000","http://localhost:3001", "http://localhost:3002","http://localhost:3003","http://localhost:3004","http://localhost:3005"}) 
+public class SeatTypeController extends BaseController {
 
-public class SeatTypeController {
     private final SeatTypeService seatTypeService;
 
+    /**
+     * Retrieves all seat types with pagination.
+     *
+     * @param page  The page number (optional, defaults to 1)
+     * @param limit The number of items per page (optional, defaults to 10)
+     * @return PaginatedResponse of SeatTypeDTOs
+     */
     @GetMapping
-    public List<SeatType> getAllSeatTypes() {
-        return seatTypeService.getAllSeatTypes();
+    public ResponseEntity<Object> getAllSeatTypes(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer limit) {
+        PaginatedResponse<SeatTypeDTO> seatTypes = seatTypeService.getAllSeatTypes(page, limit);
+        return buildResponse(seatTypes, HttpStatus.OK, "Seat types retrieved successfully");
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SeatType> getSeatTypeById(@PathVariable UUID id) {
-        return seatTypeService.getSeatTypeById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    /**
+     * Retrieves a seat type by ID.
+     *
+     * @param seatTypeId The UUID of the seat type
+     * @return SeatTypeDTO
+     */
+    @GetMapping("/{seatTypeId}")
+    public ResponseEntity<Object> getSeatTypeById(@PathVariable UUID seatTypeId) {
+        SeatTypeDTO seatType = seatTypeService.getSeatTypeById(seatTypeId);
+        return buildResponse(seatType, HttpStatus.OK, "Seat type retrieved successfully");
     }
 
+    /**
+     * Creates a new seat type (admin only).
+     *
+     * @param seatTypeDTO The DTO containing seat type details
+     * @return Created SeatTypeDTO
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping
-    public SeatType createSeatType(@RequestBody SeatType seatType) {
-        return seatTypeService.createSeatType(seatType);
+    public ResponseEntity<Object> createSeatType(@Valid @RequestBody SeatTypeDTO seatTypeDTO) {
+        SeatTypeDTO createdSeatType = seatTypeService.createSeatType(seatTypeDTO);
+        return buildResponse(createdSeatType, HttpStatus.CREATED, "Seat type created successfully");
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<SeatType> updateSeatType(@PathVariable UUID id, @RequestBody SeatType seatType) {
-        try {
-            return ResponseEntity.ok(seatTypeService.updateSeatType(id, seatType));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    /**
+     * Updates an existing seat type (admin only).
+     *
+     * @param seatTypeId  The UUID of the seat type
+     * @param seatTypeDTO The DTO containing updated details
+     * @return Updated SeatTypeDTO
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/{seatTypeId}")
+    public ResponseEntity<Object> updateSeatType(@PathVariable UUID seatTypeId, @Valid @RequestBody SeatTypeDTO seatTypeDTO) {
+        SeatTypeDTO updatedSeatType = seatTypeService.updateSeatType(seatTypeId, seatTypeDTO);
+        return buildResponse(updatedSeatType, HttpStatus.OK, "Seat type updated successfully");
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSeatType(@PathVariable UUID id) {
-        seatTypeService.deleteSeatType(id);
-        return ResponseEntity.noContent().build();
+    /**
+     * Deletes a seat type by ID (admin only).
+     *
+     * @param seatTypeId The UUID of the seat type
+     * @return Success response
+     */
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/{seatTypeId}")
+    public ResponseEntity<Object> deleteSeatType(@PathVariable UUID seatTypeId) {
+        seatTypeService.deleteSeatType(seatTypeId);
+        return buildResponse(null, HttpStatus.OK, "Seat type deleted successfully");
     }
 }
