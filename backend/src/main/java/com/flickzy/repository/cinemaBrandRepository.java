@@ -1,14 +1,14 @@
 package com.flickzy.repository;
 
+import com.flickzy.entity.CinemaBrand;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.flickzy.entity.CinemaBrand;
-
 import java.util.UUID;
+
+/**
+ * Repository for CinemaBrand entities.
+ */
 @Repository
-public interface cinemaBrandRepository extends JpaRepository<CinemaBrand, UUID>{
-
-
-    
+public interface CinemaBrandRepository extends JpaRepository<CinemaBrand, UUID> {
 }
