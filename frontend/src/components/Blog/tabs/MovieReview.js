@@ -26,9 +26,9 @@ export default function MovieReview() {
           {blogList.slice(0, 3).map((blog, idx, arr) => {
             let colProps;
             if (arr.length === 1) {
-              colProps = { xs: 24, sm: 24, md: 24, lg: 24 };
+              colProps = { xs: 24, sm: 12, md: 8, lg: 8 };
             } else if (arr.length === 2) {
-              colProps = { xs: 24, sm: 24, md: 12, lg: 12 };
+              colProps = { xs: 24, sm: 12, md: 8, lg: 8 };
             } else {
               colProps = { xs: 24, sm: 24, md: 8, lg: 8 };
             }
@@ -44,29 +44,40 @@ export default function MovieReview() {
 
       <div className="content-section">
         <Row gutter={[16, 16]} justify="center" wrap>
-          <Col lg={16} md={16} xs={24} sm={24} className="latest-articles">
-            <h2>Bài viết mới nhất</h2>
-            {blogList.slice(3).map((blog, index) => (
-              <React.Fragment key={index + 3}>
-                <SmallBlogCard blog={blog} />
-                <hr />
-              </React.Fragment>
-            ))}
-            <button className="load-more">Xem thêm</button>
-          </Col>
-
-          <Col lg={8} md={8} xs={24} sm={24} className="most-viewed">
-            <h2>Xem nhiều nhất</h2>
-            {topBlogList.map((blog, index) => (
-              <React.Fragment key={index}>
-                <TopBlogCard blog={blog} />
-                {index < topBlogList.length - 1 && <hr />}
-              </React.Fragment>
-            ))}
-          </Col>
+          {blogList.length > 3 && (
+            <Col
+              lg={topBlogList.length > 0 ? 16 : 24}
+              md={topBlogList.length > 0 ? 16 : 24}
+              xs={24}
+              sm={24}>
+              <h2>Bài viết mới nhất</h2>
+              {blogList.slice(3).map((blog, index) => (
+                <React.Fragment key={index + 3}>
+                  <SmallBlogCard blog={blog} />
+                  <hr />
+                </React.Fragment>
+              ))}
+              <button className="load-more">Xem thêm</button>
+            </Col>
+          )}
+          {topBlogList.length > 0 && (
+            <Col
+              lg={blogList.length > 3 ? 8 : 24}
+              md={blogList.length > 3 ? 8 : 24}
+              xs={24}
+              sm={24}>
+              <h2>Xem nhiều nhất</h2>
+              {topBlogList.map((blog, index) => (
+                <React.Fragment key={index}>
+                  <TopBlogCard blog={blog} />
+                  {index < topBlogList.length - 1 && <hr />}
+                </React.Fragment>
+              ))}
+            </Col>
+          )}
         </Row>
       </div>
-      <div className="highlight-section">
+      {/* <div className="highlight-section">
         <h2>Danh sách top phim nổi bật</h2>
         <Row gutter={[16, 16]} justify="center">
           {blogList.slice(0, 3).map((blog, idx) => (
@@ -76,7 +87,7 @@ export default function MovieReview() {
           ))}
         </Row>
         <button className="load-more">Xem nhiều hơn</button>
-      </div>
+      </div> */}
     </div>
   );
 }

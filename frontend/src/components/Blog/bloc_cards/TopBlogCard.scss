@@ -1,4 +1,8 @@
 .most-viewed-item {
+    display      : flex;
+    align-items  : start;
+    margin-bottom: 15px;
+
     .most-viewed-image {
         height             : 80px;
         width              : 140px;
