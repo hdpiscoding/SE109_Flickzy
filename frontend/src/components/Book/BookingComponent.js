@@ -6,18 +6,9 @@ import { FaRegMap } from "react-icons/fa6";
 import "./FloatingBooking.css";
 import Search from "antd/es/transfer/search";
 import { useGlobalContext } from "../../Layout";
+import { getAllBrands, getAllCinemas } from "../../services/BookingService";
 
 const { Title, Text } = Typography;
-
-const cinemas = [
-  "CGV Hùng Vương Plaza",
-  "CGV Liberty Citypoint",
-  "CGV Sư Vạn Hạnh",
-  "CGV Vincom Mega Mall Grand Park",
-  "CGV Crescent Mall",
-  "CGV Pearl Plaza",
-  "CGV Aeon Bình Tân",
-];
 
 const dates = ["5", "6", "7", "8", "9", "10", "11"];
 const weekdays = [
@@ -38,11 +29,15 @@ const times = [
 ];
 
 export default function BookingComponent({ haveclosebtn }) {
+  const [brands, setBrands] = useState([]);
+  const [cinemas, setCinemas] = useState([]);
+
+  const [selectedBrand, setSelectedBrand] = useState("all");
   const context = useGlobalContext();
 
   const { handleNav, handleClose } = context;
 
-  const [selectedCinema, setSelectedCinema] = useState(cinemas[0]);
+  const [selectedCinema, setSelectedCinema] = useState(null);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [provinces, setProvinces] = useState([]);
 
@@ -56,6 +51,33 @@ export default function BookingComponent({ haveclosebtn }) {
         console.error("Error fetching provinces:", error);
       }
     };
+    const fetchBrands = async () => {
+      try {
+        const response = await getAllBrands();
+        const data = response.data.data;
+
+        const allBrand = {
+          id: "all",
+          name: "All",
+          avatar:
+            "https://static.vecteezy.com/system/resources/thumbnails/026/631/971/small/category-icon-symbol-design-illustration-vector.jpg", // hoặc link ảnh mặc định bạn muốn
+        };
+
+        setBrands([allBrand, ...data]);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
+    const fetchCinemas = async () => {
+      try {
+        const response = await getAllCinemas();
+        const data = response.data.data;
+        setCinemas(data);
+        setSelectedCinema(cinemas[0].cinemaName);
+      } catch (error) {}
+    };
+    fetchCinemas();
+    fetchBrands();
     fetchProvinces();
   }, []);
 
@@ -125,8 +147,55 @@ export default function BookingComponent({ haveclosebtn }) {
         </div>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
-        {cinemas.map((cinema, index) => (
-          <div className="cinema-card" key={index}></div>
+        {brands.map((brand) => (
+          <div
+            className={`cinema-card${
+              selectedBrand === brand.id ? " cinema-card-selected" : ""
+            }`}
+            key={brand.id}
+            onClick={() => setSelectedBrand(brand.id)}
+            style={{
+              border:
+                selectedBrand === brand.id
+                  ? "2px solid #6cc832"
+                  : "1px solid #eee",
+              boxShadow:
+                selectedBrand === brand.id
+                  ? "0 2px 8px rgba(108,200,50,0.15)"
+                  : "0 1px 4px rgba(0,0,0,0.08)",
+              borderRadius: 8,
+              padding: 4,
+              cursor: "pointer",
+              background: selectedBrand === brand.id ? "#f6fff2" : "#fff",
+              transition: "all 0.2s",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={brand.avatar}
+              style={{
+                width: brand.id === "all" ? 35 : 60,
+                height: brand.id === "all" ? 35 : 60,
+                objectFit: "cover",
+                borderRadius: 8,
+              }}
+              alt={brand.name}
+            />
+            <div
+              style={{
+                textAlign: "center",
+                fontWeight: selectedBrand === brand.id ? "bold" : "normal",
+                color: selectedBrand === brand.id ? "#6cc832" : "#333",
+                fontSize: 13,
+                marginTop: 4,
+              }}
+            >
+              {brand.name}
+            </div>
+          </div>
         ))}
       </Row>
       <hr style={{ color: "gray", margin: " 16px 0 24px 0" }}></hr>
@@ -139,7 +208,9 @@ export default function BookingComponent({ haveclosebtn }) {
             renderItem={(cinema) => (
               <List.Item
                 className={`cinema-item ${
-                  cinema === selectedCinema ? "cinema-item-selected" : ""
+                  cinema.cinemaName === selectedCinema
+                    ? "cinema-item-selected"
+                    : ""
                 }`}
                 style={{
                   cursor: "pointer",
@@ -147,14 +218,15 @@ export default function BookingComponent({ haveclosebtn }) {
                   padding: "8px 8px",
                   marginTop: 8,
                 }}
-                onClick={() => setSelectedCinema(cinema)}
+                onClick={() => setSelectedCinema(cinema.cinemaName)}
               >
                 <Text
                   style={{
-                    fontWeight: cinema === selectedCinema ? "bold" : "normal",
+                    fontWeight:
+                      cinema.cinemaName === selectedCinema ? "bold" : "normal",
                   }}
                 >
-                  {cinema}
+                  {cinema.cinemaName}
                 </Text>
               </List.Item>
             )}
@@ -186,7 +258,7 @@ export default function BookingComponent({ haveclosebtn }) {
               <div
                 key={index}
                 className={
-                  index === selectedDateIndex ? "primarybtn" : "defaultbtn"
+                  index === selectedDateIndex ? "primarybtnn" : "defaultbtnn"
                 }
                 onClick={() => setSelectedDateIndex(index)}
               >

@@ -9,7 +9,7 @@ import { useGlobalContext } from "../../Layout";
 import { getARoom, getAllSeatsByRoomId } from "../../services/BookingService";
 import { calc } from "antd/es/theme/internal";
 export default function PlaceSeatComponent() {
-  const [roomId, setRoomId] = useState("c79f5918-489f-409c-b9ba-9215da84f3ad");
+  const [roomId, setRoomId] = useState("cccda124-8dd8-44cc-8bc9-1ff692193e05");
   const { handleBack, handleNav, handleClose, step1 } = useGlobalContext();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -26,12 +26,12 @@ export default function PlaceSeatComponent() {
     //Api get a room
     const fetchRoomData = async () => {
       const response = await getARoom(roomId);
-      setHeight(response.height);
-      setWidth(response.width);
+      setHeight(response.data.height);
+      setWidth(response.data.width);
     };
     const fetchSeatData = async () => {
       const response = await getAllSeatsByRoomId(roomId);
-      setSeat(response);
+      setSeat(response.data);
     };
 
     fetchRoomData();

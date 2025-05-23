@@ -18,6 +18,7 @@ import java.util.UUID;
 /**
  * REST controller for managing seats.
  */
+
 @RestController
 @RequestMapping("/api/v1/seats")
 @RequiredArgsConstructor

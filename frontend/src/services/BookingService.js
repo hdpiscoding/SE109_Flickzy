@@ -1,7 +1,13 @@
 import axios from "../untils/axiosCustomize";
 export const getARoom = (id) => {
-  return axios.get("api/rooms/" + id);
+  return axios.get("/v1/rooms/" + id);
 };
 export const getAllSeatsByRoomId = (id) => {
-  return axios.get("api/seats/room/" + id);
+  return axios.get("/v1/seats/room/" + id);
+};
+export const getAllBrands = () => {
+  return axios.get("/v1/brands");
+};
+export const getAllCinemas = () => {
+  return axios.get("/v1/cinemas");
 };

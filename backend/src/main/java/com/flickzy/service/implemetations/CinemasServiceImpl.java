@@ -1,6 +1,7 @@
 package com.flickzy.service.implemetations;
 
 import com.flickzy.dto.CinemaDTO;
+import com.flickzy.dto.CinemaFilterDTO;
 import com.flickzy.dto.PaginatedResponse;
 import com.flickzy.entity.CinemaBrand;
 import com.flickzy.entity.Cinemas;
@@ -9,14 +10,18 @@ import com.flickzy.repository.CinemaBrandRepository;
 import com.flickzy.repository.CinemasRepository;
 import com.flickzy.service.interfaces.CinemasService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -91,18 +96,34 @@ public class CinemasServiceImpl implements CinemasService {
         cinemasRepository.deleteById(id);
         logger.info("Cinema deleted successfully with id: {}", id);
     }
-
     @Override
-    public PaginatedResponse<CinemaDTO> getAllCinemas(Integer page, Integer limit) {
-        logger.info("Fetching all cinemas with page: {}, limit: {}", page, limit);
-
-        int pageNum = page == null ? 1 : page;
-        int pageSize = limit == null ? 10 : limit;
-        PageRequest pageRequest = PageRequest.of(pageNum - 1, pageSize);
-
-        Page<Cinemas> cinemaPage = cinemasRepository.findAll(pageRequest);
+    @Transactional(readOnly = true)
+    public PaginatedResponse<CinemaDTO> getAllCinemasFilter(@Valid CinemaFilterDTO filterDTO, Integer page, Integer limit) {
+        int pageNumber = (page != null && page > 0) ? page - 1 : 0;
+        int pageSize = (limit != null && limit > 0) ? limit : 10;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+    
+        List<String> brandIdsRaw = filterDTO.getBrandIds() != null ? filterDTO.getBrandIds() : List.of();
+        Page<Cinemas> cinemaPage;
+    
+        if (brandIdsRaw.contains("all")) {
+            cinemaPage = cinemasRepository.findAll(pageable);
+        } else {
+            List<UUID> brandIds = brandIdsRaw.stream()
+                    .map(this::parseUUID)
+                    .filter(uuid -> uuid != null)
+                    .toList();
+            if (brandIds.isEmpty()) {
+                cinemaPage = Page.empty(pageable);
+            } else {
+                cinemaPage = cinemasRepository.findAllByCinemaBrand_IdIn(brandIds, pageable);
+            }
+        }
+    
+        List<CinemaDTO> cinemaDTOs = cinemasMapper.toDtoList(cinemaPage.getContent());
+    
         return new PaginatedResponse<>(
-                cinemasMapper.toDtoList(cinemaPage.getContent()),
+                cinemaDTOs,
                 cinemaPage.getNumber() + 1,
                 cinemaPage.getSize(),
                 cinemaPage.getTotalElements(),
@@ -110,17 +131,25 @@ public class CinemasServiceImpl implements CinemasService {
                 cinemaPage.isLast()
         );
     }
+        @Override
+        public CinemaDTO getCinemaById(UUID id) {
+            logger.info("Fetching cinema with id: {}", id);
 
-    @Override
-    public CinemaDTO getCinemaById(UUID id) {
-        logger.info("Fetching cinema with id: {}", id);
-
-        Cinemas cinema = cinemasRepository.findById(id)
-                .orElseThrow(() -> {
-                    logger.error("Cinema not found with id: {}", id);
-                    return new EntityNotFoundException("Cinema not found");
+            Cinemas cinema = cinemasRepository.findById(id)
+                    .orElseThrow(() -> {
+                        logger.error("Cinema not found with id: {}", id);
+                        return new EntityNotFoundException("Cinema not found");
                 });
 
         return cinemasMapper.toDto(cinema);
+    }
+
+    private UUID parseUUID(String id) {
+        try {
+            return UUID.fromString(id);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid UUID string: {}", id);
+            return null;
+        }
     }
 }
