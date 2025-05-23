@@ -16,6 +16,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { addABlog } from "../../services/blogService";
+import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
 
 const { Option } = Select;
 
@@ -26,51 +27,57 @@ const dummyCategories = [
 
 const mdParser = new MarkdownIt();
 
-const AddBlogsModal = () => {
+const AddBlogsModal = ({ onSuccess }) => {
   const [content, setContent] = useState("");
   const [coverFile, setCoverFile] = useState(null);
-
-  const getBase64 = (file, cb) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => cb(reader.result);
-  };
+  const [form] = Form.useForm();
+  const [uploading, setUploading] = useState(false);
 
   const handleCoverChange = (info) => {
-    if (info.file.status === "removed") {
+    if (info.fileList.length === 0) {
       setCoverFile(null);
       return;
     }
-    const file = info.file.originFileObj;
+    const file = info.fileList[0]?.originFileObj;
     if (file && file instanceof Blob) {
-      getBase64(file, (imageUrl) => {
-        setCoverFile(imageUrl);
-      });
+      setCoverFile(file);
     } else {
       setCoverFile(null);
     }
   };
 
-  const [form] = Form.useForm();
-
   const onFinish = async (values) => {
-    const blogData = {
-      title: values.title,
-      content: content,
-      description: values.description,
-      // cover: coverFile,
-      timeToRead: values.timeToRead,
-      categoryId: values.categoryId,
-    };
+    setUploading(true);
     try {
+      let coverUrl = coverFile;
+      if (coverFile && typeof coverFile !== "string") {
+        coverUrl = await uploadToCloudinary(coverFile);
+      }
+      if (!coverUrl) {
+        setUploading(false);
+        return;
+      }
+      const blogData = {
+        title: values.title,
+        content: content,
+        description: values.description,
+        cover: coverUrl,
+        timeToRead: values.timeToRead,
+        categoryId: values.categoryId,
+      };
       await addABlog(blogData);
-
-      console.log("Create blog success", blogData);
+      if (onSuccess) onSuccess();
     } catch (error) {
-      // message.error("Create failed");
       console.error("Create blog failed", error);
     }
+    setUploading(false);
   };
+
+  const coverImg = coverFile
+    ? typeof coverFile === "string"
+      ? coverFile
+      : URL.createObjectURL(coverFile)
+    : null;
 
   return (
     <div className="blog-form-container">
@@ -132,12 +139,14 @@ const AddBlogsModal = () => {
                 maxCount={1}
                 beforeUpload={() => false}
                 onChange={handleCoverChange}
-                onRemove={() => setCoverFile(null)}>
+                onRemove={() => setCoverFile(null)}
+                showUploadList={false}
+                disabled={uploading}>
                 <Button icon={<UploadOutlined />}>Select Image</Button>
               </Upload>
-              {coverFile && (
+              {coverImg && (
                 <img
-                  src={coverFile}
+                  src={coverImg}
                   alt="cover preview"
                   style={{
                     marginTop: 12,

@@ -10,6 +10,7 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { AdvancedImage } from "@cloudinary/react";
+import { uploadToCloudinary } from "../../untils/uploadToCloudinary"; // thêm dòng này
 
 const mdParser = new MarkdownIt();
 const cld = new Cloudinary({ cloud: { cloudName: "dwye9udip" } }); // đổi cloudName nếu cần
@@ -31,50 +32,6 @@ const EditBrandModal = ({ brand, onSuccess }) => {
       setDescription(brand.description || "");
     }
   }, [brand, form]);
-
-  // Hàm upload file lên Cloudinary, trả về public_id
-  const uploadToCloudinary = async (file) => {
-    const data = new FormData();
-    data.append("file", file);
-    data.append("upload_preset", "ml_default"); // đổi upload_preset nếu cần
-    const res = await fetch(
-      "https://api.cloudinary.com/v1_1/dwye9udip/image/upload",
-      {
-        method: "POST",
-        body: data,
-      }
-    );
-    const result = await res.json();
-    if (result.public_id) return result.public_id;
-    throw new Error("Upload failed");
-  };
-
-  // Lưu file object vào state, không upload ngay
-  const handleAvatarChange = (info) => {
-    if (info.file.status === "removed") {
-      setAvatarFile(null);
-      return;
-    }
-    const file = info.file.originFileObj;
-    if (file && file instanceof Blob) {
-      setAvatarFile(file);
-    } else {
-      setAvatarFile(null);
-    }
-  };
-
-  const handleCoverChange = (info) => {
-    if (info.file.status === "removed") {
-      setCoverFile(null);
-      return;
-    }
-    const file = info.file.originFileObj;
-    if (file && file instanceof Blob) {
-      setCoverFile(file);
-    } else {
-      setCoverFile(null);
-    }
-  };
 
   const onFinish = async (values) => {
     setUploading(true);
@@ -129,6 +86,32 @@ const EditBrandModal = ({ brand, onSuccess }) => {
           .resize(auto().gravity(autoGravity()).width(100).height(100))
       : URL.createObjectURL(coverFile)
     : null;
+
+  const handleAvatarChange = (info) => {
+    if (info.fileList.length === 0) {
+      setAvatarFile(null);
+      return;
+    }
+    const file = info.fileList[0]?.originFileObj;
+    if (file && file instanceof Blob) {
+      setAvatarFile(file);
+    } else {
+      setAvatarFile(null);
+    }
+  };
+
+  const handleCoverChange = (info) => {
+    if (info.fileList.length === 0) {
+      setCoverFile(null);
+      return;
+    }
+    const file = info.fileList[0]?.originFileObj;
+    if (file && file instanceof Blob) {
+      setCoverFile(file);
+    } else {
+      setCoverFile(null);
+    }
+  };
 
   return (
     <div className="brand-form-container">

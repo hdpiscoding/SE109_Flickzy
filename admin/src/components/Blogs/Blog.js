@@ -30,18 +30,26 @@ const Blog = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [editingBlog, setEditingBlog] = useState(null);
 
+  // Thêm hàm fetchBlogs để dùng lại
+  const fetchBlogs = async () => {
+    try {
+      const res = await getAllBlog({});
+      setBlogs(res.data || []);
+    } catch (error) {
+      setBlogs([]);
+    }
+  };
+
   useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const res = await getAllBlog({});
-        setBlogs(res.data || []);
-      } catch (error) {
-        // message.error("Failed to load blogs");
-        setBlogs([]);
-      }
-    };
     fetchBlogs();
   }, []);
+
+  // Callback khi add hoặc edit thành công
+  const handleSuccess = () => {
+    setIsModalOpen(false);
+    setIsEditModalOpen(false);
+    fetchBlogs();
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -143,7 +151,7 @@ const Blog = () => {
         footer={null}
         destroyOnClose
         width={700}>
-        <AddBlogsModal />
+        <AddBlogsModal onSuccess={handleSuccess} />
       </Modal>
       <Modal
         open={isEditModalOpen}
@@ -151,7 +159,9 @@ const Blog = () => {
         footer={null}
         destroyOnClose
         width={700}>
-        {editingBlog && <EditBlogsModal blog={editingBlog} />}
+        {editingBlog && (
+          <EditBlogsModal blog={editingBlog} onSuccess={handleSuccess} />
+        )}
       </Modal>
     </div>
   );
