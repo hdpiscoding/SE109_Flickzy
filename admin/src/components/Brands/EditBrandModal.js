@@ -9,15 +9,14 @@ import { editABrand } from "../../services/brandService";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
-import { AdvancedImage } from "@cloudinary/react";
-import { uploadToCloudinary } from "../../untils/uploadToCloudinary"; // thêm dòng này
+import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
 
 const mdParser = new MarkdownIt();
-const cld = new Cloudinary({ cloud: { cloudName: "dwye9udip" } }); // đổi cloudName nếu cần
+const cld = new Cloudinary({ cloud: { cloudName: "dwye9udip" } });
 
 const EditBrandModal = ({ brand, onSuccess }) => {
-  const [avatarFile, setAvatarFile] = useState(null); // file object hoặc public_id string
-  const [coverFile, setCoverFile] = useState(null); // file object hoặc public_id string
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [coverFile, setCoverFile] = useState(null);
   const [description, setDescription] = useState("");
   const [form] = Form.useForm();
   const [uploading, setUploading] = useState(false);
@@ -39,11 +38,11 @@ const EditBrandModal = ({ brand, onSuccess }) => {
       let avatarPublicId = avatarFile;
       let coverPublicId = coverFile;
 
-      // Nếu là file object thì upload lên Cloudinary, nếu là string thì giữ nguyên
-      if (avatarFile && typeof avatarFile !== "string") {
+      // Chỉ upload nếu là file object (Blob)
+      if (avatarFile && avatarFile instanceof Blob) {
         avatarPublicId = await uploadToCloudinary(avatarFile);
       }
-      if (coverFile && typeof coverFile !== "string") {
+      if (coverFile && coverFile instanceof Blob) {
         coverPublicId = await uploadToCloudinary(coverFile);
       }
 
@@ -67,23 +66,15 @@ const EditBrandModal = ({ brand, onSuccess }) => {
     setUploading(false);
   };
 
-  // Preview: nếu là string (public_id) thì dùng Cloudinary, nếu là file thì dùng URL.createObjectURL
+  // Preview: giống EditBlogsModal, chỉ dùng <img>
   const avatarImg = avatarFile
     ? typeof avatarFile === "string"
-      ? cld
-          .image(avatarFile)
-          .format("auto")
-          .quality("auto")
-          .resize(auto().gravity(autoGravity()).width(100).height(100))
+      ? avatarFile
       : URL.createObjectURL(avatarFile)
     : null;
   const coverImg = coverFile
     ? typeof coverFile === "string"
-      ? cld
-          .image(coverFile)
-          .format("auto")
-          .quality("auto")
-          .resize(auto().gravity(autoGravity()).width(100).height(100))
+      ? coverFile
       : URL.createObjectURL(coverFile)
     : null;
 
@@ -150,23 +141,19 @@ const EditBrandModal = ({ brand, onSuccess }) => {
                 disabled={uploading}>
                 <Button icon={<UploadOutlined />}>Select Avatar</Button>
               </Upload>
-              {avatarImg &&
-                (typeof avatarFile === "string" ? (
-                  <div style={{ marginTop: 12 }}>
-                    <AdvancedImage cldImg={avatarImg} />
-                  </div>
-                ) : (
-                  <div style={{ marginTop: 12 }}>
-                    <img
-                      src={avatarImg}
-                      alt="avatar preview"
-                      style={{
-                        maxHeight: 100,
-                        borderRadius: 8,
-                      }}
-                    />
-                  </div>
-                ))}
+              {avatarImg && (
+                <div style={{ marginTop: 12 }}>
+                  <img
+                    key={avatarImg}
+                    src={avatarImg}
+                    alt="avatar preview"
+                    style={{
+                      maxHeight: 100,
+                      borderRadius: 8,
+                    }}
+                  />
+                </div>
+              )}
             </Form.Item>
           </Col>
           <Col xs={24} md={12}>
@@ -187,23 +174,19 @@ const EditBrandModal = ({ brand, onSuccess }) => {
                 disabled={uploading}>
                 <Button icon={<UploadOutlined />}>Select Cover</Button>
               </Upload>
-              {coverImg &&
-                (typeof coverFile === "string" ? (
-                  <div style={{ marginTop: 12 }}>
-                    <AdvancedImage cldImg={coverImg} />
-                  </div>
-                ) : (
-                  <div style={{ marginTop: 12 }}>
-                    <img
-                      src={coverImg}
-                      alt="cover preview"
-                      style={{
-                        maxHeight: 100,
-                        borderRadius: 8,
-                      }}
-                    />
-                  </div>
-                ))}
+              {coverImg && (
+                <div style={{ marginTop: 12 }}>
+                  <img
+                    key={coverImg}
+                    src={coverImg}
+                    alt="cover preview"
+                    style={{
+                      maxHeight: 100,
+                      borderRadius: 8,
+                    }}
+                  />
+                </div>
+              )}
             </Form.Item>
           </Col>
         </Row>

@@ -20,9 +20,11 @@ import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
 
 const { Option } = Select;
 
-const dummyCategories = [
-  { id: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd", name: "Tech" },
-  { id: "b1c23d45-7e8f-4a1b-9c2d-12e3f4g5h6i7", name: "Life" },
+const categories = [
+  { id: "550e8400-e29b-41d4-a716-446655440000", name: "Theatrical Movie" },
+  { id: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd", name: "Movie Collection" },
+  { id: "c183e72d-e684-4936-a1d9-5c84e3f9b41a", name: "Movie Review" },
+  { id: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b", name: "Latest" },
 ];
 
 const mdParser = new MarkdownIt();
@@ -102,7 +104,7 @@ const EditBlogsModal = ({ blog, onSuccess }) => {
         className="blog-form"
         initialValues={{
           timeToRead: 5,
-          categoryId: dummyCategories[0].id,
+          categoryId: categories[0].id,
         }}>
         <Row gutter={24}>
           <Col xs={24} md={16}>
@@ -180,7 +182,7 @@ const EditBlogsModal = ({ blog, onSuccess }) => {
                 { required: true, message: "Please select a category!" },
               ]}>
               <Select>
-                {dummyCategories.map((cat) => (
+                {categories.map((cat) => (
                   <Option key={cat.id} value={cat.id}>
                     {cat.name}
                   </Option>
