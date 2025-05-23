@@ -15,6 +15,7 @@ import "./AddBlogsModal.scss";
 import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
+import { addABlog } from "../../services/blogService";
 
 const { Option } = Select;
 
@@ -52,10 +53,23 @@ const AddBlogsModal = () => {
 
   const [form] = Form.useForm();
 
-  const onFinish = (values) => {
-    const blogData = { ...values, content, cover: coverFile };
-    // handle submit logic here
-    console.log(blogData);
+  const onFinish = async (values) => {
+    const blogData = {
+      title: values.title,
+      content: content,
+      description: values.description,
+      // cover: coverFile,
+      timeToRead: values.timeToRead,
+      categoryId: values.categoryId,
+    };
+    try {
+      await addABlog(blogData);
+
+      console.log("Create blog success", blogData);
+    } catch (error) {
+      // message.error("Create failed");
+      console.error("Create blog failed", error);
+    }
   };
 
   return (
