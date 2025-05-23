@@ -46,7 +46,8 @@ public class ScheduleMapper implements BaseMapper<Schedule, CinemaScheduleRespon
                                     s.getScheduleStart(),
                                     s.getScheduleEnd(),
                                     s.getRoom().getRoomId(),
-                                    s.getRoom().getRoomType()
+                                    s.getRoom().getRoomType(),
+                                    s.getType() != null ? s.getType().getType() : null
                             ))
                             .toList();
 
@@ -90,7 +91,8 @@ public class ScheduleMapper implements BaseMapper<Schedule, CinemaScheduleRespon
                                                 schedule.getScheduleStart(),
                                                 schedule.getScheduleEnd(),
                                                 schedule.getRoom().getRoomId(),
-                                                schedule.getRoom().getRoomType()
+                                                schedule.getRoom().getRoomType(),
+                                                schedule.getType() != null ? schedule.getType().getType() : null
                                         ))
                                         .toList();
 

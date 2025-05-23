@@ -8,10 +8,12 @@ import com.flickzy.dto.Schedule.ScheduleDTO;
 import com.flickzy.entity.Movies;
 import com.flickzy.entity.Room;
 import com.flickzy.entity.Schedule;
+import com.flickzy.entity.ScheduleType;
 import com.flickzy.mapper.ScheduleMapper;
 import com.flickzy.repository.MovieRepository;
 import com.flickzy.repository.RoomRepository;
 import com.flickzy.repository.ScheduleRepository;
+import com.flickzy.repository.ScheduleTypeRepository;
 import com.flickzy.service.interfaces.ScheduleService;
 import com.flickzy.specification.ScheduleSpecifications;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,12 +35,13 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final MovieRepository movieRepository;
     private final RoomRepository roomRepository;
     private final ScheduleMapper scheduleMapper;
+    private final ScheduleTypeRepository scheduleTypeRepository;
 
     @Override
     public List<CinemaScheduleResponseDTO> getSchedulesByCinema(CinemaScheduleFilterDTO filterDTO) {
         logger.info("Fetching schedules by cinema: cinemaId={}, date={}", filterDTO.getCinemaId(), filterDTO.getDate());
         List<Schedule> schedules = scheduleRepository.findAll(
-                ScheduleSpecifications.byCinemaAndDate(filterDTO.getCinemaId(), filterDTO.getDate())
+                ScheduleSpecifications.byCinemaAndDate(filterDTO.getCinemaId(), filterDTO.getDate(), filterDTO.getTypeId())
         );
         return scheduleMapper.toCinemaScheduleResponseDTOs(schedules);
     }
@@ -53,7 +56,8 @@ public class ScheduleServiceImpl implements ScheduleService {
                         filterDTO.getMovieId(),
                         filterDTO.getDate(),
                         filterDTO.getCinemaBrandId(),
-                        filterDTO.getProvince()
+                        filterDTO.getProvince(),
+                        filterDTO.getTypeId()
                 )
         );
 
@@ -81,6 +85,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         Schedule schedule = scheduleMapper.toEntity(scheduleDTO);
         schedule.setMovie(movie);
         schedule.setRoom(room);
+
+        // Set schedule type if provided
+        if (scheduleDTO.getTypeId() != null) {
+            ScheduleType type = scheduleTypeRepository.findById(scheduleDTO.getTypeId())
+                    .orElseThrow(() -> {
+                        logger.error("ScheduleType not found: {}", scheduleDTO.getTypeId());
+                        return new EntityNotFoundException("ScheduleType not found");
+                    });
+            schedule.setType(type);
+        }
 
         Schedule savedSchedule = scheduleRepository.save(schedule);
         logger.info("Schedule added successfully: scheduleId={}", savedSchedule.getScheduleId());

@@ -38,5 +38,6 @@ public class MovieScheduleResponseDTO {
         private LocalTime scheduleEnd;
         private UUID roomId;
         private String roomType;
+        private String typeName;
     }
 }
