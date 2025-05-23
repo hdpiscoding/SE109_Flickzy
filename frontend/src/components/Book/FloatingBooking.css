@@ -67,10 +67,10 @@
 .primarybtnn,
 .defaultbtnn {
   width: fit-content;
-  min-width: 100px;
+  min-width: 90px;
 
   cursor: pointer;
-  padding: 16px 10px;
+  padding: 14px 4px;
   border-radius: 4px;
 }
 .primarybtnn {
