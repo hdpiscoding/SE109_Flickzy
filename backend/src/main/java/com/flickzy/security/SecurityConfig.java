@@ -60,6 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/bookings/me").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/booking").hasAnyAuthority("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/booking-by-schedule/{id}").permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
 

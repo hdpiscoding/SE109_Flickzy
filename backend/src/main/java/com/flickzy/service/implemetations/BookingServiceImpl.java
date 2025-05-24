@@ -80,8 +80,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if seat is already booked
         long existingBookings = bookingRepository.count(
-                BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId())
-        );
+                BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId()));
         if (existingBookings > 0) {
             logger.error("Seat is already booked: seatId={}", seat.getSeatId());
             throw new IllegalStateException("Seat is already booked");
@@ -114,5 +113,13 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
         logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
         return bookingMapper.toDto(savedBooking);
+    }
+    @Override
+    public List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId) {
+        logger.info("Fetching bookings for schedule: scheduleId={}", scheduleId);
+        List<Booking> bookings = bookingRepository.findAll(
+                BookingSpecifications.byScheduleId(scheduleId)
+        );
+        return bookingMapper.toDtoList(bookings);
     }
 }

@@ -34,6 +34,12 @@ public class BookingController extends BaseController {
         List<BookingResponseDTO> bookings = bookingService.getBookingHistory(userId);
         return buildResponse(bookings, HttpStatus.OK, "Booking history retrieved successfully");
     }
+    @GetMapping("/booking-by-schedule/{id}")
+    public ResponseEntity<Object> getBookingByScheduleId(@PathVariable UUID id) {
+        List<BookingResponseDTO> bookings = bookingService.getBookingByScheduleId(id);
+        return buildResponse(bookings, HttpStatus.OK, "Blog retrieved successfully");
+    }
+
 
     @PostMapping("/booking")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
