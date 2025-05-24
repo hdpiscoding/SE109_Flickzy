@@ -1,6 +1,8 @@
 package com.flickzy.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.flickzy.entity.CinemaBrand;
+
 import lombok.*;
 
 import java.util.UUID;
@@ -15,8 +17,9 @@ public class CinemaDTO {
     private String cinemaName;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private UUID brandId;
-
+    private CinemaBrand cinemaBrand; 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private UUID brandId; // Keep for compatibility
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String cinemaAddress;
 

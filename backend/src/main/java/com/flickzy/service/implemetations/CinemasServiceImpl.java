@@ -121,7 +121,11 @@ public class CinemasServiceImpl implements CinemasService {
         }
     
         List<CinemaDTO> cinemaDTOs = cinemasMapper.toDtoList(cinemaPage.getContent());
-    
+    // Manually set the cinemaBrand field for each CinemaDTO
+    for (int i = 0; i < cinemaDTOs.size(); i++) {
+        Cinemas cinema = cinemaPage.getContent().get(i);
+        cinemaDTOs.get(i).setCinemaBrand(cinema.getCinemaBrand());
+    }
         return new PaginatedResponse<>(
                 cinemaDTOs,
                 cinemaPage.getNumber() + 1,

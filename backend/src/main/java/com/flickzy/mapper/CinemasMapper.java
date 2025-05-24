@@ -20,9 +20,7 @@ public class CinemasMapper implements BaseMapper<Cinemas, CinemaDTO> {
     @Override
     public CinemaDTO toDto(Cinemas entity) {
         CinemaDTO dto = modelMapper.map(entity, CinemaDTO.class);
-        if (entity.getCinemaBrand() != null) {
-            dto.setBrandId(entity.getCinemaBrand().getId());
-        }
+     
         return dto;
     }
 
