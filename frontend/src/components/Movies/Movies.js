@@ -36,9 +36,10 @@ export default function Movies() {
         getAllGenres()
             .then((data) => setGenreList(data))
             .catch((err) => console.error("Error fetching genres:", err));
-        getAllMovies({ page: 1, limit: 10, isShowing: true })
-            .then((data) => setShowingMovies(data.data || []))
-            .catch((err) => console.error("Error fetching showing movies:", err));
+        // // Fetch showing movies
+        // getAllMovies({ page: 1, limit: 10, isShowing: true })
+        //     .then((data) => setShowingMovies(data.data || []))
+        //     .catch((err) => console.error("Error fetching showing movies:", err));
     }, []);
 
     useEffect(() => {
@@ -118,7 +119,7 @@ export default function Movies() {
                         </div>
 
                         <div style={{margin: "0 100px"}}>
-                            <MovieCarousel movieList={showingMovies} />
+                            <MovieCarousel movieList={movies} />
                         </div>
                     </div>
                 </div>
@@ -129,7 +130,7 @@ export default function Movies() {
                             <span style={{color: '#333', fontWeight: "bold", fontSize: 20}}>Find movies on Flickzy</span>
 
                             <Flex gap={20}>
-                                <Select placeholder="Genre" options={genreOptions} style={{width:'200px'}} onChange={handleGenreChange} allowClear/>
+                                <Select placeholder="Genre" options={genreOptions} style={{width:'100px'}} onChange={handleGenreChange} allowClear/>
 
                                 <Select placeholder="Year" options={yearList} style={{width:'100px'}} onChange={handleYearChange} allowClear/>
 

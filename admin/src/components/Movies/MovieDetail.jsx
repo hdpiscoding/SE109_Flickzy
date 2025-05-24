@@ -1,7 +1,6 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Card, Image, Tag, Descriptions, Button } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
-import {getMovieDetail, getMovieShowing} from "../../services/MovieService";
 
 const sampleMovies = [
     {
@@ -19,24 +18,7 @@ const sampleMovies = [
         director: 'Christopher Nolan',
         genres: ['Action', 'Sci-Fi'],
         poster: 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg',
-        trailer: 'https://youtube.com/inception',
-        showings: [
-            {
-                name: "Spring Premiere",
-                startDate: "2024-07-01",
-                endDate: "2024-07-15"
-            },
-            {
-                name: "Summer Blockbuster",
-                startDate: "2024-08-01",
-                endDate: "2024-08-10"
-            },
-            {
-                name: "Fall Special",
-                startDate: "2025-04-01",
-                endDate: "2025-09-30"
-            }
-        ]
+        trailer: 'https://youtube.com/inception'
     },
     // ...other movies
 ];
@@ -48,104 +30,44 @@ const ageRatingColors = {
     "18+": "#FF3B30"
 };
 
-const isExpired = (endDate) => {
-    return new Date(endDate) < new Date();
-};
-
-function genresToString(genres) {
-    return genres?.map(g => g.name).join(', ');
-}
-
 export default function MovieDetail() {
-    const { movieId } = useParams();
-    const navigate = useNavigate();
+    // const { id } = useParams();
+    // const navigate = useNavigate();
+    // const movie = sampleMovies.find(m => m.key === id);
+    //
+    // if (!movie) return <div>Movie not found</div>;
     const [movie, setMovie] = React.useState(sampleMovies[0]);
-    const [movieShowings, setMovieShowings] = React.useState([]);
-    useEffect(() => {
-        fetchData();
-    }, []);
-
-    const fetchData = async () => {
-        try {
-            const [movieDetail, movieShowing] = await Promise.all([
-                getMovieDetail(movieId),
-                getMovieShowing(movieId)
-            ]);
-            setMovie(movieDetail);
-            setMovieShowings(movieShowing);
-        }
-        catch (error) {
-            console.error("Error fetching movie details:", error);
-        }
-    }
 
     return (
-        <div style={{ marginTop: '10px' }}>
-            <Button onClick={() => navigate('/movies')} style={{ marginBottom: 16 }}>Back</Button>
-            <div style={{display: 'flex', justifyContent: 'end', marginBottom: 16}}>
-                <Button type="primary" onClick={() => navigate(`/movies/${movieId}/edit`)}>Edit movie</Button>
+        <div style={{display: 'grid', gridTemplateColumns: '1.5fr 9fr 1.5fr'}}>
+            <div style={{ marginTop: '100px', gridColumnStart: 2 }}>
+                <Button onClick={() => navigate(-1)} style={{ marginBottom: 16 }}>Back</Button>
+                <Card
+                    title={movie.title}
+                    bordered={false}
+                >
+                    <Descriptions column={1} bordered>
+                        <Descriptions.Item label="Description">{movie.description}</Descriptions.Item>
+                        <Descriptions.Item label="Content">{movie.content}</Descriptions.Item>
+                        <Descriptions.Item label="Release Date">{movie.release}</Descriptions.Item>
+                        <Descriptions.Item label="Age Rating">
+                            <Tag color={ageRatingColors[movie.ageRating] || 'default'}>{movie.ageRating}</Tag>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Ratings">{movie.rating}</Descriptions.Item>
+                        <Descriptions.Item label="Nation">{movie.nation}</Descriptions.Item>
+                        <Descriptions.Item label="Duration">{movie.length} phút</Descriptions.Item>
+                        <Descriptions.Item label="Actors">{movie.actors}</Descriptions.Item>
+                        <Descriptions.Item label="Director">{movie.director}</Descriptions.Item>
+                        <Descriptions.Item label="Genres">{movie.genres.join(', ')}</Descriptions.Item>
+                        <Descriptions.Item label="Poster">
+                            <Image src={movie.poster} width={120} />
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Trailer">
+                            <a href={movie.trailer} target="_blank" rel="noopener noreferrer">{movie.trailer}</a>
+                        </Descriptions.Item>
+                    </Descriptions>
+                </Card>
             </div>
-            <Card
-                title={movie.movieName}
-                bordered={false}
-            >
-                <Descriptions column={1} bordered>
-                    <Descriptions.Item label="Description">{movie.movieDescription}</Descriptions.Item>
-                    <Descriptions.Item label="Content">{movie.movieContent}</Descriptions.Item>
-                    <Descriptions.Item label="Release Date">{movie.movieRelease}</Descriptions.Item>
-                    <Descriptions.Item label="Age Rating">
-                        <Tag color={ageRatingColors[movie.ageRating] || 'default'}>{movie.ageRating}</Tag>
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Ratings">{movie.movieRating}</Descriptions.Item>
-                    <Descriptions.Item label="Nation">{movie.movieNation}</Descriptions.Item>
-                    <Descriptions.Item label="Duration">{movie.movieLength} phút</Descriptions.Item>
-                    <Descriptions.Item label="Actors">{movie.movieActors}</Descriptions.Item>
-                    <Descriptions.Item label="Director">{movie.movieDirector}</Descriptions.Item>
-                    <Descriptions.Item label="Genres">{genresToString(movie.genres)}</Descriptions.Item>
-                    <Descriptions.Item label="Poster">
-                        <Image src={movie.moviePoster} width={120} />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Background">
-                        <Image src={movie.movieBackground} width={250} />
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Trailer">
-                        <a href={movie.movieTrailer} target="_blank" rel="noopener noreferrer">{movie.movieTrailer}</a>
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Showing Info">
-                        {movieShowings && movieShowings?.length > 0 ? (
-                            <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-                                {movieShowings?.map((showing, idx) => {
-                                    const expired = isExpired(showing.endDate);
-                                    return (
-                                        <Card
-                                            key={idx}
-                                            size="small"
-                                            title={showing.name}
-                                            bordered={true}
-                                            style={{
-                                                background: expired ? "#f0f0f0" : "#f6ffed",
-                                                borderColor: expired ? "#d9d9d9" : "#b7eb8f",
-                                                minWidth: 200,
-                                                opacity: expired ? 0.5 : 1,
-                                                color: expired ? "#888" : "inherit"
-                                            }}
-                                        >
-                                            <div>
-                                                <b>Start Date:</b> {showing.startDate}
-                                            </div>
-                                            <div>
-                                                <b>End Date:</b> {showing.endDate}
-                                            </div>
-                                        </Card>
-                                    );
-                                })}
-                            </div>
-                        ) : (
-                            "No showing info"
-                        )}
-                    </Descriptions.Item>
-                </Descriptions>
-            </Card>
         </div>
     );
 }

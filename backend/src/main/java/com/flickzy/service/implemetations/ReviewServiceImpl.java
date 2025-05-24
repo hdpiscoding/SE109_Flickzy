@@ -83,16 +83,4 @@ public class ReviewServiceImpl implements ReviewService {
                 reviews.isLast()
         );
     }
-
-    @Override
-    public Boolean isUserReviewed(UUID userId, UUID movieId) {
-        return reviewRepository.existsByMovie_IdAndUser_Id(movieId, userId);
-    }
-
-    @Override
-    public Boolean canUserReview(UUID userId, UUID movieId) {
-        return reviewRepository.canUserReview(userId, movieId);
-    }
-
-
 }

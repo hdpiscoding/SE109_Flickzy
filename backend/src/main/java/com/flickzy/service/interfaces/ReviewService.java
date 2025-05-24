@@ -12,6 +12,4 @@ public interface ReviewService {
     ReviewDTO updateReview(UUID id, ReviewDTO review);
     void deleteReview(UUID id);
     PaginatedResponse<ReviewDTO> getAllReviewsByMovie(UUID movieId, int page, int limit);
-    Boolean isUserReviewed(UUID userId, UUID movieId);
-    Boolean canUserReview(UUID userId, UUID movieId);
 }

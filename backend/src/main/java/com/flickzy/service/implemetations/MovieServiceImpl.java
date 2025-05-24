@@ -12,7 +12,7 @@ import com.flickzy.repository.MovieRepository;
 import com.flickzy.repository.ReviewRepository;
 import com.flickzy.service.interfaces.MovieService;
 import com.flickzy.utils.dates.DateUtils;
-import com.flickzy.specification.MovieSpecification;
+import com.flickzy.utils.specifications.MovieSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
