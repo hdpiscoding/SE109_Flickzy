@@ -1,16 +1,9 @@
 import React, { useEffect } from 'react';
-import { Form, Input, Button, Select, DatePicker, ConfigProvider, message } from 'antd';
+import {Form, Input, Button, Select, DatePicker, ConfigProvider, message, Modal, Card, Flex, InputNumber} from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-
-const genreOptions = [
-    { value: 1, label: "Action" },
-    { value: 2, label: "Horror" },
-    { value: 3, label: "Romance" },
-    { value: 4, label: "Thriller" },
-    { value: 5, label: "Comedy" },
-    { value: 6, label: "Sci-Fi" }
-];
+import {getMovieDetail, getMovieShowing, getAllGenres, updateMovieShowing, updateMovie} from "../../services/MovieService";
+import {toast} from "react-toastify";
 
 const ageRatingOptions = [
     { value: 'P', label: 'P' },
@@ -19,116 +12,269 @@ const ageRatingOptions = [
     { value: '18+', label: '18+' }
 ];
 
-const sampleMovies = [
-    {
-        key: '1',
-        image: 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg',
-        title: 'Inception',
-        release: '2010-07-16',
-        ageRating: '16+',
-        rating: 4.8,
-        description: 'A mind-bending thriller.',
-        content: 'A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO.',
-        nation: 'USA',
-        length: 148,
-        actors: 'Leonardo DiCaprio, Joseph Gordon-Levitt',
-        director: 'Christopher Nolan',
-        genres: ['Action', 'Sci-Fi'],
-        poster: 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg',
-        trailer: 'https://youtube.com/inception'
-    },
-];
+const isExpired = (endDate) => {
+    return new Date(endDate) < new Date();
+};
+
+const mapGenresToOptions = (genres) => {
+    return genres.map(g => ({
+        value: g.id,
+        label: g.name
+    }));
+}
 
 export default function EditMovie() {
-    // const { id } = useParams();
-    // const navigate = useNavigate();
+    const { movieId } = useParams();
+    const navigate = useNavigate();
     const [form] = Form.useForm();
-    // const movie = sampleMovies.find(m => m.key === id);
-    const [movie, setMovie] = React.useState(sampleMovies[0]);
+    const [showingModalOpen, setShowingModalOpen] = React.useState(false);
+    const [showing, setShowing] = React.useState(null);
+    const [showingForm] = Form.useForm();
+    const [movie, setMovie] = React.useState(null);
+    const [genreList, setGenreList] = React.useState([]);
 
     useEffect(() => {
-        if (movie) {
-            form.setFieldsValue({
-                movieName: movie.title,
-                movieDescription: movie.description,
-                movieContent: movie.content,
-                movieTrailer: movie.trailer,
-                genres: movie.genres,
-                movieRelease: dayjs(movie.release),
-                moviePoster: movie.poster,
-                movieNation: movie.nation,
-                movieLength: movie.length,
-                movieActors: movie.actors,
-                movieDirector: movie.director,
-                ageRating: movie.ageRating,
-            });
-        }
-    }, [movie, form]);
+        fetchMovie(movieId);
+    }, [movieId]);
 
-    const onFinish = (values) => {
-        // Handle update logic here
-        message.success('Movie updated!');
-        navigate(-1);
+    useEffect(() => {
+        form.setFieldsValue({
+            movieName: movie?.movieName,
+            movieDescription: movie?.movieDescription,
+            movieContent: movie?.movieContent,
+            movieTrailer: movie?.movieTrailer,
+            genres: movie?.genres?.map(g => g.id) || [],
+            movieRelease: dayjs(movie?.movieRelease),
+            moviePoster: movie?.moviePoster,
+            movieBackground: movie?.movieBackground,
+            movieNation: movie?.movieNation,
+            movieLength: parseInt(movie?.movieLength),
+            movieActors: movie?.movieActors,
+            movieDirector: movie?.movieDirector,
+            ageRating: movie?.ageRating,
+            movieShowing: showing || undefined,
+        });
+    }, [movie, showing]);
+
+    const fetchMovie = async (id) => {
+        try {
+            const [movieDetailResponse, showingsResponse, genresResponse] = await Promise.all([
+                getMovieDetail(id),
+                getMovieShowing(id),
+                getAllGenres()
+            ]);
+            // Only get the first non-expired showing (if any)
+            const now = dayjs();
+            const currentShowing = showingsResponse?.find(s => !isExpired(s.endDate));
+            setMovie(movieDetailResponse);
+            setShowing(currentShowing || null);
+            setGenreList(mapGenresToOptions(genresResponse) || []);
+        } catch (e) {
+            setMovie(null);
+        }
     };
 
-    if (!movie) return <div>Movie not found</div>;
+    const handleAddOrEditShowing = () => {
+        setShowingModalOpen(true);
+        if (showing) {
+            showingForm.setFieldsValue({
+                name: showing.name,
+                startDate: dayjs(showing.startDate),
+                endDate: dayjs(showing.endDate)
+            });
+        } else {
+            showingForm.resetFields();
+        }
+    };
+
+    const handleShowingOk = () => {
+        showingForm.validateFields().then(values => {
+            const newShowing = {
+                name: values.name,
+                startDate: values.startDate.format('YYYY-MM-DD'),
+                endDate: values.endDate.format('YYYY-MM-DD')
+            };
+            setShowing(newShowing);
+            setShowingModalOpen(false);
+            form.setFieldsValue({ movieShowing: newShowing });
+        });
+    };
+
+    const onFinish = async (values) => {
+        try {
+            // Prepare genres as array of {id}
+            const genres = values.genres.map(id => ({ id }));
+
+            // Prepare movie data
+            const movieData = {
+                ...values,
+                genres,
+                movieRelease: values.movieRelease.format('YYYY-MM-DD'),
+            };
+
+            // Update movie
+            await updateMovie(movieId, movieData);
+
+            // Update movie showing if exists
+            if (values.movieShowing && values.movieShowing.id) {
+                const showingData = {
+                    ...values.movieShowing,
+                    // Ensure dates are in correct format
+                    startDate: dayjs(values.movieShowing.startDate).format('YYYY-MM-DD'),
+                    endDate: dayjs(values.movieShowing.endDate).format('YYYY-MM-DD'),
+                };
+                await updateMovieShowing(values.movieShowing.id, showingData);
+            }
+
+            toast.success('Movie updated successfully!');
+            navigate(`/movies/${movieId}`);
+        } catch (error) {
+            toast.error('Failed to update movie or showing');
+        }
+    };
 
     return (
         <ConfigProvider theme={{
             components: {
-                Input: { activeBorderColor: '#9CEE69', hoverBorderColor: '#9CEE69' },
-                Button: { colorPrimary: "#9cee69", colorPrimaryHover: "#85D94F", colorText: "#fff", fontWeight: 600, colorPrimaryActive: "#85D94F" },
-                Select: { colorPrimary: "#9cee69", colorPrimaryHover: "#85D94F", colorPrimaryActive: "#85D94F" },
-                DatePicker: { colorPrimary: "#9cee69", colorPrimaryHover: "#85D94F", colorPrimaryActive: "#85D94F" }
+                Input: {
+                    activeBorderColor: '#9CEE69',
+                    hoverBorderColor: '#9CEE69',
+                    activeShadow: '0 0 0 1px #9CEE69'
+                },
+                Button: {
+                    colorPrimary: "#9cee69",
+                    colorPrimaryHover: "#85D94F",
+                    colorText: "#fff",
+                    fontWeight: 600,
+                    colorPrimaryActive: "#85D94F",
+                    primaryShadow: "0 0px 0 #9cee69",
+                },
+                Select: {
+                    colorPrimary: "#9cee69",
+                    colorPrimaryHover: "#85D94F",
+                    colorPrimaryActive: "#85D94F",
+                    colorPrimaryBorder: "#9CEE69",
+                    activeShadow: '0 0 0 1px #9CEE69',
+                    activeBorderColor: '#9CEE69',
+                    primaryShadow: "0 0px 0 #9cee69",
+                    optionSelectedBg: 'rgba(0,0,0,0.04)',
+                },
+                DatePicker: {
+                    colorPrimary: "#9cee69",
+                    colorPrimaryHover: "#85D94F",
+                    colorPrimaryActive: "#85D94F",
+                    activeShadow: '0 0 0 1px #9CEE69',
+                    primaryShadow: "0 0px 0 #9cee69",
+                }
             }
         }}>
-            <div style={{display: 'grid', gridTemplateColumns: '1.5fr 9fr 1.5fr'}}>
-                <div style={{ gridColumnStart: 2, marginTop: '100px', background: '#fff', padding: 32, borderRadius: 8 }}>
-                    <h2>Edit movie</h2>
-                    <Form form={form} layout="vertical" onFinish={onFinish}>
-                        {/* Same fields as AddMovie */}
-                        <Form.Item name="movieName" label="Name" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="movieDescription" label="Description" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="movieContent" label="Content" rules={[{ required: true }]}>
-                            <Input.TextArea rows={3} />
-                        </Form.Item>
-                        <Form.Item name="movieTrailer" label="Trailer (URL)">
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="genres" label="Genres" rules={[{ required: true }]}>
-                            <Select mode="multiple" options={genreOptions} placeholder="Choose genre..." />
-                        </Form.Item>
-                        <Form.Item name="movieRelease" label="Release Date" rules={[{ required: true }]}>
-                            <DatePicker style={{ width: '100%' }} />
-                        </Form.Item>
-                        <Form.Item name="moviePoster" label="Poster (URL)" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="movieNation" label="Nation" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="movieLength" label="Duration (min)" rules={[{ required: true, type: 'number', min: 1, message: 'Nhập số phút hợp lệ' }]}>
-                            <Input type="number" />
-                        </Form.Item>
-                        <Form.Item name="movieActors" label="Actors" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="movieDirector" label="Director" rules={[{ required: true }]}>
-                            <Input />
-                        </Form.Item>
-                        <Form.Item name="ageRating" label="Age Rating" rules={[{ required: true }]}>
-                            <Select options={ageRatingOptions} placeholder="Choose age rating..." />
-                        </Form.Item>
-                        <Form.Item>
-                            <Button type="primary" htmlType="submit">Save</Button>
-                        </Form.Item>
-                    </Form>
-                </div>
+            <div style={{ marginTop: '10px', background: '#fff', padding: 32, borderRadius: 8 }}>
+                <Button onClick={() => navigate(`/movies/${movieId}`)} style={{ marginBottom: 16, color: '#333' }}>Back</Button>
+                <h2>Edit movie</h2>
+                <Form form={form} layout="vertical" onFinish={onFinish}>
+                    {/* Same fields as AddMovie */}
+                    <Form.Item name="movieName" label="Name" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieDescription" label="Description" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieContent" label="Content" rules={[{ required: true }]}>
+                        <Input.TextArea rows={3} />
+                    </Form.Item>
+                    <Form.Item name="movieTrailer" label="Trailer (URL)">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="genres" label="Genres" rules={[{ required: true }]}>
+                        <Select mode="multiple" options={genreList} placeholder="Choose genre..." />
+                    </Form.Item>
+                    <Form.Item name="movieRelease" label="Release Date" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item name="moviePoster" label="Poster (URL)" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieBackground" label="Background (URL)" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieNation" label="Nation" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieLength" label="Duration (min)" rules={[{ required: true, type: 'number', min: 1, message: 'Nhập số phút hợp lệ' }]}>
+                        <InputNumber style={{ width: '100%' }} min={1} />
+                    </Form.Item>
+                    <Form.Item name="movieActors" label="Actors" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="movieDirector" label="Director" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="ageRating" label="Age Rating" rules={[{ required: true }]}>
+                        <Select options={ageRatingOptions} placeholder="Choose age rating..." />
+                    </Form.Item>
+                    <Form.Item label="Movie Showing" name="movieShowing">
+                        <div>
+                            <Button type='dashed' style={{ color: '#9CEE69', borderColor: '#9CEE69' }} onClick={handleAddOrEditShowing}>
+                                {showing ? "Edit Showing" : "Add Showing"}
+                            </Button>
+                            {showing && (
+                                <div style={{ marginTop: 16, cursor: 'pointer' }} onClick={handleAddOrEditShowing}>
+                                    <Card
+                                        size="small"
+                                        title={showing.name}
+                                        bordered={true}
+                                        style={{
+                                            background: "#f6ffed",
+                                            borderColor: "#b7eb8f",
+                                            minWidth: 200,
+                                            marginTop: 8
+                                        }}
+                                    >
+                                        <div>
+                                            <b>Start Date:</b> {showing.startDate}
+                                        </div>
+                                        <div>
+                                            <b>End Date:</b> {showing.endDate}
+                                        </div>
+                                    </Card>
+                                </div>
+                            )}
+                        </div>
+                    </Form.Item>
+                    <Form.Item>
+                        <Button type="primary" htmlType="submit">Save</Button>
+                    </Form.Item>
+                </Form>
             </div>
+            <Modal
+                title="Movie Showing"
+                open={showingModalOpen}
+                onOk={handleShowingOk}
+                onCancel={() => setShowingModalOpen(false)}
+                destroyOnClose
+                footer={
+                    <Flex justify="end" gap={8}>
+                        <Button style={{ color: '#b7b7b7' }} onClick={() => setShowingModalOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button type="primary" onClick={handleShowingOk}>
+                            Save
+                        </Button>
+                    </Flex>
+                }
+            >
+                <Form form={showingForm} layout="vertical">
+                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="startDate" label="Start Date" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+                    <Form.Item name="endDate" label="End Date" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </ConfigProvider>
     );
 }

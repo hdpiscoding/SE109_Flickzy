@@ -1,5 +1,17 @@
 import React, {useEffect, useState} from 'react';
-import {Flex, Tooltip, Button, Modal, ConfigProvider, Select, Carousel, Collapse, Divider, Pagination} from "antd";
+import {
+    Flex,
+    Tooltip,
+    Button,
+    Modal,
+    ConfigProvider,
+    Select,
+    Carousel,
+    Collapse,
+    Divider,
+    Pagination,
+    Empty, Typography
+} from "antd";
 import './Movie.css'
 import MovieTrailer from "./MovieTrailer";
 import DateCard from "./Card/DateCard";
@@ -9,8 +21,19 @@ import ReviewCard from "./Card/ReviewCard";
 import { AiFillStar } from "react-icons/ai";
 import MovieHorizontalCard from "./Card/MovieHorizontalCard";
 import ReviewInput from "./ReviewInput";
-import {getAllCinemaBrands, getMovieDetail} from "../../services/MovieService";
+import {
+    getAllCinemaBrands,
+    getAllMovies,
+    getMovieDetail,
+    getAllMovieReviews,
+    isUserReviewed,
+    createMovieReview,
+    getAllMovieSchedule
+} from "../../services/MovieService";
 import {useParams} from "react-router-dom";
+import {toast} from "react-toastify";
+import useAuthStore from "../../store/useAuthStore";
+
 
 export const vietnamProvinces = [
     { value: "Hà Nội", label: "Hà Nội" },
@@ -78,97 +101,6 @@ export const vietnamProvinces = [
     { value: "Yên Bái", label: "Yên Bái" }
 ];
 
-const sampleReviews = [
-    {
-        avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-        username: 'Nguyen Van A',
-        date: '2024-06-01',
-        rating: 4.5,
-        content: 'Great movie! The plot was engaging and the acting was impressive.',
-    },
-    {
-        avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-        username: 'Tran Thi B',
-        date: '2024-06-02',
-        rating: 3,
-        content: 'The movie was okay, but some scenes felt a bit slow.',
-    },
-    {
-        avatar: 'https://randomuser.me/api/portraits/men/65.jpg',
-        username: 'Le Minh C',
-        date: '2024-06-03',
-        rating: 5,
-        content: 'Absolutely loved it! Highly recommend for action lovers.',
-    },
-    {
-        avatar: 'https://randomuser.me/api/portraits/women/22.jpg',
-        username: 'Pham Quynh D',
-        date: '2024-06-04',
-        rating: 2.5,
-        content: 'Not my cup of tea. The story was predictable.',
-    },
-    {
-        avatar: 'https://randomuser.me/api/portraits/men/77.jpg',
-        username: 'Hoang Van E',
-        date: '2024-06-05',
-        rating: 4,
-        content: 'Good effects and music. Worth watching with friends.',
-    },
-];
-
-const sampleMovies = [
-    {
-        image: 'https://image.tmdb.org/t/p/w500/8UlWHLMpgZm9bx6QYh0NFoq67TZ.jpg',
-        title: 'Inception',
-        genres: [
-            { id: 1, name: 'Action' },
-            { id: 2, name: 'Sci-Fi' }
-        ],
-        rating: 4.8,
-        ageRating: '16+'
-    },
-    {
-        image: 'https://image.tmdb.org/t/p/w500/6KErczPBROQty7QoIsaa6wJYXZi.jpg',
-        title: 'Interstellar',
-        genres: [
-            { id: 2, name: 'Sci-Fi' },
-            { id: 3, name: 'Drama' }
-        ],
-        rating: 4.7,
-        ageRating: '13+'
-    },
-    {
-        image: 'https://image.tmdb.org/t/p/w500/9O1Iy9od7uGg1Q1h1d1t8A1tLQv.jpg',
-        title: 'The Dark Knight',
-        genres: [
-            { id: 1, name: 'Action' },
-            { id: 4, name: 'Crime' }
-        ],
-        rating: 4.9,
-        ageRating: 'P'
-    },
-    {
-        image: 'https://image.tmdb.org/t/p/w500/5KCVkau1HEl7ZzfPsKAPM0sMiKc.jpg',
-        title: 'Avengers: Endgame',
-        genres: [
-            { id: 1, name: 'Action' },
-            { id: 5, name: 'Adventure' }
-        ],
-        rating: 4.6,
-        ageRating: '13+'
-    },
-    {
-        image: 'https://image.tmdb.org/t/p/w500/6agKYU5IQFpuDyUYPu39w7UCRrJ.jpg',
-        title: 'Parasite',
-        genres: [
-            { id: 3, name: 'Drama' },
-            { id: 6, name: 'Thriller' }
-        ],
-        rating: 4.5,
-        ageRating: '16+'
-    }
-];
-
 const cinemas = [
     {id: "1", name: "CGV Vincom Đồng Khởi", address: "Tầng 5, Vincom Center, 171 Đ. Đồng Khởi, Bến Nghé, Quận 1, Thành phố Hồ Chí Minh", image: "https://homepage.momocdn.net/cinema/momo-amazone-s3-api-240829164527-638605467276820522.png", schedules: [{id: "1", scheduleStart: "09:00:00", scheduleEnd: "11:00:00"}, {id: "2", scheduleStart: "12:00:00", scheduleEnd: "14:00:00"}, {id: "3", scheduleStart: "15:00:00", scheduleEnd: "17:00:00"}, {id: "4", scheduleStart: "18:00:00", scheduleEnd: "20:00:00"}, {id: "5", scheduleStart: "21:00:00", scheduleEnd: "23:00:00"}, {id: "6", scheduleStart: "00:00:00", scheduleEnd: "02:00:00"}]},
     {id: "2", name: "CGV Vincom Thảo Điền", address: "Tầng 3, Vincom Center Thảo Điền, 161 Đ. Quốc Hương, Thảo Điền, Quận 2, Thành phố Hồ Chí Minh", image: "https://homepage.momocdn.net/cinema/momo-amazone-s3-api-240829164527-638605467276820522.png", schedules: [{id: "1", scheduleStart: "09:00:00", scheduleEnd: "11:00:00"}, {id: "2", scheduleStart: "12:00:00", scheduleEnd: "14:00:00"}, {id: "3", scheduleStart: "15:00:00", scheduleEnd: "17:00:00"}, {id: "4", scheduleStart: "18:00:00", scheduleEnd: "20:00:00"}, {id: "5", scheduleStart: "21:00:00", scheduleEnd: "23:00:00"}, {id: "6", scheduleStart: "00:00:00", scheduleEnd: "02:00:00"}]},
@@ -226,25 +158,65 @@ const ScheduleContainer = (props) => {
 
 
 export default function MovieDetail() {
+    const { user, isLoggedIn } = useAuthStore();
     const {movieId} = useParams();
     const [movie, setMovie] = useState({});
+    const [showingMovies, setShowingMovies] = useState([]);
     const [cinemaBrands, setCinemaBrands] = useState([]);
+    const [reviews, setReviews] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(5);
+    const [totalElements, setTotalElements] = useState(0);
+
+    useEffect(() => {
+        fetchReviews(currentPage, pageSize);
+    }, [currentPage, pageSize, movieId]);
+
+    const fetchReviews = async (page, limit) => {
+        try {
+            const res = await getAllMovieReviews(movieId, page, limit);
+            setReviews(res.data || []);
+            setTotalElements(res.totalElements || 0);
+        } catch (error) {
+            setReviews([]);
+            setTotalElements(0);
+        }
+    };
+
+
     useEffect(() => {
         fetchData()
     }, []);
 
+    useEffect(() => {
+        const fetchMovieDetail = async () => {
+            try {
+                const movieResponse = await getMovieDetail(movieId);
+                setMovie(movieResponse);
+            } catch (error) {
+                console.error("Error fetching movie detail:", error);
+            }
+        }
+        fetchMovieDetail();
+    }, [movieId]);
+
     const fetchData = async () => {
         try {
-            const response = await getMovieDetail(movieId);
-            setMovie(response);
-            setCinemaBrands(await getAllCinemaBrands());
-
+            const [cinemaBrandsResponse, showingMoviesResponse ] = await Promise.all([
+                getAllCinemaBrands(),
+                getAllMovies({page: 1, limit: 10, isShowing: true})]);
+            setCinemaBrands(cinemaBrandsResponse);
+            setShowingMovies(showingMoviesResponse.data);
+            if (isLoggedIn) {
+                const res = await isUserReviewed(movieId)
+                setIsUserReviewedState(res.isReviewed);
+            }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }
-    const [isUserReviewed, setIsUserReviewed] = useState(false);
-    const [canUserReview, setCanUserReview] = useState(false);
+    const [isUserReviewedState, setIsUserReviewedState] = useState(false);
+    const [canUserReviewState, setCanUserReviewState] = useState(true);
 
     const [openTrailer, setOpenTrailer] = useState(false);
     const handleViewTrailer = () => {
@@ -268,22 +240,72 @@ export default function MovieDetail() {
     };
 
     const [collapseItems, setCollapseItems] = useState([]);
+    // useEffect(() => {
+    //     setCollapseItems(cinemas?.map((item, index) => (
+    //         {key: index, label: (<CollapsePanel image={item.image} cinemaName={item.name} address={item.address}/>), children: (<ScheduleContainer schedules={item.schedules}/>)}
+    //     )))
+    // }, [])
+
+    const [scheduleData, setScheduleData] = useState([]);
+    const [loadingSchedule, setLoadingSchedule] = useState(false);
+
+    const fetchSchedules = async () => {
+        setLoadingSchedule(true);
+        try {
+            const filter = {
+                movieId,
+                province,
+                date: new Date(Date.now() + focusedDate * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+            };
+            if (focusedCinema !== -1 && cinemaBrands[focusedCinema]) {
+                filter.cinemaBrandId = cinemaBrands[focusedCinema].id;
+            }
+            const res = await getAllMovieSchedule(filter);
+            setScheduleData(res || []);
+        } catch (e) {
+            setScheduleData([]);
+        }
+        setLoadingSchedule(false);
+    };
+
     useEffect(() => {
-        setCollapseItems(cinemas?.map((item, index) => (
-            {key: index, label: (<CollapsePanel image={item.image} cinemaName={item.name} address={item.address}/>), children: (<ScheduleContainer schedules={item.schedules}/>)}
-        )))
-    }, [])
+        fetchSchedules();
+    }, [movieId, province, focusedDate, focusedCinema]);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const pageSize = 5; // Number of reviews per page
+    // Build collapse items from scheduleData
+    useEffect(() => {
+        const items = [];
+        scheduleData.forEach((brand) => {
+            brand.cinemas.forEach((cinema, idx) => {
+                items.push({
+                    key: `${brand.brandName}-${cinema.cinemaId}`,
+                    label: (
+                        <CollapsePanel
+                            image={brand.avatar}
+                            cinemaName={cinema.cinemaName}
+                            address={cinema.cinemaAddress}
+                        />
+                    ),
+                    children: (
+                        <ScheduleContainer schedules={cinema.schedules} />
+                    )
+                });
+            });
+        });
+        setCollapseItems(items);
+    }, [scheduleData]);
 
-    const paginatedReviews = sampleReviews.slice(
-        (currentPage - 1) * pageSize,
-        currentPage * pageSize
-    );
-
-    const handleRating = ({ rating, content }) => {
-        alert(rating + content);
+    const handleRating = async ({ rating, content }) => {
+        try {
+            await createMovieReview(movieId, { star: rating, content });
+            // Refresh reviews and set isUserReviewedState to true
+            await fetchReviews(currentPage, pageSize);
+            setIsUserReviewedState(true);
+            toast.success('Rating submitted successfully!');
+        } catch (error) {
+            // Optionally show an error message
+            console.error("Error submitting review:", error);
+        }
     }
 
     return (
@@ -390,7 +412,7 @@ export default function MovieDetail() {
                             <Flex vertical style={{gridColumnStart: 1}} gap={10}>
                                 <h3 style={{color: '#333'}}>Lịch chiếu: {movie.movieName}</h3>
 
-                                <Select options={vietnamProvinces} value={province} onChange={handleProvinceChange} style={{width: "fit-content"}}></Select>
+                                <Select showSearch options={vietnamProvinces} value={province} onChange={handleProvinceChange} style={{width: "fit-content"}}></Select>
 
                                 <div style={{ width: "750px", marginTop: '10px', marginBottom: '10px'}}>
                                     <Carousel className="my-carousel" arrows={true} dots={false} slidesToShow={10} initialSlide={0}>
@@ -409,12 +431,19 @@ export default function MovieDetail() {
                                     </div>
                                     {cinemaBrands?.map((cinema, index) => (
                                         <div key={index} onClick={() => handleCinemaChange(index)}>
-                                            <CinemaCard cinemaIcon={cinema.avatar} cinemaName={cinema.brandName} isFocus={focusedCinema === index}></CinemaCard>
+                                            <CinemaCard id={cinema.id} cinemaIcon={cinema.avatar} cinemaName={cinema.brandName} isFocus={focusedCinema === index}></CinemaCard>
                                         </div>
                                     ))}
                                 </Flex>
 
-                                <Collapse accordion items={collapseItems} expandIconPosition='end'/>
+                                {scheduleData && scheduleData.length > 0
+                                    ?
+                                    <Collapse accordion items={collapseItems} expandIconPosition='end'/>
+                                    :
+                                    <Empty description={"Không có lịch chiếu"}>
+                                        <Typography.Text style={{color: '#333', fontSize: '16px'}}></Typography.Text>
+                                    </Empty>}
+
 
                                 <Divider style={{backgroundColor: '#d6d1d4'}}/>
 
@@ -425,32 +454,38 @@ export default function MovieDetail() {
 
                                 <Divider style={{backgroundColor: '#d6d1d4'}}/>
 
-                                <Flex vertical gap={10}>
+                                <Flex vertical gap={10} style={{marginBottom: '50px', marginTop: '10px'}}>
                                     <h3 style={{color: '#333'}}>Đánh giá từ người xem</h3>
 
-                                    <Flex align='center' gap={10}>
-                                        <AiFillStar style={{height: '50px', width: '50px', color: '#fadb14'}}/>
+                                    {reviews.length > 0
+                                        ?
                                         <div>
-                                            <span style={{fontSize: '40px', fontWeight: 'bold', color: '#333'}}>{movie.movieRating ?? "0.0"}</span>
-                                            <span style={{fontSize: '18px', color: '#333'}}>/5.0    ({sampleReviews.length ?? "0"} đánh giá)</span>
+                                            <Flex align='center' gap={10}>
+                                                <AiFillStar style={{height: '50px', width: '50px', color: '#fadb14'}}/>
+                                                <div>
+                                                    <span style={{fontSize: '40px', fontWeight: 'bold', color: '#333'}}>{parseFloat(movie.movieRating).toFixed(1) ?? "0.0"}</span>
+                                                    <span style={{fontSize: '18px', color: '#333'}}>&nbsp;/5.0 ({reviews.length ?? "0"} đánh giá)</span>
+                                                </div>
+                                            </Flex>
+
+                                            {reviews?.map((review, index) => (
+                                                <ReviewCard key={index} avatar={review.user.avatar} content={review.content} username={review.user.fullname ?? review.user.email} date={review.date} rating={review.star}/>
+                                            ))}
+
+                                            <Flex style={{width: '100%', marginBottom: '20px'}} align="center">
+                                                <Pagination
+                                                    current={currentPage}
+                                                    pageSize={pageSize}
+                                                    total={totalElements}
+                                                    onChange={setCurrentPage}
+                                                    style={{ marginTop: 16 }}
+                                                />
+                                            </Flex>
                                         </div>
-                                    </Flex>
+                                        :
+                                        <Empty description={<Typography.Text>No reviews</Typography.Text>}/>}
 
-                                    {paginatedReviews?.map((review, index) => (
-                                        <ReviewCard key={index} avatar={review.avatar} content={review.content} username={review.username} date={review.date} rating={review.rating}/>
-                                    ))}
-
-                                    <Flex style={{width: '100%', marginBottom: '20px'}} align="center">
-                                        <Pagination
-                                            current={currentPage}
-                                            pageSize={pageSize}
-                                            total={sampleReviews.length}
-                                            onChange={setCurrentPage}
-                                            style={{ marginTop: 16 }}
-                                        />
-                                    </Flex>
-
-                                    {isUserReviewed && canUserReview ? <ReviewInput onSubmit={handleRating} /> : <div/>}
+                                    {!isUserReviewedState && canUserReviewState && isLoggedIn ? <ReviewInput onSubmit={handleRating} /> : <div/>}
 
                                 </Flex>
                             </Flex>
@@ -458,9 +493,9 @@ export default function MovieDetail() {
                             <div style={{ position: 'sticky', top: 100, alignSelf: 'start', gridColumnStart: 3}}>
                                 <Flex vertical gap={10}>
                                     <h3 style={{color: '#333'}}>Phim đang chiếu</h3>
-                                    {sampleMovies?.map((item, index) => (
+                                    {showingMovies?.map((item, index) => (
                                         <div>
-                                            <MovieHorizontalCard key={index} image={item.image} title={item.title} genres={genresToString(item.genres)} rating={item.rating} ageRating={item.ageRating}/>
+                                            <MovieHorizontalCard key={index} image={item.moviePoster} title={item.movieName} genres={genresToString(item.genres)} rating={item.movieRating} ageRating={item.ageRating} id={item.id}/>
                                             <Divider style={{backgroundColor: '#d6d1d4'}}/>
                                         </div>
                                     ))}

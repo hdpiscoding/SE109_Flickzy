@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -42,5 +44,21 @@ public class ReviewController extends BaseController {
     @GetMapping("/{movieId}")
     public ResponseEntity<Object> getAllReviewsByMovie(@PathVariable UUID movieId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int limit) {
         return buildResponse(reviewService.getAllReviewsByMovie(movieId, page, limit), HttpStatus.OK, "Reviews retrieved successfully");
+    }
+
+    @GetMapping("/me/{movieId}/is-reviewed")
+    public ResponseEntity<Object> isUserReviewed(@RequestHeader("Authorization") String authHeader, @PathVariable UUID movieId) {
+        UUID userId = jwtService.extractUserId(authHeader.substring(7));
+        Map<String, Boolean> data = new HashMap<>();
+        data.put("isReviewed", reviewService.isUserReviewed(userId, movieId));
+        return buildResponse(data, HttpStatus.OK, "User review status retrieved successfully");
+    }
+
+    @GetMapping("/me/{movieId}/can-review")
+    public ResponseEntity<Object> canUserReview(@RequestHeader("Authorization") String authHeader, @PathVariable UUID movieId) {
+        UUID userId = jwtService.extractUserId(authHeader.substring(7));
+        Map<String, Boolean> data = new HashMap<>();
+        data.put("canReview", reviewService.canUserReview(userId, movieId));
+        return buildResponse(data, HttpStatus.OK, "User review permission retrieved successfully");
     }
 }

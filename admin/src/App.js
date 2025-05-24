@@ -27,6 +27,8 @@ import {
 } from "antd";
 import { useNavigate } from "react-router";
 import { Outlet } from "react-router";
+import {toast} from "react-toastify";
+import useAuthStore from "./store/useAuthStore";
 const { Header, Content, Footer, Sider } = Layout;
 
 const items = [
@@ -59,9 +61,10 @@ const items = [
 
 const menuProps = [
   {
-    key: 2,
+    key: 'signout',
     label: "Đăng xuất",
     icon: React.createElement(LogoutOutlined),
+    danger: true
   },
 ];
 
@@ -71,11 +74,22 @@ const App = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+  const {user, logout} = useAuthStore();
+
+  const handleMenuClick = ({ key }) => {
+    if (key === "signout") {
+      logout();
+      toast.success("Log out successfully!");
+      nav("/login");
+      // Add your sign out logic here
+    }
+  };
+
   return (
     <ConfigProvider
       theme={{
         token: {
-          colorPrimary: "", // Green color
+          colorPrimary: "#85D94F", // Green color
         },
       }}
     >
@@ -152,14 +166,14 @@ const App = () => {
                   fontWeight: "bold",
                 }}
               >
-                Khách hàng
+                Admin
               </span>
-              <Dropdown overlay={<Menu items={menuProps} />}>
+              <Dropdown overlay={<Menu onClick={handleMenuClick} items={menuProps} />}>
                 <div>
                   <Button>
                     <Space>
                       <Avatar size="small" icon={<UserOutlined />} />
-                      {isShowLogo && <span>Nguyễn Văn A</span>}
+                      {isShowLogo && <span>{user.email}</span>}
                       <DownOutlined />
                     </Space>
                   </Button>
