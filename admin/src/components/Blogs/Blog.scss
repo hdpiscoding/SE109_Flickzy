@@ -1,0 +1,38 @@
+.blog-management-page {
+    padding   : 24px;
+    background: #fff;
+    min-height: 100vh;
+
+    .blog-header {
+        display        : flex;
+        justify-content: space-between;
+        align-items    : center;
+        margin-bottom  : 24px;
+
+        h2 {
+            margin     : 0;
+            font-weight: 600;
+            font-size  : 1.5rem;
+        }
+    }
+
+    .blog-table {
+        .ant-table-thead>tr>th {
+            background : #fafafa;
+            font-weight: 600;
+        }
+
+        .ant-table-tbody>tr>td {
+            vertical-align: middle;
+        }
+    }
+
+    .blog-cover-img {
+        width        : 60px;
+        height       : 40px;
+        object-fit   : cover;
+        border-radius: 6px;
+        border       : 1px solid #eee;
+        box-shadow   : 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+}

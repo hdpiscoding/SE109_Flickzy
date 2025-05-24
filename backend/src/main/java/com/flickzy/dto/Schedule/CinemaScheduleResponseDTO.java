@@ -31,5 +31,8 @@ public class CinemaScheduleResponseDTO {
         private UUID roomId;
         private String roomType;
         private String roomName;
+        private String typeName;
+        private String typeId;
+
     }
 }

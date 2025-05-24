@@ -42,24 +42,39 @@ export default function Latest() {
         </Row>
       </div>
       <hr />
-
       <div className="content-section">
         <Row gutter={[16, 16]} justify="center" wrap>
-          <Col lg={16} md={16} xs={24} sm={24} className="latest-articles">
-            <h4>Bài viết mới nhất</h4>
-            {blogList.slice(3).map((blog, index) => (
-              <SmallBlogCard key={index + 3} blog={blog} />
-            ))}
-            <hr />
-            <button className="load-more">Xem thêm</button>
-          </Col>
-
-          <Col lg={8} md={8} xs={24} sm={24} className="most-viewed">
-            <h4>Xem nhiều nhất</h4>
-            {topBlogList.map((blog, index) => (
-              <TopBlogCard key={index} blog={blog} />
-            ))}
-          </Col>
+          {blogList.length > 3 && (
+            <Col
+              lg={topBlogList.length > 0 ? 16 : 24}
+              md={topBlogList.length > 0 ? 16 : 24}
+              xs={24}
+              sm={24}>
+              <h2>Bài viết mới nhất</h2>
+              {blogList.slice(3).map((blog, index) => (
+                <React.Fragment key={index + 3}>
+                  <SmallBlogCard blog={blog} />
+                  <hr />
+                </React.Fragment>
+              ))}
+              <button className="load-more">Xem thêm</button>
+            </Col>
+          )}
+          {topBlogList.length > 0 && (
+            <Col
+              lg={blogList.length > 3 ? 8 : 24}
+              md={blogList.length > 3 ? 8 : 24}
+              xs={24}
+              sm={24}>
+              <h2>Xem nhiều nhất</h2>
+              {topBlogList.map((blog, index) => (
+                <React.Fragment key={index}>
+                  <TopBlogCard blog={blog} />
+                  {index < topBlogList.length - 1 && <hr />}
+                </React.Fragment>
+              ))}
+            </Col>
+          )}
         </Row>
       </div>
     </div>

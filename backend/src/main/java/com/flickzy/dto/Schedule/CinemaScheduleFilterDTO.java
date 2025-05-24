@@ -18,4 +18,7 @@ public class CinemaScheduleFilterDTO {
 
     @NotNull(message = "Date is required")
     private LocalDate date;
+
+    private UUID typeId;
+
 }

@@ -119,7 +119,7 @@ export default function Snack({
               items.map((item) => (
                 <div className="item" key={item.id}>
                   <img
-                    src={`/images/${item.image}`}
+                    src={item.image}
                     alt={item.name}
                     className="item-image"
                   />

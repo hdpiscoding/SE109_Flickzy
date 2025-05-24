@@ -1,6 +1,7 @@
 package com.flickzy.service.implemetations;
 
 import com.flickzy.dto.BookingRequestDTO;
+import com.flickzy.dto.BookingSeatResponseDTO;
 import com.flickzy.dto.BookingResponseDTO;
 import com.flickzy.entity.Booking;
 import com.flickzy.entity.Schedule;
@@ -80,8 +81,7 @@ public class BookingServiceImpl implements BookingService {
 
         // Check if seat is already booked
         long existingBookings = bookingRepository.count(
-                BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId())
-        );
+                BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId()));
         if (existingBookings > 0) {
             logger.error("Seat is already booked: seatId={}", seat.getSeatId());
             throw new IllegalStateException("Seat is already booked");
@@ -114,5 +114,23 @@ public class BookingServiceImpl implements BookingService {
         Booking savedBooking = bookingRepository.save(booking);
         logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
         return bookingMapper.toDto(savedBooking);
+    }
+    // Helper method to get bookings by scheduleId
+    public List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId) {
+        logger.info("Fetching bookings for scheduleId={}", scheduleId);
+        List<Booking> bookings = bookingRepository.findAll(
+                BookingSpecifications.byScheduleId(scheduleId)
+        );
+        return bookingMapper.toDtoList(bookings);
+    }
+
+    @Override
+    public List<BookingSeatResponseDTO> getBookedSeatIdsByScheduleId(UUID scheduleId) {
+        // Lấy danh sách booking theo scheduleId
+        List<BookingResponseDTO> bookings = getBookingByScheduleId(scheduleId);
+        // Trả về danh sách seatId đã được đặt
+        return bookings.stream()
+            .map(b -> new BookingSeatResponseDTO(b.getSeat().getSeatId()))
+            .toList();
     }
 }

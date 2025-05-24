@@ -4,17 +4,22 @@ import "./DetailBlog.scss";
 import SmallBlogCard from "./bloc_cards/SmallBlogCard";
 import { Col, Image, Row } from "antd";
 import { useParams } from "react-router-dom";
-import { getABlog } from "../../services/BlogService";
+import { getABlog, getAllBlog } from "../../services/BlogService"; // thêm getAllBlog
 
 export default function DetailBlog() {
   const [blog, setBlog] = React.useState({});
+  const [relatedBlogs, setRelatedBlogs] = React.useState([]); // state cho bài viết liên quan
   let blogId = useParams().id;
   React.useEffect(() => {
-    // Fetch genres
     getABlog(blogId)
       .then((data) => setBlog(data))
       .catch((err) => console.error("Error fetching genres:", err));
-  }, []);
+    getAllBlog({ top: 5 })
+      .then((data) =>
+        setRelatedBlogs(Array.isArray(data.data) ? data.data : [])
+      )
+      .catch((err) => console.error("Error fetching related blogs:", err));
+  }, [blogId]);
   return (
     <div className="container">
       <div className="detail-blog">
@@ -35,47 +40,23 @@ export default function DetailBlog() {
         </div>
         <Row gutter={24}>
           {" "}
-          <Col xs={24} sm={16} md={18}>
+          <Col xs={24} sm={16} md={16}>
             <ReactMarkdown>
               {blog.content ? blog.content : "Đang tải nội dung..."}
             </ReactMarkdown>
+          </Col>
+          <Col xs={24} sm={8} md={8} className="table-of-contents">
             <div>
-              <div>Bài viết có liên quan</div>
-              <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard /> <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard /> <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard />
+              <h2>Bài viết có liên quan</h2>
+              {relatedBlogs.length === 0 ? (
+                <div>Đang tải...</div>
+              ) : (
+                relatedBlogs.map((item, idx) => (
+                  <SmallBlogCard key={item.id || idx} blog={item} />
+                ))
+              )}
             </div>
             <button className="load-more">Xem thêm</button>
-          </Col>
-          <Col xs={24} sm={8} md={6} className="table-of-contents">
-            <h3>Mục lục</h3>
-            <ul>
-              <li>
-                <a href="#section1">
-                  1. Cuốn theo chiều gió - Gone With the Wind (1939)
-                </a>
-              </li>
-              <li>
-                <a href="#section2">
-                  2. Quá Nhanh Quá Nguy Hiểm - Fast & Furious 7 (2015)
-                </a>
-              </li>
-              <li>
-                <a href="#section3">3. Thế thân - Avatar (2009)</a>
-              </li>
-              <li>
-                <a href="#section4">4. Titanic (1997)</a>
-              </li>
-              <li>
-                <a href="#section5">
-                  5. Avengers: Hồi kết - Avengers: Endgame (2019)
-                </a>
-              </li>
-            </ul>
           </Col>
         </Row>
       </div>

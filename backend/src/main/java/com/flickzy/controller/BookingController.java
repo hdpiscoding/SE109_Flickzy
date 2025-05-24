@@ -3,6 +3,7 @@ package com.flickzy.controller;
 import com.flickzy.base.BaseController;
 import com.flickzy.dto.BookingRequestDTO;
 import com.flickzy.dto.BookingResponseDTO;
+import com.flickzy.dto.BookingSeatResponseDTO;
 import com.flickzy.entity.Users;
 import com.flickzy.repository.UserRepository;
 import com.flickzy.service.interfaces.BookingService;
@@ -34,7 +35,11 @@ public class BookingController extends BaseController {
         List<BookingResponseDTO> bookings = bookingService.getBookingHistory(userId);
         return buildResponse(bookings, HttpStatus.OK, "Booking history retrieved successfully");
     }
-
+@GetMapping("/booking-by-schedule/{id}")
+public ResponseEntity<Object> getBookedSeatIdsByScheduleId(@PathVariable UUID id) {
+    List<BookingSeatResponseDTO> seatIds = bookingService.getBookedSeatIdsByScheduleId(id);
+    return buildResponse(seatIds, HttpStatus.OK, "Booked seatIds retrieved successfully");
+}
     @PostMapping("/booking")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     public ResponseEntity<Object> addBooking(

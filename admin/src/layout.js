@@ -7,6 +7,7 @@ import Schedules from "./components/Schedules/Schedules";
 import NewRoom from "./components/Rooms/NewRoom";
 import NewRoom2 from "./components/Rooms/NewRoom2";
 import App from "./App";
+import Blog from "./components/Blogs/Blog";
 
 const Layout = () => {
   return (
@@ -18,6 +19,7 @@ const Layout = () => {
           <Route path="movies" element={<Movies />} />
           <Route path="schedules" element={<Schedules />} />
           <Route path="rooms" element={<Rooms />} />
+          <Route path="blogs" element={<Blog />} />
           <Route path="new-room" element={<NewRoom />} />
           <Route path="new-room2" element={<NewRoom2 />} />
 

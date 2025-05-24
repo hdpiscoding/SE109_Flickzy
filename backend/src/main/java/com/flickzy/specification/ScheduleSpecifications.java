@@ -1,9 +1,9 @@
 package com.flickzy.specification;
 
 import com.flickzy.entity.Cinemas;
-import com.flickzy.entity.Movies;
 import com.flickzy.entity.Room;
 import com.flickzy.entity.Schedule;
+import com.flickzy.entity.ScheduleType;
 import jakarta.persistence.criteria.Join;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ScheduleSpecifications {
 
-    public static Specification<Schedule> byCinemaAndDate(String cinemaId, LocalDate date) {
+    public static Specification<Schedule> byCinemaAndDate(String cinemaId, LocalDate date, UUID scheduleTypeId) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             Join<Schedule, Room> roomJoin = root.join("room");
@@ -22,7 +22,18 @@ public class ScheduleSpecifications {
             predicates = criteriaBuilder.and(predicates, criteriaBuilder.equal(root.get("scheduleDate"), date));
 
             if (!"All".equals(cinemaId)) {
-                predicates = criteriaBuilder.and(predicates, criteriaBuilder.equal(cinemaJoin.get("id"), UUID.fromString(cinemaId)));
+                predicates = criteriaBuilder.and(
+                        predicates,
+                        criteriaBuilder.equal(cinemaJoin.get("id"), UUID.fromString(cinemaId))
+                );
+            }
+
+            if (scheduleTypeId != null) {
+                Join<Schedule, ScheduleType> typeJoin = root.join("type"); // chỉ join khi cần
+                predicates = criteriaBuilder.and(
+                        predicates,
+                        criteriaBuilder.equal(typeJoin.get("id"), scheduleTypeId)
+                );
             }
 
             return predicates;
@@ -30,16 +41,16 @@ public class ScheduleSpecifications {
     }
 
     public static Specification<Schedule> byMovieAndDateAndBrandAndProvince(
-            UUID movieId, LocalDate date, UUID cinemaBrandId, String province) {
+            UUID movieId, LocalDate date, UUID cinemaBrandId, String province, UUID scheduleTypeId) {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             var predicates = criteriaBuilder.conjunction();
 
             // Filter by movieId
             predicates = criteriaBuilder.and(
-                    predicates,
-                    criteriaBuilder.equal(root.get("movie").get("id"), movieId)
-            );
+                predicates,
+                criteriaBuilder.equal(root.get("movie").get("id"), movieId)
+        );
 
             // Filter by date
             predicates = criteriaBuilder.and(
@@ -63,6 +74,15 @@ public class ScheduleSpecifications {
                 predicates = criteriaBuilder.and(
                         predicates,
                         criteriaBuilder.equal(root.get("room").get("cinema").get("province"), province)
+                );
+            }
+
+            // Filter by scheduleTypeId (if provided)
+            if (scheduleTypeId != null) {
+                Join<Schedule, ScheduleType> typeJoin = root.join("type"); // chỉ join khi cần
+                predicates = criteriaBuilder.and(
+                        predicates,
+                        criteriaBuilder.equal(typeJoin.get("id"), scheduleTypeId)
                 );
             }
 

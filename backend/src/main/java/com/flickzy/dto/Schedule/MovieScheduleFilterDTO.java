@@ -22,4 +22,7 @@ public class MovieScheduleFilterDTO {
     private UUID cinemaBrandId;
 
     private String province;
+
+    private UUID typeId;
+
 }

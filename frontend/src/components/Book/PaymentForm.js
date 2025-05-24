@@ -38,6 +38,12 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
     "16+": "#FF8C00",
     "18+": "#FF3B30",
   };
+  const handelOpenMap = () => {
+    const address = ticketData.cinema.cinemaAddress;
+    const encodedAddress = encodeURIComponent(address);
+    const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+    window.open(url, "_blank");
+  };
   return (
     <div
       onClick={handleClose} // Gọi handleClose khi nhấp vào nền
@@ -86,7 +92,7 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
                 </span>{" "}
                 {ticketData.movieInfo.movieName}
               </div>
-              <div>2D Phụ đề</div>
+              <div>{ticketData.scheduleInfo.typeName}</div>
             </div>
 
             <div
@@ -110,8 +116,9 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
                   {" "}
                   {ticketData.cinema.cinemaAddress}
                   <span
+                    onClick={handelOpenMap}
                     style={{
-                      color: "#4B8C22",
+                      color: "#9cee69",
                       cursor: "pointer",
                       textDecoration: "underline",
                       marginLeft: 8,

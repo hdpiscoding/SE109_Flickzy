@@ -1,123 +1,127 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../OtherComponents/Button";
 import { IoArrowBack } from "react-icons/io5";
-import "./FloatingBooking.css"; // Import CSS for styling
+import "./FloatingBooking.css";
 import Snack from "./Snack";
 import PaymentForm from "./PaymentForm";
-import { Spin } from "antd"; // Import Spin from Ant Design
+import { Spin } from "antd";
 import { useGlobalContext } from "../../Layout";
-import { getARoom, getAllSeatsByRoomId } from "../../services/BookingService";
-import { calc } from "antd/es/theme/internal";
+import {
+  getARoom,
+  getAllSeatsByRoomId,
+  getUnavaiSeat,
+} from "../../services/BookingService";
+
 export default function PlaceSeatComponent() {
   const { handleBack, handleNav, handleClose, step1, ticketData } =
     useGlobalContext();
-  const [brandId, setBrandId] = useState(ticketData.brandId);
-  const [roomId, setRoomId] = useState(ticketData.roomId);
-  const [scheduleInfo, setScheduleInfo] = useState({
-    scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
-    scheduleDate: "2025-05-23",
-    scheduleStart: "17:00:00",
-    scheduleEnd: "19:00:00",
-    roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
-    roomType: "Phòng chiếu IMAX with Laser",
-  });
+  const [brandId] = useState(ticketData.brandId);
+  const [scheduleInfo, setScheduleInfo] = useState(ticketData.scheduleInfo);
   const moviesInfo = ticketData.movieInfo;
   const [snacks, setSnacks] = useState([]);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị modal
-  const [isPayFormVisible, setIsPayFormVisible] = useState(false); // Trạng thái hiển thị form thanh toán
-  const [screenLength, setScreenLength] = useState(0.7);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPayFormVisible, setIsPayFormVisible] = useState(false);
+  const [screenLength] = useState(0.7);
   const [seat, setSeat] = useState([]);
   const [seatType, setSeatType] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
-  const booking = [1, 2, 3];
+  const [booking, setBooking] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const ageRatingColors = {
     P: "#4CAF50",
     "13+": "#FFA500",
     "16+": "#FF8C00",
     "18+": "#FF3B30",
   };
+
   useEffect(() => {
-    //Api get a room
-    const fetchRoomData = async () => {
-      const response = await getARoom(scheduleInfo.roomId);
-      setHeight(response.data.height);
-      setWidth(response.data.width);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch all data in parallel
+        const [unavailRes, roomRes, seatRes] = await Promise.all([
+          getUnavaiSeat(scheduleInfo.scheduleId),
+          getARoom(scheduleInfo.roomId),
+          getAllSeatsByRoomId(scheduleInfo.roomId),
+        ]);
+
+        // Unavailable seats
+        const unavailableSeats = unavailRes.data.map((seat) => seat.seatId);
+        setBooking(unavailableSeats);
+
+        // Room info
+        setHeight(roomRes.data.height);
+        setWidth(roomRes.data.width);
+
+        // Seat info
+        setSeat(seatRes.data);
+
+        // Format schedule info
+        const formatTime = (timeStr) => {
+          if (!timeStr) return "";
+          const [hour, minute] = timeStr.split(":");
+          return `${hour}:${minute}`;
+        };
+        const formatDate = (dateStr) => {
+          if (!dateStr) return "";
+          const dateObj = new Date(dateStr);
+          const today = new Date();
+          const isToday =
+            dateObj.getDate() === today.getDate() &&
+            dateObj.getMonth() === today.getMonth() &&
+            dateObj.getFullYear() === today.getFullYear();
+          const dayNames = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ];
+          const dayName = isToday ? "Today" : dayNames[dateObj.getDay()];
+          const day = String(dateObj.getDate()).padStart(2, "0");
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          return `${dayName}, ${day}/${month}`;
+        };
+        setScheduleInfo({
+          scheduleId: scheduleInfo.scheduleId,
+          scheduleDate: formatDate(scheduleInfo.scheduleDate),
+          scheduleStart: formatTime(scheduleInfo.scheduleStart),
+          scheduleEnd: formatTime(scheduleInfo.scheduleEnd),
+          roomId: scheduleInfo.roomId,
+          roomType: scheduleInfo.roomType,
+        });
+      } catch (err) {
+        // Optionally handle error
+      }
+      setIsLoading(false);
     };
-    const fetchSeatData = async () => {
-      const response = await getAllSeatsByRoomId(scheduleInfo.roomId);
-      setSeat(response.data);
-    };
-    const formatData = () => {
-      // Format start and end time as HH:mm
-      const formatTime = (timeStr) => {
-        if (!timeStr) return "";
-        const [hour, minute] = timeStr.split(":");
-        return `${hour}:${minute}`;
-      };
-
-      // Format date as "Today, dd/MM" or "Saturday, dd/MM"
-      const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        const dateObj = new Date(dateStr);
-        const today = new Date();
-        const isToday =
-          dateObj.getDate() === today.getDate() &&
-          dateObj.getMonth() === today.getMonth() &&
-          dateObj.getFullYear() === today.getFullYear();
-
-        const dayNames = [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ];
-        const dayName = isToday ? "Today" : dayNames[dateObj.getDay()];
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        return `${dayName}, ${day}/${month}`;
-      };
-
-      const formatSchedule = {
-        scheduleId: scheduleInfo.scheduleId,
-        scheduleDate: formatDate(scheduleInfo.scheduleDate),
-        scheduleStart: formatTime(scheduleInfo.scheduleStart),
-        scheduleEnd: formatTime(scheduleInfo.scheduleEnd),
-        roomId: scheduleInfo.roomId,
-        roomType: scheduleInfo.roomType,
-      };
-      setScheduleInfo(formatSchedule);
-    };
-    formatData();
-
-    fetchRoomData();
-    fetchSeatData();
+    fetchData();
+    // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    const getAllSeatStyle = () => {
-      const uniqueSeatTypes = [];
-      seat.forEach((seatItem) => {
-        if (
-          seatItem.seatTypeId &&
-          !uniqueSeatTypes.some(
-            (type) => type.seatTypeId === seatItem.seatTypeId.seatTypeId
-          )
-        ) {
-          uniqueSeatTypes.push(seatItem.seatTypeId);
-        }
-      });
 
-      setSeatType(uniqueSeatTypes);
-    };
-    getAllSeatStyle();
-    setIsLoading(false);
+  useEffect(() => {
+    // Only run when seat data is available
+    if (!seat.length) return;
+    const uniqueSeatTypes = [];
+    seat.forEach((seatItem) => {
+      if (
+        seatItem.seatTypeId &&
+        !uniqueSeatTypes.some(
+          (type) => type.seatTypeId === seatItem.seatTypeId.seatTypeId
+        )
+      ) {
+        uniqueSeatTypes.push(seatItem.seatTypeId);
+      }
+    });
+    setSeatType(uniqueSeatTypes);
   }, [seat]);
+
   useEffect(() => {
     const total = selectedSeats.reduce(
       (sum, seat) => sum + (seat.seatTypeId.price || 0),
@@ -128,34 +132,20 @@ export default function PlaceSeatComponent() {
 
   const handleBuyNowClick = () => {
     if (selectedSeats.length === 0) {
-      alert("Please select at least one seat"); // Thông báo nếu không có ghế nào được chọn
+      alert("Please select at least one seat");
       return;
     }
-    setIsModalVisible(true); // Hiển thị modal
-  };
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false); // Đóng modal
-  };
-  // hàm gọi  mở giao diện để thanh toán
-  const handlePay = () => {
-    setIsPayFormVisible(true); // Hiển thị form thanh toán
-  };
-
-  const handleClosePayForm = () => {
-    setIsPayFormVisible(false); // Đóng form thanh toán
+    setIsModalVisible(true);
   };
 
   const getSeatStyle = (seatItem) => {
     const type = seatItem.seatTypeId;
-    const isUnavailable = booking.includes(seatItem.seat_id);
+    const isUnavailable = booking.includes(seatItem.seatId);
     const isSelected = selectedSeats.includes(seatItem);
-
     return {
       gridRow: `${seatItem.row} / span ${type?.height || 1}`,
       gridColumn: `${seatItem.columnn} / span ${type?.width || 1}`,
       backgroundColor: isUnavailable ? "gray" : type?.color || "gray",
-
       borderRadius: "4px",
       display: "flex",
       alignItems: "center",
@@ -167,105 +157,107 @@ export default function PlaceSeatComponent() {
 
   const handleSeatClick = (seatItem) => {
     if (booking.includes(seatItem.seat_id)) {
-      return; // Không làm gì nếu ghế không khả dụng
+      return;
     }
-
     const isSelected = selectedSeats.includes(seatItem);
     if (isSelected) {
-      setSelectedSeats((prev) => prev.filter((s) => s !== seatItem)); // Bỏ chọn ghế
+      setSelectedSeats((prev) => prev.filter((s) => s !== seatItem));
     } else {
       if (selectedSeats.length >= 8) {
-        alert("Maxiumum 8 seats can be selected"); // Thông báo nếu đã chọn đủ số ghế
+        alert("Maxiumum 8 seats can be selected");
       } else {
         setSelectedSeats((prev) => [...prev, seatItem]);
-      } // Chọn ghế
+      }
     }
   };
+
+  // ...existing code...
+  // ...existing code...
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh", // Chiều cao toàn màn hình
+        height: "100vh",
+        position: "relative",
       }}
     >
-      {isLoading ? (
+      {/* Header luôn hiển thị */}
+      <div
+        style={{
+          display: "flex",
+          flex: "0 0 auto",
+          margin: 8,
+          alignContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {step1 ? (
+          <div onClick={handleBack}>
+            <IoArrowBack
+              onClick={handleNav(0)}
+              className="back_btn"
+              style={{
+                fontSize: 22,
+                cursor: "pointer",
+                color: "gray",
+                padding: 6,
+                borderRadius: 20,
+              }}
+            />{" "}
+          </div>
+        ) : null}
+
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
+            flex: 1,
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "bold",
           }}
         >
-          <Spin size="large" /> {/* Hiển thị vòng tròn loading */}
+          Buy ticket
         </div>
-      ) : (
-        <>
+        <div
+          onClick={handleClose}
+          className="close_btn"
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: "gray",
+            cursor: "pointer",
+            marginRight: 8,
+          }}
+        >
+          ✕
+        </div>
+      </div>
+
+      {/* Nội dung và phần dưới */}
+      <div
+        style={{
+          backgroundColor: "#F4F4F4",
+          flex: "1 1 auto",
+          overflowY: "auto",
+          position: "relative",
+        }}
+      >
+        {isLoading ? (
           <div
             style={{
+              minHeight: 300,
               display: "flex",
-              flex: "0 0 auto",
-              margin: 8,
-              alignContent: "center",
+              justifyContent: "center",
               alignItems: "center",
             }}
           >
-            {step1 ? (
-              <div onClick={handleBack}>
-                <IoArrowBack
-                  onClick={handleNav(0)}
-                  className="back_btn"
-                  style={{
-                    fontSize: 22,
-                    cursor: "pointer",
-                    color: "gray",
-                    padding: 6,
-                    borderRadius: 20,
-                  }}
-                />{" "}
-              </div>
-            ) : (
-              <></>
-            )}
-
-            <div
-              style={{
-                flex: 1,
-                textAlign: "center",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {" "}
-              Buy ticket
-            </div>
-            <div
-              onClick={handleClose}
-              className="close_btn"
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-                color: "gray",
-                cursor: "pointer",
-                marginRight: 8,
-              }}
-            >
-              ✕
-            </div>
+            <Spin size="large" />
           </div>
-
-          <div
-            style={{
-              backgroundColor: "#F4F4F4",
-              flex: "1 1 auto", // Phần này sẽ co giãn
-              overflowY: "auto", // Thêm cuộn dọc nếu nội dung quá lớn
-            }}
-          >
+        ) : (
+          <>
             <div
               style={{
                 backgroundColor: "#F4F4F4",
-
                 padding: "10px",
                 display: "flex",
                 justifyContent: "center",
@@ -274,13 +266,10 @@ export default function PlaceSeatComponent() {
               <div
                 style={{
                   alignContent: "center",
-
                   justifyContent: "center",
                   display: "flex",
                   flexDirection: "column",
-
                   alignItems: "center",
-                  // Adjust the height as needed
                 }}
               >
                 <div
@@ -313,11 +302,10 @@ export default function PlaceSeatComponent() {
                     cursor: "pointer",
                     padding: "10px",
                     fontSize: 14,
-
                     width: "fit-content",
                     height: "fit-content",
                     borderRadius: "16px",
-                    alignSelf: "center", // Center vertically
+                    alignSelf: "center",
                   }}
                 >
                   {seat.map((s) => (
@@ -336,7 +324,6 @@ export default function PlaceSeatComponent() {
               style={{
                 display: "flex",
                 backgroundColor: "#F4F4F4",
-
                 justifyContent: "center",
                 padding: "8px",
                 color: "gray",
@@ -355,7 +342,6 @@ export default function PlaceSeatComponent() {
                   style={{
                     width: 20,
                     height: 20,
-
                     backgroundColor: "gray",
                     borderRadius: "4px",
                     marginRight: 8,
@@ -376,7 +362,6 @@ export default function PlaceSeatComponent() {
                     style={{
                       width: `calc(${type.width * 20}px)`,
                       height: `calc(${type.height * 20}px)`,
-
                       backgroundColor: type.color,
                       borderRadius: "4px",
                       marginRight: 8,
@@ -389,21 +374,33 @@ export default function PlaceSeatComponent() {
                   </span>
                 </div>
               ))}
-            </div>{" "}
-          </div>
+            </div>
+          </>
+        )}
+      </div>
 
+      {/* Phần dưới cùng */}
+      <div
+        className="floating-booking-bottom"
+        style={{
+          borderRadius: "0 0 16px 16px",
+          padding: "16px 16px",
+          flex: "0 0 auto",
+          height: "fit-content",
+          background: "#fff",
+        }}
+      >
+        {isLoading ? (
           <div
-            className="floating-booking-bottom"
             style={{
-              borderRadius: "0 0 16px 16px",
-              padding: "16px 16px",
-
-              flex: "0 0 auto", // Phần này cố định
-              height: "fit-content",
-              borderRadius: "0 0 16px 16px",
-              padding: "16px 16px",
+              minHeight: 100,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
-          >
+          ></div>
+        ) : (
+          <>
             <div style={{ display: "flex", gap: 8 }}>
               <div
                 style={{
@@ -417,7 +414,6 @@ export default function PlaceSeatComponent() {
                   width: 30,
                   lineHeight: "20px",
                   height: "fit-content",
-
                   textAlign: "center",
                 }}
               >
@@ -426,7 +422,6 @@ export default function PlaceSeatComponent() {
               <div
                 style={{
                   fontSize: 20,
-
                   fontWeight: "bold",
                   fontFamily: '"Aminute", sans-serif',
                 }}
@@ -461,7 +456,6 @@ export default function PlaceSeatComponent() {
                 alignItems: "center",
               }}
             >
-              {" "}
               <div
                 style={{
                   margin: "8px 0px",
@@ -480,6 +474,7 @@ export default function PlaceSeatComponent() {
                 {selectedSeats.map((id) => {
                   return (
                     <div
+                      key={id.seat_id}
                       style={{
                         color: "#4B8C22",
                         border: "1px solid #4B8C22",
@@ -511,9 +506,7 @@ export default function PlaceSeatComponent() {
               }}
             >
               <div>
-                {" "}
                 <div style={{ color: "#7B7B7B", fontWeight: "bold" }}>
-                  {" "}
                   Price
                 </div>
                 <div
@@ -530,11 +523,11 @@ export default function PlaceSeatComponent() {
                 text="Buy Now"
                 fontSize={17}
                 onClick={handleBuyNowClick}
-              ></Button>{" "}
+              ></Button>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
       {isModalVisible && (
         <Snack
@@ -560,4 +553,5 @@ export default function PlaceSeatComponent() {
       )}
     </div>
   );
+  // ...existing code...
 }

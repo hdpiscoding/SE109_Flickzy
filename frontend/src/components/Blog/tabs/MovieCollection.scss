@@ -13,7 +13,7 @@
         text-align: center;
     }
 
-    .highlight-item img {
+    .highlight-item {
         width        : 100%;
         height       : auto;
         border-radius: 8px;
@@ -24,25 +24,8 @@
         gap    : 20px;
     }
 
-    .latest-articles,
-    .most-viewed {
-        flex: 1;
-    }
 
-    .article-item,
-    .most-viewed-item {
-        display      : flex;
-        align-items  : center;
-        margin-bottom: 15px;
-    }
 
-    .article-item img,
-    .most-viewed-item img {
-        width        : 80px;
-        height       : 80px;
-        margin-right : 10px;
-        border-radius: 8px;
-    }
 
     .load-more {
         display         : block;

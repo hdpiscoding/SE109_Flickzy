@@ -14,3 +14,6 @@ export const getAllCinemas = () => {
 export const getAvailableSnacks = (brandId) => {
   return axios.get("/v1/snacks/available/" + brandId);
 };
+export const getUnavaiSeat = (scheduleId) => {
+  return axios.get("/v1/booking-by-schedule/" + scheduleId);
+};
