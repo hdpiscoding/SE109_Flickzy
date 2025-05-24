@@ -1,7 +1,6 @@
 package com.flickzy.specification;
 
 import com.flickzy.entity.Cinemas;
-import com.flickzy.entity.Movies;
 import com.flickzy.entity.Room;
 import com.flickzy.entity.Schedule;
 import com.flickzy.entity.ScheduleType;
@@ -18,7 +17,6 @@ public class ScheduleSpecifications {
             query.distinct(true);
             Join<Schedule, Room> roomJoin = root.join("room");
             Join<Room, Cinemas> cinemaJoin = roomJoin.join("cinema");
-            Join<Schedule, ScheduleType> typeJoin = root.join("type"); // Thêm join với ScheduleType
 
             var predicates = criteriaBuilder.conjunction();
             predicates = criteriaBuilder.and(predicates, criteriaBuilder.equal(root.get("scheduleDate"), date));
@@ -30,8 +28,8 @@ public class ScheduleSpecifications {
                 );
             }
 
-            // Lọc theo scheduleTypeId nếu không null
             if (scheduleTypeId != null) {
+                Join<Schedule, ScheduleType> typeJoin = root.join("type"); // chỉ join khi cần
                 predicates = criteriaBuilder.and(
                         predicates,
                         criteriaBuilder.equal(typeJoin.get("id"), scheduleTypeId)
@@ -47,7 +45,6 @@ public class ScheduleSpecifications {
         return (root, query, criteriaBuilder) -> {
             query.distinct(true);
             var predicates = criteriaBuilder.conjunction();
-            Join<Schedule, ScheduleType> typeJoin = root.join("type"); // Thêm join với ScheduleType
 
             // Filter by movieId
             predicates = criteriaBuilder.and(
@@ -82,6 +79,7 @@ public class ScheduleSpecifications {
 
             // Filter by scheduleTypeId (if provided)
             if (scheduleTypeId != null) {
+                Join<Schedule, ScheduleType> typeJoin = root.join("type"); // chỉ join khi cần
                 predicates = criteriaBuilder.and(
                         predicates,
                         criteriaBuilder.equal(typeJoin.get("id"), scheduleTypeId)
