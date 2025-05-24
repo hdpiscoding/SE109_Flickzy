@@ -95,7 +95,7 @@ export default function Snack({
         <div
           style={{
             display: "flex",
-            margin: 8,
+            margin: 0,
             alignContent: "center",
             alignItems: "center",
           }}
@@ -143,6 +143,7 @@ export default function Snack({
                   )}
                   <div className="quantity-control">
                     <button
+                      style={{ width: 24, height: 24 }}
                       onClick={() => updateQuantity(item.id, item.quantity - 1)}
                     >
                       -
@@ -153,12 +154,14 @@ export default function Snack({
                       onChange={(e) => updateQuantity(item.id, e.target.value)}
                       style={{
                         width: "40px",
-                        height: "22px",
+                        height: "24px",
+                        border: "1px solid #ccc",
                         textAlign: "center",
                         margin: "0 5px",
                       }}
                     />
                     <button
+                      style={{ width: 24, height: 24 }}
                       onClick={() => updateQuantity(item.id, item.quantity + 1)}
                     >
                       +

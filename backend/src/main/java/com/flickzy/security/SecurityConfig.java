@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/schedule-by-movie").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cinemas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/cinemas/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/snacks/**").permitAll()
                         // User APIs
                         .requestMatchers("/api/v1/users/me/**").hasAnyAuthority("USER", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/v1/bookings/me").hasAnyAuthority("USER", "ADMIN")
@@ -82,6 +83,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/blog").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/blog/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/blog/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/snacks").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/snacks/{id}").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/snacks/{id}/delete").hasAuthority("ADMIN")
+                         .requestMatchers(HttpMethod.PATCH, "/api/v1/snacks/{id}/availability").hasAuthority("ADMIN")
                         // Default APIs
                         .anyRequest().authenticated()
                 )
