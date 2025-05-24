@@ -68,12 +68,15 @@ public class Movies extends BaseEntity {
     @Column(name = "age_rating")
     String ageRating; // ["P", "13+", "16+", "18+"]
 
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Transient
+    Double movieRating = 0.0;
+
+    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL)
     List<Schedule> schedules;
 
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL)
     List<Reviews> reviews;
 
-    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "movie", fetch =FetchType.LAZY, cascade = CascadeType.ALL)
     List<MovieShowing> showings;
 }

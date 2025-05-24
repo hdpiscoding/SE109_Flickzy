@@ -1,4 +1,4 @@
-package com.flickzy.utils.specifications;
+package com.flickzy.specification;
 
 import com.flickzy.entity.Genres;
 import com.flickzy.entity.MovieShowing;

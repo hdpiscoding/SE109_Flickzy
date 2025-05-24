@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/cinemas")
+@RequestMapping("/api/v1/cinemas")
 @CrossOrigin(origins = "*") // Cho phép gọi từ frontend
 public class CinemasController {
 
