@@ -46,7 +46,8 @@ public class ScheduleMapper implements BaseMapper<Schedule, CinemaScheduleRespon
                                     s.getScheduleStart(),
                                     s.getScheduleEnd(),
                                     s.getRoom().getRoomId(),
-                                    s.getRoom().getRoomType()
+                                    s.getRoom().getRoomType(),
+                                    s.getRoom().getRoomName()
                             ))
                             .toList();
 

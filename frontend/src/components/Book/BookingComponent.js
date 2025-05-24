@@ -29,7 +29,7 @@ export default function BookingComponent({ haveclosebtn }) {
   const [schedule, setSchedule] = useState([]);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
 
-  const { handleNav, handleClose } = context;
+  const { handleNav, handleClose, setTicketData } = context;
 
   const [selectedCinema, setSelectedCinema] = useState(null);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
@@ -99,7 +99,21 @@ export default function BookingComponent({ haveclosebtn }) {
     fetchProvinces();
   }, []);
 
-  const handleNavigate = () => {
+  const handleNavigate = (idx) => {
+    setTicketData({
+      cinema: selectedCinema,
+      brandId: selectedCinema.brandId,
+      scheduleInfo: {
+        scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
+        scheduleDate: "2025-05-23",
+        scheduleStart: "17:00:00",
+        scheduleEnd: "19:00:00",
+        roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
+        roomType: "Phòng chiếu IMAX with Laser",
+        roomName: "05",
+      },
+      movieInfo: schedule[idx],
+    });
     handleNav(1);
   };
 
@@ -423,7 +437,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                     <div
                                       key={slot}
                                       className="slot-button"
-                                      onClick={handleNavigate}
+                                      onClick={() => handleNavigate(idx)}
                                       style={{
                                         fontSize: 16,
                                         padding: "4px 16px",

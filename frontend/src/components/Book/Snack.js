@@ -1,55 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../OtherComponents/Button";
-import "./Snack.css"; // Import CSS for styling
-
+import "./Snack.css";
+import { getAvailableSnacks } from "../../services/BookingService";
+import { Empty, Spin } from "antd";
 export default function Snack({
   handleClose,
   handleOpenPaymentForm,
   initAmount,
+  brandId,
 }) {
-  const initialItems = [
-    {
-      id: 1,
-      name: "Combo Nhà Gấu",
-      price: 259000,
-      description: "4 Coke 22oz + 2 Bắp 2 Ngăn 64OZ Phô Mai + Caramel",
-      image: "combo1.png",
-      quantity: 0,
-    },
-    {
-      id: 2,
-      name: "Combo 2 Coke 32oz",
-      price: 259000,
-      description: "2 Coke 32oz + 1 Bắp 2 Ngăn 64OZ Phô Mai + Caramel",
-      image: "combo2.png",
-      quantity: 0,
-    },
-    {
-      id: 3,
-      name: "Sprite 32oz",
-      price: 37000,
-      description: "",
-      image: "sprite.png",
-      quantity: 0,
-    },
-    {
-      id: 4,
-      name: "Coke Zero 32oz",
-      price: 37000,
-      description: "",
-      image: "cokezero.png",
-      quantity: 0,
-    },
-    {
-      id: 5,
-      name: "Coke 32oz",
-      price: 37000,
-      description: "",
-      image: "coke.png",
-      quantity: 0,
-    },
-  ];
-  const [items, setItems] = useState(initialItems);
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSnacks = async () => {
+      setLoading(true);
+      try {
+        const response = await getAvailableSnacks(brandId);
+        const data = await response.data.data;
+        setItems(data.map((item) => ({ ...item, quantity: 0 })));
+      } catch (error) {
+        setItems([]);
+        console.error("Error fetching snacks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSnacks();
+  }, [brandId]);
 
   const updateQuantity = (id, value) => {
     setItems((prev) =>
@@ -127,49 +106,66 @@ export default function Snack({
         </div>
         <div className="combo-container">
           <div className="item-list">
-            {items.map((item) => (
-              <div className="item" key={item.id}>
-                <img
-                  src={`/images/${item.image}`}
-                  alt={item.name}
-                  className="item-image"
+            {loading ? (
+              <Spin></Spin>
+            ) : items.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 32, color: "#888" }}>
+                <Empty
+                  description="No snack available"
+                  style={{ marginTop: 40 }}
                 />
-                <div className="item-info">
-                  <div className="item-title">
-                    {item.name} - {item.price.toLocaleString()}đ
-                  </div>
-                  {item.description && (
-                    <div className="item-desc">{item.description}</div>
-                  )}
-                  <div className="quantity-control">
-                    <button
-                      style={{ width: 24, height: 24 }}
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                    >
-                      -
-                    </button>
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => updateQuantity(item.id, e.target.value)}
-                      style={{
-                        width: "40px",
-                        height: "24px",
-                        border: "1px solid #ccc",
-                        textAlign: "center",
-                        margin: "0 5px",
-                      }}
-                    />
-                    <button
-                      style={{ width: 24, height: 24 }}
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                    >
-                      +
-                    </button>
+              </div>
+            ) : (
+              items.map((item) => (
+                <div className="item" key={item.id}>
+                  <img
+                    src={`/images/${item.image}`}
+                    alt={item.name}
+                    className="item-image"
+                  />
+                  <div className="item-info">
+                    <div className="item-title">
+                      {item.name} - {item.price.toLocaleString()}đ
+                    </div>
+                    {item.description && (
+                      <div className="item-desc">{item.description}</div>
+                    )}
+                    <div className="quantity-control">
+                      <button
+                        style={{ width: 24, height: 24 }}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity - 1)
+                        }
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        value={item.quantity}
+                        onChange={(e) =>
+                          updateQuantity(item.id, e.target.value)
+                        }
+                        style={{
+                          width: "40px",
+                          height: "24px",
+                          border: "1px solid #ccc",
+                          textAlign: "center",
+                          margin: "0 5px",
+                        }}
+                      />
+                      <button
+                        style={{ width: 24, height: 24 }}
+                        onClick={() =>
+                          updateQuantity(item.id, item.quantity + 1)
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
 
           <div className="pfooter">
@@ -180,11 +176,31 @@ export default function Snack({
             <Button
               text="Pay"
               isFullWidth={true}
-              onClick={handleOpenPaymentForm}
+              onClick={() => {
+                handleOpenPaymentForm(items);
+              }}
             ></Button>
           </div>
         </div>
       </div>
+      {/* Spinner CSS */}
+      <style>
+        {`
+          .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6cc832;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+          }
+          @keyframes spin {
+            0% { transform: rotate(0deg);}
+            100% { transform: rotate(360deg);}
+          }
+        `}
+      </style>
     </div>
   );
 }

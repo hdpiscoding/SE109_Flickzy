@@ -17,6 +17,7 @@ const Layout = () => {
   const [type, setType] = useState(0);
   const [step1, setStep1] = useState(0);
   const [trailerlink, setTrailerlink] = useState("");
+  const [ticketData, setTicketData] = useState(null);
 
   const handleOpen = () => {
     setIsVisible(true);
@@ -31,6 +32,7 @@ const Layout = () => {
 
   const handleNav = (tt) => {
     setIsVisible(true);
+
     setType(1);
   };
   const handleBack = () => {
@@ -51,6 +53,8 @@ const Layout = () => {
     setIsVisible,
     setTrailerlink,
     step1,
+    ticketData,
+    setTicketData,
   };
 
   return (

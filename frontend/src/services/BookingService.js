@@ -11,3 +11,6 @@ export const getAllBrands = () => {
 export const getAllCinemas = () => {
   return axios.get("/v1/cinemas");
 };
+export const getAvailableSnacks = (brandId) => {
+  return axios.get("/v1/snacks/available/" + brandId);
+};

@@ -9,7 +9,10 @@ import { useGlobalContext } from "../../Layout";
 import { getARoom, getAllSeatsByRoomId } from "../../services/BookingService";
 import { calc } from "antd/es/theme/internal";
 export default function PlaceSeatComponent() {
-  const [roomId, setRoomId] = useState("cccda124-8dd8-44cc-8bc9-1ff692193e05");
+  const { handleBack, handleNav, handleClose, step1, ticketData } =
+    useGlobalContext();
+  const [brandId, setBrandId] = useState(ticketData.brandId);
+  const [roomId, setRoomId] = useState(ticketData.roomId);
   const [scheduleInfo, setScheduleInfo] = useState({
     scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
     scheduleDate: "2025-05-23",
@@ -18,25 +21,8 @@ export default function PlaceSeatComponent() {
     roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
     roomType: "Phòng chiếu IMAX with Laser",
   });
-  const moviesInfo = {
-    movieId: "636411cd-e9ff-46f3-b542-fc21d818a7bc",
-    movieName: "Until Dawn: Bí Mật Kinh Hoàng",
-    ageRating: "18+",
-    moviePoster:
-      "https://cinema.momocdn.net/img/76503184372632094-untilll.png?size=M",
-    genresName: "Kinh dị",
-    schedules: [
-      {
-        scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
-        scheduleDate: "2025-05-23",
-        scheduleStart: "17:00:00",
-        scheduleEnd: "19:00:00",
-        roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
-        roomType: null,
-      },
-    ],
-  };
-  const { handleBack, handleNav, handleClose, step1 } = useGlobalContext();
+  const moviesInfo = ticketData.movieInfo;
+  const [snacks, setSnacks] = useState([]);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị modal
@@ -141,6 +127,10 @@ export default function PlaceSeatComponent() {
   }, [selectedSeats]);
 
   const handleBuyNowClick = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat"); // Thông báo nếu không có ghế nào được chọn
+      return;
+    }
     setIsModalVisible(true); // Hiển thị modal
   };
 
@@ -551,17 +541,21 @@ export default function PlaceSeatComponent() {
           handleClose={() => {
             setIsModalVisible(false);
           }}
-          handleOpenPaymentForm={() => {
+          handleOpenPaymentForm={(snacks) => {
             setIsPayFormVisible(true);
+            setSnacks(snacks);
           }}
           initAmount={totalAmount}
+          brandId={brandId}
         ></Snack>
       )}
       {isPayFormVisible && (
         <PaymentForm
+          seats={selectedSeats}
           handleClose={() => {
             setIsPayFormVisible(false);
           }}
+          snacks={snacks}
         ></PaymentForm>
       )}
     </div>
