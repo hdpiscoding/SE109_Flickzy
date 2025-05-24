@@ -9,7 +9,33 @@ import { useGlobalContext } from "../../Layout";
 import { getARoom, getAllSeatsByRoomId } from "../../services/BookingService";
 import { calc } from "antd/es/theme/internal";
 export default function PlaceSeatComponent() {
-  const [roomId, setRoomId] = useState("c79f5918-489f-409c-b9ba-9215da84f3ad");
+  const [roomId, setRoomId] = useState("cccda124-8dd8-44cc-8bc9-1ff692193e05");
+  const [scheduleInfo, setScheduleInfo] = useState({
+    scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
+    scheduleDate: "2025-05-23",
+    scheduleStart: "17:00:00",
+    scheduleEnd: "19:00:00",
+    roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
+    roomType: "Phòng chiếu IMAX with Laser",
+  });
+  const moviesInfo = {
+    movieId: "636411cd-e9ff-46f3-b542-fc21d818a7bc",
+    movieName: "Until Dawn: Bí Mật Kinh Hoàng",
+    ageRating: "18+",
+    moviePoster:
+      "https://cinema.momocdn.net/img/76503184372632094-untilll.png?size=M",
+    genresName: "Kinh dị",
+    schedules: [
+      {
+        scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
+        scheduleDate: "2025-05-23",
+        scheduleStart: "17:00:00",
+        scheduleEnd: "19:00:00",
+        roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
+        roomType: null,
+      },
+    ],
+  };
   const { handleBack, handleNav, handleClose, step1 } = useGlobalContext();
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
@@ -19,20 +45,70 @@ export default function PlaceSeatComponent() {
   const [seat, setSeat] = useState([]);
   const [seatType, setSeatType] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
-  const schedule = [1, 2, 3];
+  const booking = [1, 2, 3];
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const ageRatingColors = {
+    P: "#4CAF50",
+    "13+": "#FFA500",
+    "16+": "#FF8C00",
+    "18+": "#FF3B30",
+  };
   useEffect(() => {
     //Api get a room
     const fetchRoomData = async () => {
-      const response = await getARoom(roomId);
-      setHeight(response.height);
-      setWidth(response.width);
+      const response = await getARoom(scheduleInfo.roomId);
+      setHeight(response.data.height);
+      setWidth(response.data.width);
     };
     const fetchSeatData = async () => {
-      const response = await getAllSeatsByRoomId(roomId);
-      setSeat(response);
+      const response = await getAllSeatsByRoomId(scheduleInfo.roomId);
+      setSeat(response.data);
     };
+    const formatData = () => {
+      // Format start and end time as HH:mm
+      const formatTime = (timeStr) => {
+        if (!timeStr) return "";
+        const [hour, minute] = timeStr.split(":");
+        return `${hour}:${minute}`;
+      };
+
+      // Format date as "Today, dd/MM" or "Saturday, dd/MM"
+      const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        const dateObj = new Date(dateStr);
+        const today = new Date();
+        const isToday =
+          dateObj.getDate() === today.getDate() &&
+          dateObj.getMonth() === today.getMonth() &&
+          dateObj.getFullYear() === today.getFullYear();
+
+        const dayNames = [
+          "Sunday",
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+        ];
+        const dayName = isToday ? "Today" : dayNames[dateObj.getDay()];
+        const day = String(dateObj.getDate()).padStart(2, "0");
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        return `${dayName}, ${day}/${month}`;
+      };
+
+      const formatSchedule = {
+        scheduleId: scheduleInfo.scheduleId,
+        scheduleDate: formatDate(scheduleInfo.scheduleDate),
+        scheduleStart: formatTime(scheduleInfo.scheduleStart),
+        scheduleEnd: formatTime(scheduleInfo.scheduleEnd),
+        roomId: scheduleInfo.roomId,
+        roomType: scheduleInfo.roomType,
+      };
+      setScheduleInfo(formatSchedule);
+    };
+    formatData();
 
     fetchRoomData();
     fetchSeatData();
@@ -82,7 +158,7 @@ export default function PlaceSeatComponent() {
 
   const getSeatStyle = (seatItem) => {
     const type = seatItem.seatTypeId;
-    const isUnavailable = schedule.includes(seatItem.seat_id);
+    const isUnavailable = booking.includes(seatItem.seat_id);
     const isSelected = selectedSeats.includes(seatItem);
 
     return {
@@ -100,7 +176,7 @@ export default function PlaceSeatComponent() {
   };
 
   const handleSeatClick = (seatItem) => {
-    if (schedule.includes(seatItem.seat_id)) {
+    if (booking.includes(seatItem.seat_id)) {
       return; // Không làm gì nếu ghế không khả dụng
     }
 
@@ -342,7 +418,8 @@ export default function PlaceSeatComponent() {
               <div
                 style={{
                   fontSize: 12,
-                  backgroundColor: "#6cc832",
+                  backgroundColor:
+                    ageRatingColors[moviesInfo.ageRating] || "#6cc832",
                   color: "white",
                   padding: 1,
                   fontWeight: "bold",
@@ -354,7 +431,7 @@ export default function PlaceSeatComponent() {
                   textAlign: "center",
                 }}
               >
-                C12
+                {moviesInfo.ageRating}
               </div>
               <div
                 style={{
@@ -364,7 +441,7 @@ export default function PlaceSeatComponent() {
                   fontFamily: '"Aminute", sans-serif',
                 }}
               >
-                InterSttellar{" "}
+                {moviesInfo.movieName}
               </div>
             </div>
             <div
@@ -376,8 +453,8 @@ export default function PlaceSeatComponent() {
                 marginTop: 8,
               }}
             >
-              21:50 ~ 00:39 · Hôm nay, 07/04 · Phòng chiếu IMAX with Laser · 2D
-              Phụ đề
+              {scheduleInfo.scheduleStart} ~ {scheduleInfo.scheduleEnd} ·{" "}
+              {scheduleInfo.scheduleDate}· {scheduleInfo.roomType} · 2D Phụ đề
             </div>
             <hr
               style={{

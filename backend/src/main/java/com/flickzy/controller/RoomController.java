@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * REST controller for managing rooms.
  */
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/v1/rooms")
 @RequiredArgsConstructor

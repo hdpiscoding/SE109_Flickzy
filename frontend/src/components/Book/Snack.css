@@ -1,7 +1,6 @@
 .combo-container {
   max-width: 480px;
-  margin: 0 auto;
-  padding: 16px;
+
   background-color: white;
   font-family: Arial, sans-serif;
 }
@@ -21,7 +20,7 @@
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
-  margin-right: 12px;
+  margin-right: 18px;
 }
 
 .item-info {
