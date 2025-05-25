@@ -5,11 +5,16 @@ import com.flickzy.dto.LoginDTO;
 import com.flickzy.dto.RegisterDTO;
 import com.flickzy.dto.User.UserResponse;
 import com.flickzy.entity.Users;
+import com.flickzy.exception.InvalidOTPException;
+import com.flickzy.exception.TooManyRequestsException;
 import com.flickzy.mapper.UserMapper;
 import com.flickzy.repository.UserRepository;
 import com.flickzy.service.interfaces.AuthService;
+import com.flickzy.service.interfaces.EmailService;
 import com.flickzy.service.interfaces.JwtService;
+import com.flickzy.service.interfaces.OTPService;
 import com.flickzy.utils.enums.Role;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +31,8 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-
+    private final EmailService emailService;
+    private final OTPService otpService;
 
     @Override
     public AuthResponseDTO register(RegisterDTO request) {
@@ -65,9 +71,34 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void forgotPassword(String newPassword) {
-        return;
+    public void forgotPassword(String email) {
+        try {
+            if (!userRepository.existsByEmail(email)) {
+                throw new RuntimeException("User not found");
+            }
+            if (!otpService.canSendOTP(email)){
+                throw new TooManyRequestsException("Too many requests. Please try again later.");
+            }
+            String otp = emailService.generateOTP();
+            otpService.saveOTP(email, otp);
+            emailService.sendOTPEmail(email, otp);
+        }
+        catch (MessagingException e)
+        {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
-
+    @Override
+    public UserResponse resetPassword(String otp, String email, String newPassword) {
+        boolean isValid = otpService.verifyOTP(email, otp);
+        if (!isValid) {
+            throw new InvalidOTPException("OTP is invalid or expired. Please try again.");
+        }
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return userMapper.toDto(user);
+    }
 }
