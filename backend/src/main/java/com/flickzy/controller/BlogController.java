@@ -18,7 +18,7 @@ import java.util.UUID;
 public class BlogController extends BaseController {
     private final BlogService blogService;
 
-    @GetMapping("/blogs")
+    @PostMapping("/blogs")
     public ResponseEntity<Object> getAllBlogs(@RequestBody(required = false) BlogFilter filters) {
         return buildResponse(blogService.getAllBlogs(filters != null ? filters : new BlogFilter()), HttpStatus.OK, "Blogs retrieved successfully");
     }

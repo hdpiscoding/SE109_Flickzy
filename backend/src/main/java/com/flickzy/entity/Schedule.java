@@ -38,6 +38,11 @@ public class Schedule extends BaseEntity {
 
     LocalTime scheduleEnd;
 
+    @ManyToOne
+    @JoinColumn(name = "type_id")  
+    ScheduleType type;
+
+
     @OneToMany(mappedBy = "schedule")
     List<Booking> bookings;
 }

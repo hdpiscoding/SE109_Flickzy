@@ -6,6 +6,8 @@ const { Text } = Typography;
 import './MovieCard.css'
 import {useNavigate} from "react-router-dom";
 
+const { Text } = Typography;
+
 export default function MovieCard({movie, type}) {
     const [genres, setGenres] = useState(
         movie.genres.map(item => item.name).join(', ')

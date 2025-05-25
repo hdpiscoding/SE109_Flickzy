@@ -23,12 +23,12 @@ public class Seats extends BaseEntity {
     UUID seatId;
 
     @ManyToOne
-    @JoinColumn(name = "seat_type_id", referencedColumnName = "seatTypeId", nullable = false)
+    @JoinColumn(name = "seat_type_id", referencedColumnName = "seatTypeId")
     SeatType seatTypeId;
 
 
     @ManyToOne
-    @JoinColumn(name = "room_id" , referencedColumnName = "roomId", nullable = false)
+    @JoinColumn(name = "room_id" , referencedColumnName = "roomId")
     Room room;
 
     @Column

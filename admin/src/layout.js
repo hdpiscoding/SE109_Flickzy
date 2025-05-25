@@ -7,12 +7,12 @@ import Schedules from "./components/Schedules/Schedules";
 import NewRoom from "./components/Rooms/NewRoom";
 import NewRoom2 from "./components/Rooms/NewRoom2";
 import App from "./App";
+import Blog from "./components/Blogs/Blog";
 import MovieDetail from "./components/Movies/MovieDetail";
 import AddMovie from "./components/Movies/AddMovie";
 import EditMovie from "./components/Movies/EditMovie";
 import Login from "./components/Auth/LoginPage";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
-
 
 const Layout = () => {
   return (
@@ -31,6 +31,7 @@ const Layout = () => {
           <Route path="movies/:movieId/edit" element={<EditMovie />} />
           <Route path="schedules" element={<Schedules />} />
           <Route path="rooms" element={<Rooms />} />
+          <Route path="blogs" element={<Blog />} />
           <Route path="new-room" element={<NewRoom />} />
           <Route path="new-room2" element={<NewRoom2 />} />
 

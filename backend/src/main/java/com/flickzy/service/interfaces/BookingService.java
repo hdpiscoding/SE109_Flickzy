@@ -9,4 +9,5 @@ import java.util.UUID;
 public interface BookingService {
     List<BookingResponseDTO> getBookingHistory(UUID userId);
     BookingResponseDTO addBooking(BookingRequestDTO bookingRequestDTO, UUID userId);
+    List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId);
 }

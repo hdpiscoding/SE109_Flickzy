@@ -1,8 +1,12 @@
 .article-item {
+    width        : 700px;
+    display      : flex;
+    align-items  : start;
+    margin-bottom: 15px;
+
     .article-image {
         height             : 120px;
-        width              : 350px;
-        background-image   : url("https://homepage.momocdn.net/blogscontents/momo-upload-api-210326143727-637523662479216901.jpg");
+        width              : 200px;
         background-size    : cover;
         background-repeat  : no-repeat;
         border-radius      : 10px;

@@ -29,4 +29,7 @@ public class ScheduleDTO {
 
     @NotNull(message = "End time is required")
     private LocalTime scheduleEnd;
+
+    @NotNull(message = "Schedule type ID is required")
+    private UUID typeId;
 }

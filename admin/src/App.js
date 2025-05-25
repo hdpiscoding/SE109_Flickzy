@@ -57,6 +57,11 @@ const items = [
     icon: React.createElement(DollarOutlined),
     label: "Rooms",
   },
+  {
+    key: 6,
+    icon: React.createElement(DollarOutlined),
+    label: "Blogs",
+  },
 ];
 
 const menuProps = [
@@ -91,8 +96,7 @@ const App = () => {
         token: {
           colorPrimary: "#85D94F", // Green color
         },
-      }}
-    >
+      }}>
       <Layout>
         <Sider
           theme="light"
@@ -104,8 +108,7 @@ const App = () => {
           onCollapse={(collapsed, type) => {
             console.log(collapsed, type);
             setIsShowLogo(!isShowLogo);
-          }}
-        >
+          }}>
           {isShowLogo && (
             // <Image
             //   src={require("./assets/images/TaskMate.png")}
@@ -143,6 +146,9 @@ const App = () => {
                 case "5":
                   nav("/rooms");
                   break;
+                case "6":
+                  nav("/blogs");
+                  break;
 
                 default:
                   break;
@@ -155,8 +161,7 @@ const App = () => {
             style={{
               padding: 0,
               background: colorBgContainer,
-            }}
-          >
+            }}>
             <Row justify="space-between">
               <span
                 style={{
@@ -184,16 +189,14 @@ const App = () => {
           <Content
             style={{
               margin: "10px  10px 0",
-            }}
-          >
+            }}>
             <div
               style={{
                 padding: 24,
                 minHeight: "90vh",
                 background: "white",
                 borderRadius: borderRadiusLG,
-              }}
-            >
+              }}>
               <Outlet />
             </div>
           </Content>

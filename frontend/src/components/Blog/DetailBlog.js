@@ -3,71 +3,60 @@ import ReactMarkdown from "react-markdown";
 import "./DetailBlog.scss";
 import SmallBlogCard from "./bloc_cards/SmallBlogCard";
 import { Col, Image, Row } from "antd";
+import { useParams } from "react-router-dom";
+import { getABlog, getAllBlog } from "../../services/BlogService"; // thêm getAllBlog
 
-const markdownContent = `
-# Những bộ phim kinh dị 2021 đáng sợ được mong chờ
-
-Tháng này có rất nhiều phim kinh dị ra rạp để chiêu đãi lòng các tín đồ cuồng phim, đặc biệt là thể loại này. Hãy cùng MoMo điểm qua các phim kinh dị đáng mong đợi nhất trong tháng này nhé.
-
-## Tổng hợp phim kinh dị hay nhất
-- **Top 20 phim bảo tủ đáng xem nhất thời đại**
-- [Review Light Shop (2024): Siêu Phẩm Kinh Dị Hàn Quốc Trên Disney+](#)
-- Top phim hay nhất của Stephen King bạn nên xem ngay
-- Những bộ phim về quỷ Satan nhất định phải xem
-- Những bộ phim về cá sấu đáng sợ nhất trên màn ảnh
-`;
 export default function DetailBlog() {
+  const [blog, setBlog] = React.useState({});
+  const [relatedBlogs, setRelatedBlogs] = React.useState([]); // state cho bài viết liên quan
+  let blogId = useParams().id;
+  React.useEffect(() => {
+    getABlog(blogId)
+      .then((data) => setBlog(data))
+      .catch((err) => console.error("Error fetching genres:", err));
+    getAllBlog({ top: 5 })
+      .then((data) =>
+        setRelatedBlogs(Array.isArray(data.data) ? data.data : [])
+      )
+      .catch((err) => console.error("Error fetching related blogs:", err));
+  }, [blogId]);
   return (
     <div className="container">
       <div className="detail-blog">
         <Image
           height={400}
           className="cinema-logo"
-          src="https://homepage.momocdn.net/blogscontents/momo-upload-api-211108155331-637719836118631788.jpg"></Image>
+          src={blog && blog.cover ? blog.cover : ""}></Image>
         <div className="blog-info">
-          <span>8 phút đọc</span> · <span>121.1K lượt xem</span>
+          <span>
+            {blog.timeToRead ? `${blog.timeToRead} phút đọc` : "Đang tải..."}
+          </span>{" "}
+          ·{" "}
+          <span>
+            {blog.views !== undefined
+              ? `${blog.views} lượt xem`
+              : "Đang tải..."}
+          </span>
         </div>
         <Row gutter={24}>
           {" "}
-          <Col xs={24} sm={16} md={18}>
-            <ReactMarkdown>{markdownContent}</ReactMarkdown>
+          <Col xs={24} sm={16} md={16}>
+            <ReactMarkdown>
+              {blog.content ? blog.content : "Đang tải nội dung..."}
+            </ReactMarkdown>
+          </Col>
+          <Col xs={24} sm={8} md={8} className="table-of-contents">
             <div>
-              <div>Bài viết có liên quan</div>
-              <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard /> <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard /> <SmallBlogCard />
-              <SmallBlogCard />
-              <SmallBlogCard />
+              <h2>Bài viết có liên quan</h2>
+              {relatedBlogs.length === 0 ? (
+                <div>Đang tải...</div>
+              ) : (
+                relatedBlogs.map((item, idx) => (
+                  <SmallBlogCard key={item.id || idx} blog={item} />
+                ))
+              )}
             </div>
             <button className="load-more">Xem thêm</button>
-          </Col>
-          <Col xs={24} sm={8} md={6} className="table-of-contents">
-            <h3>Mục lục</h3>
-            <ul>
-              <li>
-                <a href="#section1">
-                  1. Cuốn theo chiều gió - Gone With the Wind (1939)
-                </a>
-              </li>
-              <li>
-                <a href="#section2">
-                  2. Quá Nhanh Quá Nguy Hiểm - Fast & Furious 7 (2015)
-                </a>
-              </li>
-              <li>
-                <a href="#section3">3. Thế thân - Avatar (2009)</a>
-              </li>
-              <li>
-                <a href="#section4">4. Titanic (1997)</a>
-              </li>
-              <li>
-                <a href="#section5">
-                  5. Avengers: Hồi kết - Avengers: Endgame (2019)
-                </a>
-              </li>
-            </ul>
           </Col>
         </Row>
       </div>

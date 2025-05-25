@@ -1,6 +1,7 @@
 package com.flickzy.entity;
 
 import com.flickzy.base.BaseEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,10 +9,12 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 import java.util.UUID;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+/**
+ * Entity representing a cinema brand (e.g., CGV, Lotte Cinema).
+ * Extends BaseEntity for common fields like createdAt, updatedAt.
+ */
 @Entity
-@Table(name = "cinemaBrand")
+@Table(name = "cinema_brand")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,11 +22,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CinemaBrand extends BaseEntity {
+
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "uuid")
+    @Column(columnDefinition = "uuid", updatable = false, nullable = false)
     UUID id;
 
+    @Column(nullable = false)
     String brandName;
 
     @Column(columnDefinition = "text")
@@ -35,7 +40,7 @@ public class CinemaBrand extends BaseEntity {
     @Column(columnDefinition = "text")
     String description;
 
-    @OneToMany(mappedBy = "cinemaBrand")
-    @JsonIgnore 
+    @OneToMany(mappedBy = "cinemaBrand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Cinemas> cinemas;
 }
