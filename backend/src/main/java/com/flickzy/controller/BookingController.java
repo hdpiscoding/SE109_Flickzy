@@ -50,7 +50,7 @@ public class BookingController extends BaseController {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
         UUID userId = user.getId();
-        BookingResponseDTO response = bookingService.addBooking(bookingRequestDTO, userId);
-        return buildResponse(response, HttpStatus.CREATED, "Booking added successfully");
+        List<BookingResponseDTO> response = bookingService.addBooking(bookingRequestDTO, userId);
+        return buildResponse(response, HttpStatus.CREATED, "Booking(s) added successfully");
     }
 }

@@ -1,22 +1,17 @@
 package com.flickzy.dto;
 
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import java.util.List;
 import java.util.UUID;
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class BookingRequestDTO {
-    @NotNull(message = "Schedule ID is required")
     private UUID scheduleId;
+    private List<BookingInfo> bookingInfo;
 
-    @NotNull(message = "Seat ID is required")
-    private UUID seatId;
-
-    @NotNull(message = "Price is required")
-    private Double price;
+    @Data
+    public static class BookingInfo {
+        private UUID seatId;
+        private Double price;
+    }
 }
