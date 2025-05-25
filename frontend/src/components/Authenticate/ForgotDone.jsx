@@ -3,17 +3,7 @@ import {Button, ConfigProvider, Form, Input, Modal} from "antd";
 import { ArrowLeft } from 'lucide-react';
 import './Auth.css'
 
-export default function ForgotDone() {
-    const [form] = Form.useForm();
-
-    const onFinish = (values) => {
-        console.log("Success:", values);
-    };
-
-    const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
-    };
-
+export default function ForgotDone({open, onClose, onDone}) {
     return (
         <ConfigProvider
             theme={{
@@ -31,7 +21,7 @@ export default function ForgotDone() {
                     },
                 },
             }}>
-            <Modal open={true} footer={null} centered={true}>
+            <Modal open={open} footer={null} centered={true}>
                 <div className="flickzy-modal">
                     <div>
                         <h1 className="flickzy-header">You're all set</h1>
@@ -51,6 +41,7 @@ export default function ForgotDone() {
                             marginTop: "10px",
                             fontSize: "18px",
                         }}
+                        onClick={onDone}
                     >
                         OK
                     </Button>

@@ -205,7 +205,7 @@ export default function MovieDetail() {
             const [cinemaBrandsResponse, showingMoviesResponse ] = await Promise.all([
                 getAllCinemaBrands(),
                 getAllMovies({page: 1, limit: 10, isShowing: true})]);
-            setCinemaBrands(cinemaBrandsResponse);
+            setCinemaBrands(cinemaBrandsResponse.data);
             setShowingMovies(showingMoviesResponse.data);
             if (isLoggedIn) {
                 const res = await isUserReviewed(movieId)

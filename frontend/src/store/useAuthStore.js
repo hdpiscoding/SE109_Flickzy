@@ -11,6 +11,8 @@ const useAuthStore = create(
                 set({ user, token, isLoggedIn: true }),
             logout: () =>
                 set({ user: null, token: null, isLoggedIn: false }),
+            updateUser: ({user}) =>
+                set({ user }),
         }),
         {
             name: 'auth-storage', // tên key trong localStorage

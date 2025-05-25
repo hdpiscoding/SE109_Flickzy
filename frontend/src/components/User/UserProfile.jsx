@@ -4,6 +4,8 @@ import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {getUserProfile, updateUserProfile, updateUserPassword} from "../../services/UserService";
 import {toast} from "react-toastify";
+import { uploadToCloudinary } from '../../untils/uploadToCloudinary';
+import useAuthStore from "../../store/useAuthStore";
 
 const genderOptions = [
     { value: true, label: 'Nam' },
@@ -49,14 +51,17 @@ export default function UserProfile() {
     const [pwdForm] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(mockUser.avatar);
-    const [user, setUser] = useState(null);
+    const [userState, setUserState] = useState(null);
+    const [avatarFile, setAvatarFile] = useState(null);
+    const { updateUser } = useAuthStore();
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const userData = await getUserProfile();
                 console.log(userData);
-                setUser(userData);
+                setUserState(userData);
+                updateUser({ user: userData });
                 infoForm.setFieldsValue({
                     fullname: userData?.fullname,
                     birthday: userData?.birthday ? dayjs(userData?.birthday) : null,
@@ -76,22 +81,30 @@ export default function UserProfile() {
 
     // Handle avatar upload
     const beforeUpload = (file) => {
+        setAvatarFile(file);
         const reader = new FileReader();
         reader.onload = e => setAvatarUrl(e.target.result);
         reader.readAsDataURL(file);
-        // Prevent upload
-        return false;
+        return false; // Prevent default upload
     };
 
     const onInfoFinish = async (values) => {
         setLoading(true);
         try {
+            let uploadedAvatarUrl = avatarUrl;
+            // If a new file is selected, upload to Cloudinary
+            if (avatarFile) {
+                uploadedAvatarUrl = await uploadToCloudinary(avatarFile);
+            }
             const body = {
                 ...values,
                 birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : null,
+                avatar: uploadedAvatarUrl,
             };
             await updateUserProfile(body);
             toast.success('Cập nhật thông tin thành công!');
+            updateUser({ user: {id: userState.id, ...body} });
+            setAvatarFile(null);
         } catch (error) {
             toast.error('Cập nhật thông tin thất bại!');
         }

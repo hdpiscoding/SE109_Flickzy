@@ -3,10 +3,12 @@ import {Button, ConfigProvider, Form, Input, message, Modal} from "antd";
 import './Auth.css'
 import {login} from "../../services/AuthService";
 import {toast} from "react-toastify";
+import {useNavigate} from "react-router-dom";
 
 export default function Login({ open, onClose, onLoginSuccess, onShowRegister, onShowForgot }) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const onFinish = async (values) => {
         setLoading(true);
@@ -17,6 +19,7 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
                 onLoginSuccess({ user: res.data.user, token: res.data.token });
                 form.resetFields();
                 toast.success("Log in successfully!");
+                navigate("/");
             }
         } catch (err) {
             if (

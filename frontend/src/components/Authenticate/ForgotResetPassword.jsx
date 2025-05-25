@@ -1,13 +1,29 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Button, ConfigProvider, Form, Input, Modal } from "antd";
 import './Auth.css';
 import {ArrowLeft} from "lucide-react";
+import {toast} from "react-toastify";
+import {resetPassword} from "../../services/AuthService";
 
-export default function ForgotResetPassword() {
+export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuccess, email }) {
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
-    const onFinish = (values) => {
-        console.log("Success:", values);
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            const response = await resetPassword(values.otp, email, values.newPassword);
+            if (response.status === 400) {
+                toast.error(response.message);
+            } else if (response.status === 200) {
+                toast.success(response.message);
+                if (onSuccess) onSuccess();
+            }
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Reset password failed");
+        } finally {
+            setLoading(false);
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -17,7 +33,7 @@ export default function ForgotResetPassword() {
     // Custom validation function to check if confirm password matches password
     const validateConfirmPassword = ({ getFieldValue }) => ({
         validator(_, value) {
-            if (!value || getFieldValue('password') === value) {
+            if (!value || getFieldValue('newPassword') === value) {
                 return Promise.resolve();
             }
             return Promise.reject(new Error('The two passwords that you entered do not match!'));
@@ -41,9 +57,9 @@ export default function ForgotResetPassword() {
                     },
                 },
             }}>
-            <Modal open={true} footer={null} centered={true}>
+            <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div style={{ display: "flex", alignItems: "center", gap: '68px', marginTop: '20px' }}>
-                    <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}}/>
+                    <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}} onClick={onShowForgot}/>
                     <h1 className="flickzy-header">New Password</h1>
                 </div>
 
@@ -55,8 +71,23 @@ export default function ForgotResetPassword() {
                         layout="vertical"
                     >
                         <Form.Item
+                            label="OTP"
+                            name="otp"
+                            rules={[
+                                { required: true, message: 'OTP is required' },
+                                { pattern: /^\d{6}$/, message: 'OTP must be exactly 6 digits' },
+                            ]}
+                        >
+                            <Input.OTP
+                                length={6}
+                                inputType="numeric"
+                                style={{ width: "350px" }}
+                            />
+                        </Form.Item>
+
+                        <Form.Item
                             label="Password"
-                            name="password"
+                            name="newPassword"
                             rules={[
                                 { required: true, message: 'Password is required' },
                             ]}
@@ -80,6 +111,7 @@ export default function ForgotResetPassword() {
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                loading={loading}
                                 style={{
                                     width: "350px",
                                     height: "50px",
