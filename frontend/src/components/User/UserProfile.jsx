@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Tabs, Form, Input, Button, DatePicker, Select, message, ConfigProvider, Upload, Avatar, Table } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import {getUserProfile, updateUserProfile, updateUserPassword} from "../../services/UserService";
+import {toast} from "react-toastify";
 
 const genderOptions = [
     { value: true, label: 'Nam' },
@@ -47,6 +49,30 @@ export default function UserProfile() {
     const [pwdForm] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(mockUser.avatar);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userData = await getUserProfile();
+                console.log(userData);
+                setUser(userData);
+                infoForm.setFieldsValue({
+                    fullname: userData?.fullname,
+                    birthday: userData?.birthday ? dayjs(userData?.birthday) : null,
+                    gender: userData?.gender,
+                    phone: userData?.phone,
+                    email: userData?.email,
+                });
+                setAvatarUrl(userData?.avatar || mockUser.avatar);
+            }
+            catch (error) {
+                console.error(error);
+                toast.error('Không thể tải thông tin người dùng');
+            }
+        }
+        fetchUserData();
+    }, []);
 
     // Handle avatar upload
     const beforeUpload = (file) => {
@@ -57,24 +83,36 @@ export default function UserProfile() {
         return false;
     };
 
-    // Handle personal info update
-    const onInfoFinish = (values) => {
+    const onInfoFinish = async (values) => {
         setLoading(true);
-        setTimeout(() => {
-            message.success('Cập nhật thông tin thành công!');
-            setLoading(false);
-        }, 800);
+        try {
+            const body = {
+                ...values,
+                birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : null,
+            };
+            await updateUserProfile(body);
+            toast.success('Cập nhật thông tin thành công!');
+        } catch (error) {
+            toast.error('Cập nhật thông tin thất bại!');
+        }
+        setLoading(false);
     };
 
-    // Handle password change
-    const onPwdFinish = (values) => {
+    const onPwdFinish = async (values) => {
         setLoading(true);
-        setTimeout(() => {
-            message.success('Đổi mật khẩu thành công!');
+        try {
+            await updateUserPassword({
+                currentPassword: values.currentPassword,
+                newPassword: values.newPassword,
+            });
+            toast.success('Đổi mật khẩu thành công!');
             pwdForm.resetFields();
-            setLoading(false);
-        }, 800);
+        } catch (error) {
+            toast.error('Đổi mật khẩu thất bại!');
+        }
+        setLoading(false);
     };
+
     const columns = [
         {
             title: 'Mã',
@@ -157,17 +195,10 @@ export default function UserProfile() {
                                         <Form
                                             form={infoForm}
                                             layout="vertical"
-                                            initialValues={{
-                                                fullName: mockUser.fullName,
-                                                birthday: dayjs(mockUser.birthday),
-                                                gender: mockUser.gender,
-                                                phone: mockUser.phone,
-                                                email: mockUser.email
-                                            }}
                                             onFinish={onInfoFinish}
                                         >
                                             <Form.Item
-                                                name="fullName"
+                                                name="fullname"
                                                 label="Họ tên"
                                             >
                                                 <Input />
