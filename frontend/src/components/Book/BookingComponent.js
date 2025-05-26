@@ -141,6 +141,7 @@ export default function BookingComponent({ haveclosebtn }) {
       try {
         const response = await getAllBrands();
         const data = response.data.data;
+
         const allBrand = {
           id: "all",
           name: "All",

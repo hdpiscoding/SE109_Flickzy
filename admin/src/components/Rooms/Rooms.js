@@ -1,6 +1,16 @@
-import React, { useState } from "react";
-import { Table, Button, Input, Space, Drawer, Select, Form } from "antd";
+import React, { useState, useEffect } from "react";
+import {
+  Table,
+  Button,
+  Input,
+  Space,
+  Drawer,
+  Select,
+  Form,
+  message,
+} from "antd";
 import { PlusOutlined, FilterOutlined } from "@ant-design/icons";
+import { deleteRoom, getAllRooms } from "../../services/adminService";
 
 const { Search } = Input;
 const { Option } = Select;
@@ -8,43 +18,68 @@ const { Option } = Select;
 const Rooms = () => {
   const [searchText, setSearchText] = useState("");
   const [filterVisible, setFilterVisible] = useState(false);
-  const [rooms, setRooms] = useState([
-    { key: 1, name: "Room A", type: "IMAX", status: "Available", seats: 200 },
-    {
-      key: 2,
-      name: "Room B",
-      type: "Standard",
-      status: "Occupied",
-      seats: 150,
-    },
-  ]);
+  const [rooms, setRooms] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const res = await getAllRooms();
+        // Nếu API trả về { data: { data: [...] } }
+        const data = res.data.data;
+
+        setRooms(data || []);
+      } catch (error) {
+        setRooms([]);
+      }
+    };
+    fetchRooms();
+  }, []);
 
   const columns = [
-    { title: "Room Name", dataIndex: "name", key: "name" },
-    { title: "Type", dataIndex: "type", key: "type" },
-    { title: "Seats", dataIndex: "seats", key: "seats" },
-    { title: "Status", dataIndex: "status", key: "status" },
+    { title: "Room Name", dataIndex: "roomName", key: "roomName" },
+    { title: "Room Type", dataIndex: "roomType", key: "roomType" },
+    { title: "Width", dataIndex: "width", key: "width" },
+    { title: "Height", dataIndex: "height", key: "height" },
+    { title: "Cinema ID", dataIndex: "cinemaId", key: "cinemaId" },
     {
       title: "Action",
       key: "action",
       render: (_, record) => (
         <Space>
-          <Button type="link">Edit</Button>
-          <Button type="link" danger>
+          <Button
+            type="link"
+            danger
+            onClick={() => handleDelete(record.roomId)}
+          >
             Delete
           </Button>
         </Space>
       ),
     },
   ];
+  const handleDelete = async (roomId) => {
+    try {
+      await deleteRoom(roomId);
+      setRooms((prev) =>
+        prev.map((room) =>
+          room.roomId === roomId ? { ...room, delete: true } : room
+        )
+      );
+      message.success("Room deleted!");
+    } catch (error) {
+      message.error("Delete failed!");
+    }
+  };
 
   const handleSearch = (value) => {
     setSearchText(value);
   };
 
-  const filteredRooms = rooms.filter((room) =>
-    room.name.toLowerCase().includes(searchText.toLowerCase())
-  );
+  const filteredRooms = rooms
+    .filter((room) => room.delete === false) // chỉ lấy room chưa bị xóa
+    .filter((room) =>
+      room.roomName?.toLowerCase().includes(searchText.toLowerCase())
+    );
 
   return (
     <div>
@@ -61,17 +96,16 @@ const Rooms = () => {
           style={{ width: 200 }}
         />
         <Space>
-          <Button
+          {/* <Button
             icon={<FilterOutlined />}
             onClick={() => setFilterVisible(true)}
           >
             Filters
-          </Button>
+          </Button> */}
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => {
-              // Navigate to NewRoom component
               window.location.href = "/new-room";
             }}
           >
@@ -79,13 +113,20 @@ const Rooms = () => {
           </Button>
         </Space>
       </Space>
-      <Table columns={columns} dataSource={filteredRooms} />
+      <Table
+        columns={columns}
+        dataSource={filteredRooms.map((room, idx) => ({
+          ...room,
+          key: room.roomId || idx,
+        }))}
+        pagination={false}
+      />
 
       <Drawer
         title="Filter Rooms"
         placement="right"
         onClose={() => setFilterVisible(false)}
-        visible={filterVisible}
+        open={filterVisible}
       >
         <Form layout="vertical">
           <Form.Item label="Room Type">

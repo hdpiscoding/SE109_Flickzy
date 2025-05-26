@@ -13,11 +13,8 @@ import {
 } from "@ant-design/icons";
 import {
   Avatar,
-  Breadcrumb,
   Button,
-  Col,
   Dropdown,
-  Image,
   Layout,
   Menu,
   Row,
@@ -25,9 +22,9 @@ import {
   theme,
   ConfigProvider,
 } from "antd";
-import { useNavigate } from "react-router";
-import { Outlet } from "react-router";
-const { Header, Content, Footer, Sider } = Layout;
+import { useNavigate, Outlet } from "react-router-dom";
+
+const { Header, Content, Sider } = Layout;
 
 const items = [
   {
@@ -76,34 +73,42 @@ const App = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
+
+  // Kiểm tra token trong localStorage
+  const token = localStorage.getItem("token");
+
+  React.useEffect(() => {
+    if (!token) {
+      nav("/login", { replace: true });
+    }
+  }, [token, nav]);
+
+  if (!token) {
+    // Không render nội dung nếu không có token
+    return null;
+  }
+
   return (
     <ConfigProvider
       theme={{
         token: {
           colorPrimary: "", // Green color
         },
-      }}>
+      }}
+    >
       <Layout>
         <Sider
           theme="light"
           breakpoint="lg"
           collapsedWidth="50px"
           onBreakpoint={(broken) => {
-            console.log(broken);
+            setIsShowLogo(!broken);
           }}
           onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-            setIsShowLogo(!isShowLogo);
-          }}>
-          {isShowLogo && (
-            // <Image
-            //   src={require("./assets/images/TaskMate.png")}
-            //   width={120}
-            //   style={{ margin: 27 }}
-            // />
-            <div></div>
-          )}
-
+            setIsShowLogo(!collapsed);
+          }}
+        >
+          {isShowLogo && <div></div>}
           <Menu
             theme="light"
             mode="vertical"
@@ -135,7 +140,6 @@ const App = () => {
                 case "6":
                   nav("/blogs");
                   break;
-
                 default:
                   break;
               }
@@ -147,7 +151,8 @@ const App = () => {
             style={{
               padding: 0,
               background: colorBgContainer,
-            }}>
+            }}
+          >
             <Row justify="space-between">
               <span
                 style={{
@@ -155,10 +160,11 @@ const App = () => {
                   fontSize: "1rem",
                   marginLeft: "1rem",
                   fontWeight: "bold",
-                }}>
+                }}
+              >
                 Khách hàng
               </span>
-              <Dropdown overlay={<Menu items={menuProps} />}>
+              <Dropdown menu={{ items: menuProps }}>
                 <div>
                   <Button>
                     <Space>
@@ -174,14 +180,16 @@ const App = () => {
           <Content
             style={{
               margin: "10px  10px 0",
-            }}>
+            }}
+          >
             <div
               style={{
                 padding: 24,
                 minHeight: "90vh",
                 background: "white",
                 borderRadius: borderRadiusLG,
-              }}>
+              }}
+            >
               <Outlet />
             </div>
           </Content>
@@ -190,4 +198,5 @@ const App = () => {
     </ConfigProvider>
   );
 };
+
 export default App;

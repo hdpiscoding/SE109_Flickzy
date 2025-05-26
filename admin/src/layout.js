@@ -8,11 +8,13 @@ import NewRoom from "./components/Rooms/NewRoom";
 import NewRoom2 from "./components/Rooms/NewRoom2";
 import App from "./App";
 import Blog from "./components/Blogs/Blog";
+import Login from "./components/Login";
 
 const Layout = () => {
   return (
     <>
       <Routes>
+        <Route path="/login" element={<Login />} />
         <Route path="/" element={<App />}>
           <Route index element={<Cinema />} />
           <Route path="brands" element={<Brands />} />

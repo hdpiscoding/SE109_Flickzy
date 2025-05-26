@@ -28,6 +28,7 @@ public class RoomDTO {
     String roomName;
 
     String roomType;
+    boolean isDelete;
 
     @Min(value = 1, message = "Width must be at least 1")
     int width;
