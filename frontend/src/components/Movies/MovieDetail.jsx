@@ -33,7 +33,7 @@ import {
 import {useParams} from "react-router-dom";
 import {toast} from "react-toastify";
 import useAuthStore from "../../store/useAuthStore";
-
+import { useGlobalContext } from "../../Layout";
 
 export const vietnamProvinces = [
     { value: "Hà Nội", label: "Hà Nội" },
@@ -145,11 +145,24 @@ function genresToString(genres) {
 }
 
 const ScheduleContainer = (props) => {
+    const context = useGlobalContext();
+    const { handleNav, handleClose, setTicketData } = context;
+    const handleBooking = (schedule) => {
+        setTicketData({
+            cinema: props.cinema,
+            brandId: props.brand.id,
+            scheduleInfo: schedule,
+            movieInfo: props.movie,
+        });
+        handleNav(1);
+    }
     return (
         <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', maxWidth: '700px'}}>
             {
                 props.schedules?.map((item, index) => (
-                    <ScheduleCard key={index} from={formatTime(item.scheduleStart)} to={formatTime(item.scheduleEnd)} />
+                    <div onClick={() => handleBooking(item)} key={index} style={{cursor: 'pointer'}}>
+                        <ScheduleCard key={index} id={item.id} from={formatTime(item.scheduleStart)} to={formatTime(item.scheduleEnd)}/>
+                    </div>
                 ))
             }
         </div>
@@ -167,6 +180,7 @@ export default function MovieDetail() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalElements, setTotalElements] = useState(0);
+
 
     useEffect(() => {
         fetchReviews(currentPage, pageSize);
@@ -287,7 +301,7 @@ export default function MovieDetail() {
                         />
                     ),
                     children: (
-                        <ScheduleContainer schedules={cinema.schedules} />
+                        <ScheduleContainer schedules={cinema.schedules} cinema={cinema} movie={movie} brand={brand}/>
                     )
                 });
             });

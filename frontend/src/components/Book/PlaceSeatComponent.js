@@ -405,9 +405,6 @@ export default function PlaceSeatComponent() {
           <div
             className="floating-booking-bottom"
             style={{
-              borderRadius: "0 0 16px 16px",
-              padding: "16px 16px",
-
               flex: "0 0 auto", // Phần này cố định
               height: "fit-content",
               borderRadius: "0 0 16px 16px",

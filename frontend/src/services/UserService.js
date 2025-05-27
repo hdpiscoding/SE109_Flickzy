@@ -14,3 +14,8 @@ export const getUserProfile = async () => {
     const response = await instance.get('/v1/users/me');
     return response.data;
 }
+
+export const getUserBookingHistory = async () => {
+    const response = await instance.get('/v1/bookings/me');
+    return response.data;
+}

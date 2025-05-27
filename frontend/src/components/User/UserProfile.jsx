@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import { Tabs, Form, Input, Button, DatePicker, Select, message, ConfigProvider, Upload, Avatar, Table } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
-import {getUserProfile, updateUserProfile, updateUserPassword} from "../../services/UserService";
+import {getUserProfile, updateUserProfile, updateUserPassword, getUserBookingHistory} from "../../services/UserService";
 import {toast} from "react-toastify";
 import { uploadToCloudinary } from '../../untils/uploadToCloudinary';
 import useAuthStore from "../../store/useAuthStore";
@@ -53,13 +53,13 @@ export default function UserProfile() {
     const [avatarUrl, setAvatarUrl] = useState(mockUser.avatar);
     const [userState, setUserState] = useState(null);
     const [avatarFile, setAvatarFile] = useState(null);
+    const [bookings, setBookings] = useState([]);
     const { updateUser } = useAuthStore();
 
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 const userData = await getUserProfile();
-                console.log(userData);
                 setUserState(userData);
                 updateUser({ user: userData });
                 infoForm.setFieldsValue({
@@ -77,6 +77,17 @@ export default function UserProfile() {
             }
         }
         fetchUserData();
+
+        // Fetch booking history
+        const fetchBookings = async () => {
+            try {
+                const res = await getUserBookingHistory();
+                setBookings(res || []);
+            } catch (error) {
+                toast.error('Không thể tải lịch sử đặt vé');
+            }
+        }
+        fetchBookings();
     }, []);
 
     // Handle avatar upload
@@ -157,9 +168,9 @@ export default function UserProfile() {
             title: 'Suất chiếu',
             key: 'schedule',
             render: (_, record) => {
-                const start = dayjs(record.scheduleInfo.scheduleStart).format('HH:mm');
-                const end = dayjs(record.scheduleInfo.scheduleEnd).format('HH:mm');
-                return `${start} ~ ${end}`;
+                const start = record.scheduleInfo?.scheduleStart;
+                const end = record.scheduleInfo?.scheduleEnd;
+                return start && end ? `${start} ~ ${end}` : '--';
             },
             width: 140,
         }
@@ -306,7 +317,7 @@ export default function UserProfile() {
                                 children: (
                                     <Table
                                         columns={columns}
-                                        dataSource={mockBookings}
+                                        dataSource={bookings}
                                         rowKey="bookingId"
                                         pagination={{ pageSize: 5 }}
                                         style={{ marginTop: 16 }}
