@@ -394,6 +394,59 @@ export default function BookingComponent({ haveclosebtn }) {
         </div>
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
+        {brands.map((brand) => (
+          <div
+            className={`cinema-card${
+              selectedBrand === brand.id ? " cinema-card-selected" : ""
+            }`}
+            key={brand.id}
+            onClick={() => setSelectedBrand(brand.id)}
+            style={{
+              border:
+                selectedBrand === brand.id
+                  ? "2px solid #6cc832"
+                  : "1px solid #eee",
+              boxShadow:
+                selectedBrand === brand.id
+                  ? "0 2px 8px rgba(108,200,50,0.15)"
+                  : "0 1px 4px rgba(0,0,0,0.08)",
+              borderRadius: 8,
+              padding: 4,
+              cursor: "pointer",
+              background: selectedBrand === brand.id ? "#f6fff2" : "#fff",
+              transition: "all 0.2s",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <img
+              src={brand.avatar}
+              style={{
+                width: brand.id === "all" ? 35 : 60,
+                height: brand.id === "all" ? 35 : 60,
+                objectFit: "cover",
+                borderRadius: 8,
+              }}
+              alt={brand.name}
+            />
+            <div
+              style={{
+                textAlign: "center",
+                fontWeight: selectedBrand === brand.id ? "bold" : "normal",
+                color: selectedBrand === brand.id ? "#6cc832" : "#333",
+                fontSize: 13,
+                marginTop: 4,
+              }}
+            >
+              {brand.name}
+            </div>
+          </div>
+        ))}
+      </Row>
+      <hr style={{ color: "gray", margin: " 16px 0 24px 0" }}></hr>
+      <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
         <Col xs={24} md={8}>
           <Spin spinning={loadingProvince}>
             <Input
@@ -404,6 +457,10 @@ export default function BookingComponent({ haveclosebtn }) {
               allowClear
             />
             <List
+              style={{
+                maxHeight: 400,
+                overflowY: "auto",
+              }}
               dataSource={cinemas}
               renderItem={(cinema) => (
                 <List.Item
@@ -439,7 +496,7 @@ export default function BookingComponent({ haveclosebtn }) {
         <Col
           xs={24}
           md={16}
-          style={{ padding: "0 32px", transform: "translateY(-32px)" }}
+          style={{ padding: "0 32px", transform: "translateY(-20px)" }}
         >
           <div style={{ margin: "16px 0" }} onClick={handleOpenMap}>
             <Title level={4}>

@@ -38,26 +38,19 @@ export default function PlaceSeatComponent() {
     "18+": "#FF3B30",
   };
 
+  // Fetch data
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Fetch all data in parallel
         const [unavailRes, roomRes, seatRes] = await Promise.all([
           getUnavaiSeat(scheduleInfo.scheduleId),
           getARoom(scheduleInfo.roomId),
           getAllSeatsByRoomId(scheduleInfo.roomId),
         ]);
-
-        // Unavailable seats
-        const unavailableSeats = unavailRes.data.map((seat) => seat.seatId);
-        setBooking(unavailableSeats);
-
-        // Room info
+        setBooking(unavailRes.data.map((seat) => seat.seatId));
         setHeight(roomRes.data.height);
         setWidth(roomRes.data.width);
-
-        // Seat info
         setSeat(seatRes.data);
 
         // Format schedule info
@@ -97,7 +90,7 @@ export default function PlaceSeatComponent() {
           roomType: scheduleInfo.roomType,
         });
       } catch (err) {
-        // Optionally handle error
+        // handle error
       }
       setIsLoading(false);
     };
@@ -105,8 +98,8 @@ export default function PlaceSeatComponent() {
     // eslint-disable-next-line
   }, []);
 
+  // Get unique seat types
   useEffect(() => {
-    // Only run when seat data is available
     if (!seat.length) return;
     const uniqueSeatTypes = [];
     seat.forEach((seatItem) => {
@@ -122,46 +115,48 @@ export default function PlaceSeatComponent() {
     setSeatType(uniqueSeatTypes);
   }, [seat]);
 
+  // Calculate total
   useEffect(() => {
-    const total = selectedSeats.reduce(
-      (sum, seat) => sum + (seat.seatTypeId.price || 0),
-      0
+    setTotalAmount(
+      selectedSeats.reduce((sum, seat) => sum + (seat.seatTypeId.price || 0), 0)
     );
-    setTotalAmount(total);
   }, [selectedSeats]);
 
-  const handleBuyNowClick = () => {
-    if (selectedSeats.length === 0) {
-      alert("Please select at least one seat");
-      return;
-    }
-    setIsModalVisible(true);
-  };
-
+  // Seat style
   const getSeatStyle = (seatItem) => {
     const type = seatItem.seatTypeId;
     const isUnavailable = booking.includes(seatItem.seatId);
-    const isSelected = selectedSeats.includes(seatItem);
+    const isSelected = selectedSeats.some((s) => s.seatId === seatItem.seatId);
     return {
       gridRow: `${seatItem.row} / span ${type?.height || 1}`,
       gridColumn: `${seatItem.columnn} / span ${type?.width || 1}`,
-      backgroundColor: isUnavailable ? "gray" : type?.color || "gray",
+      backgroundColor: isUnavailable
+        ? "gray"
+        : isSelected
+        ? "#b7e4c7"
+        : type?.color || "gray",
       borderRadius: "4px",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      cursor: isUnavailable ? "default" : "pointer",
-      opacity: isSelected ? 0.4 : 1,
+      cursor: isUnavailable ? "not-allowed" : "pointer",
+      opacity: isUnavailable ? 0.5 : 1,
+      color: isSelected ? "#222" : "#fff",
+      border: isSelected ? "2px solid #4B8C22" : "1px solid #ccc",
+      fontWeight: isSelected ? "bold" : "bold",
+      transition: "all 0.2s",
+      userSelect: "none",
     };
   };
 
+  // Seat click
   const handleSeatClick = (seatItem) => {
-    if (booking.includes(seatItem.seat_id)) {
-      return;
-    }
-    const isSelected = selectedSeats.includes(seatItem);
+    if (booking.includes(seatItem.seatId)) return;
+    const isSelected = selectedSeats.some((s) => s.seatId === seatItem.seatId);
     if (isSelected) {
-      setSelectedSeats((prev) => prev.filter((s) => s !== seatItem));
+      setSelectedSeats((prev) =>
+        prev.filter((s) => s.seatId !== seatItem.seatId)
+      );
     } else {
       if (selectedSeats.length >= 8) {
         alert("Maxiumum 8 seats can be selected");
@@ -171,14 +166,21 @@ export default function PlaceSeatComponent() {
     }
   };
 
-  // ...existing code...
-  // ...existing code...
+  // Buy now
+  const handleBuyNowClick = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat");
+      return;
+    }
+    setIsModalVisible(true);
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh",
+        height: "97vh",
         position: "relative",
       }}
     >
@@ -198,7 +200,7 @@ export default function PlaceSeatComponent() {
               onClick={handleNav(0)}
               className="back_btn"
               style={{
-                fontSize: 22,
+                fontSize: 30,
                 cursor: "pointer",
                 color: "gray",
                 padding: 6,
@@ -553,5 +555,4 @@ export default function PlaceSeatComponent() {
       )}
     </div>
   );
-  // ...existing code...
 }

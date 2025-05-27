@@ -9,7 +9,7 @@ export const getAllBrands = () => {
   return axios.get("/v1/brands");
 };
 export const getAllCinemas = () => {
-  return axios.get("/v1/cinemas");
+  return axios.get("/v1/cinemas?limit=1000");
 };
 export const getAvailableSnacks = (brandId) => {
   return axios.get("/v1/snacks/available/" + brandId);

@@ -11,7 +11,7 @@ const UserProfile = React.lazy(() => import("./components/User/UserProfile"));
 
 function App() {
   return (
-    <Routes>
+    <Routes className="rootApp">
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="movie" element={<Movies />} />
