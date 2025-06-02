@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Tabs, Form, Input, Button, DatePicker, Select, message, ConfigProvider, Upload, Avatar, Table } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import {getUserProfile, updateUserProfile, updateUserPassword, getUserBookingHistory} from "../../services/UserService";
+import {toast} from "react-toastify";
+import { uploadToCloudinary } from '../../untils/uploadToCloudinary';
+import useAuthStore from "../../store/useAuthStore";
 
 const genderOptions = [
     { value: true, label: 'Nam' },
@@ -47,34 +51,92 @@ export default function UserProfile() {
     const [pwdForm] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(mockUser.avatar);
+    const [userState, setUserState] = useState(null);
+    const [avatarFile, setAvatarFile] = useState(null);
+    const [bookings, setBookings] = useState([]);
+    const { updateUser } = useAuthStore();
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const userData = await getUserProfile();
+                setUserState(userData);
+                updateUser({ user: userData });
+                infoForm.setFieldsValue({
+                    fullname: userData?.fullname,
+                    birthday: userData?.birthday ? dayjs(userData?.birthday) : null,
+                    gender: userData?.gender,
+                    phone: userData?.phone,
+                    email: userData?.email,
+                });
+                setAvatarUrl(userData?.avatar || mockUser.avatar);
+            }
+            catch (error) {
+                console.error(error);
+                toast.error('Không thể tải thông tin người dùng');
+            }
+        }
+        fetchUserData();
+
+        // Fetch booking history
+        const fetchBookings = async () => {
+            try {
+                const res = await getUserBookingHistory();
+                setBookings(res || []);
+            } catch (error) {
+                toast.error('Không thể tải lịch sử đặt vé');
+            }
+        }
+        fetchBookings();
+    }, []);
 
     // Handle avatar upload
     const beforeUpload = (file) => {
+        setAvatarFile(file);
         const reader = new FileReader();
         reader.onload = e => setAvatarUrl(e.target.result);
         reader.readAsDataURL(file);
-        // Prevent upload
-        return false;
+        return false; // Prevent default upload
     };
 
-    // Handle personal info update
-    const onInfoFinish = (values) => {
+    const onInfoFinish = async (values) => {
         setLoading(true);
-        setTimeout(() => {
-            message.success('Cập nhật thông tin thành công!');
-            setLoading(false);
-        }, 800);
+        try {
+            let uploadedAvatarUrl = avatarUrl;
+            // If a new file is selected, upload to Cloudinary
+            if (avatarFile) {
+                uploadedAvatarUrl = await uploadToCloudinary(avatarFile);
+            }
+            const body = {
+                ...values,
+                birthday: values.birthday ? values.birthday.format('YYYY-MM-DD') : null,
+                avatar: uploadedAvatarUrl,
+            };
+            await updateUserProfile(body);
+            toast.success('Cập nhật thông tin thành công!');
+            updateUser({ user: {id: userState.id, ...body} });
+            setAvatarFile(null);
+        } catch (error) {
+            toast.error('Cập nhật thông tin thất bại!');
+        }
+        setLoading(false);
     };
 
-    // Handle password change
-    const onPwdFinish = (values) => {
+    const onPwdFinish = async (values) => {
         setLoading(true);
-        setTimeout(() => {
-            message.success('Đổi mật khẩu thành công!');
+        try {
+            await updateUserPassword({
+                currentPassword: values.currentPassword,
+                newPassword: values.newPassword,
+            });
+            toast.success('Đổi mật khẩu thành công!');
             pwdForm.resetFields();
-            setLoading(false);
-        }, 800);
+        } catch (error) {
+            toast.error('Đổi mật khẩu thất bại!');
+        }
+        setLoading(false);
     };
+
     const columns = [
         {
             title: 'Mã',
@@ -106,9 +168,9 @@ export default function UserProfile() {
             title: 'Suất chiếu',
             key: 'schedule',
             render: (_, record) => {
-                const start = dayjs(record.scheduleInfo.scheduleStart).format('HH:mm');
-                const end = dayjs(record.scheduleInfo.scheduleEnd).format('HH:mm');
-                return `${start} ~ ${end}`;
+                const start = record.scheduleInfo?.scheduleStart;
+                const end = record.scheduleInfo?.scheduleEnd;
+                return start && end ? `${start} ~ ${end}` : '--';
             },
             width: 140,
         }
@@ -157,17 +219,10 @@ export default function UserProfile() {
                                         <Form
                                             form={infoForm}
                                             layout="vertical"
-                                            initialValues={{
-                                                fullName: mockUser.fullName,
-                                                birthday: dayjs(mockUser.birthday),
-                                                gender: mockUser.gender,
-                                                phone: mockUser.phone,
-                                                email: mockUser.email
-                                            }}
                                             onFinish={onInfoFinish}
                                         >
                                             <Form.Item
-                                                name="fullName"
+                                                name="fullname"
                                                 label="Họ tên"
                                             >
                                                 <Input />
@@ -262,7 +317,7 @@ export default function UserProfile() {
                                 children: (
                                     <Table
                                         columns={columns}
-                                        dataSource={mockBookings}
+                                        dataSource={bookings}
                                         rowKey="bookingId"
                                         pagination={{ pageSize: 5 }}
                                         style={{ marginTop: 16 }}

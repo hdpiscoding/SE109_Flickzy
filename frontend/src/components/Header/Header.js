@@ -12,6 +12,8 @@ import Register from "../Authenticate/Register";
 import ForgotEnterEmail from "../Authenticate/ForgotEnterEmail";
 import { toast } from "react-toastify";
 import { getAllBrand } from "../../services/CinemaService";
+import ForgotResetPassword from "../Authenticate/ForgotResetPassword";
+import ForgotDone from "../Authenticate/ForgotDone";
 
 export default function Header({ onBookingClick }) {
   const { user, isLoggedIn, logout, login } = useAuthStore();
@@ -19,6 +21,8 @@ export default function Header({ onBookingClick }) {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
+  const [showDone, setShowDone] = useState(false);
+  const [showReset, setShowReset] = useState(false);  const [resetEmail, setResetEmail] = useState("");
   const [cinemas, setCinemas] = useState([]);
 
   useEffect(() => {
@@ -49,6 +53,7 @@ export default function Header({ onBookingClick }) {
     } else if (key === "signout") {
       logout();
       toast.success("Log out successfully!");
+      navigate("/");
       // Add your sign out logic here
     }
   };
@@ -140,8 +145,8 @@ export default function Header({ onBookingClick }) {
                       src={user.avatar}
                       alt="avatar"
                       style={{
-                        width: "30px",
-                        height: "30px",
+                        width: "40px",
+                        height: "40px",
                         borderRadius: "50%",
                       }}
                     />
@@ -205,7 +210,39 @@ export default function Header({ onBookingClick }) {
             setShowForgot(false);
             setShowLogin(true);
           }}
+          onSuccess={(email) => {
+            setShowForgot(false);
+            setResetEmail(email);
+            setShowReset(true);
+          }}
         />
+      )}
+      {showReset && (
+          <ForgotResetPassword
+              open={showReset}
+              email={resetEmail}
+              onClose={() => setShowReset(false)}
+              onShowForgot={() => {
+                setShowReset(false);
+                setShowForgot(true);
+              }}
+              onSuccess={() => {
+                  setShowReset(false);
+                  setShowDone(true);
+                }
+              }
+          />
+      )}
+      {showDone && (
+          <ForgotDone
+              open={showDone}
+              onClose={() => setShowDone(false)}
+              onDone={() => {
+                setShowDone(false);
+                navigate('/');
+                setShowLogin(true);
+              }}
+          />
       )}
     </div>
   );

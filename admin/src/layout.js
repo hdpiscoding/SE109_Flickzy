@@ -8,15 +8,27 @@ import NewRoom from "./components/Rooms/NewRoom";
 import NewRoom2 from "./components/Rooms/NewRoom2";
 import App from "./App";
 import Blog from "./components/Blogs/Blog";
+import MovieDetail from "./components/Movies/MovieDetail";
+import AddMovie from "./components/Movies/AddMovie";
+import EditMovie from "./components/Movies/EditMovie";
+import Login from "./components/Auth/LoginPage";
+import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
 const Layout = () => {
   return (
     <>
       <Routes>
-        <Route path="/" element={<App />}>
+        <Route path="login" element={<Login />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <App />
+          </ProtectedRoute>}>
           <Route index element={<Cinema />} />
           <Route path="brands" element={<Brands />} />
           <Route path="movies" element={<Movies />} />
+          <Route path="movies/:movieId" element={<MovieDetail />} />
+          <Route path="movies/add" element={<AddMovie />} />
+          <Route path="movies/:movieId/edit" element={<EditMovie />} />
           <Route path="schedules" element={<Schedules />} />
           <Route path="rooms" element={<Rooms />} />
           <Route path="blogs" element={<Blog />} />

@@ -15,3 +15,19 @@ export const register = async (email, password) => {
     });
     return response.data;
 }
+
+export const forgotPassword = async (email) => {
+    const response = await axios.post("http://localhost:8386/api/v1/auth/forgot-password", {
+        email,
+    });
+    return response.data;
+}
+
+export const resetPassword = async (otp, email, newPassword) => {
+    const response = await axios.post("http://localhost:8386/api/v1/auth/reset-password", {
+        otp,
+        email,
+        newPassword,
+    });
+    return response.data;
+}

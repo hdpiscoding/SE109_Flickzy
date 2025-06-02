@@ -36,8 +36,8 @@ function ReviewInput({ onSubmit }) {
         }}>
             <div style={{ marginBottom: 24, background: '#fafafa', padding: 16, borderRadius: 8 }}>
                 <div style={{ marginBottom: 8 }}>
-                    <span style={{ fontWeight: 500 }}>Đánh giá: </span>
-                    <Rate allowHalf value={rating} onChange={setRating} />
+                    <span style={{ fontWeight: 500, color: '#333' }}>Đánh giá: </span>
+                    <Rate value={rating} onChange={setRating} />
                 </div>
                 <Input.TextArea
                     rows={3}

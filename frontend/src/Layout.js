@@ -1,4 +1,3 @@
-// Layout.jsx
 import React, { useState, createContext, useContext, useEffect } from "react";
 import { ConfigProvider } from "antd";
 import { Outlet } from "react-router-dom";
@@ -17,6 +16,7 @@ const Layout = () => {
   const [type, setType] = useState(0);
   const [step1, setStep1] = useState(0);
   const [trailerlink, setTrailerlink] = useState("");
+  const [ticketData, setTicketData] = useState(null);
 
   const handleOpen = () => {
     setIsVisible(true);
@@ -31,6 +31,7 @@ const Layout = () => {
 
   const handleNav = (tt) => {
     setIsVisible(true);
+
     setType(1);
   };
   const handleBack = () => {
@@ -51,45 +52,47 @@ const Layout = () => {
     setIsVisible,
     setTrailerlink,
     step1,
+    ticketData,
+    setTicketData,
   };
 
   return (
-    <GlobalContext.Provider value={sharedProps}>
-      <ConfigProvider
-        className="root-theme"
-        theme={{
-          token: {
-            colorPrimary: "#6cc832",
-            borderRadius: 8,
-          },
-        }}
-      >
-        <div className="layout">
-          <Header onBookingClick={handleOpen} />
-          <main className="content">
-            <Outlet context={sharedProps} />
-          </main>
-          <Footer />
+      <GlobalContext.Provider value={sharedProps}>
+        <ConfigProvider
+            className="root-theme"
+            theme={{
+              token: {
+                colorPrimary: "#6cc832",
+                borderRadius: 8,
+              },
+            }}
+        >
+          <div className="layout">
+            <Header onBookingClick={handleOpen} />
+            <main className="content">
+              <Outlet context={sharedProps} />
+            </main>
+            <Footer />
 
-          {isVisible && (
-            <>
-              <div className="overlay" onClick={handleClose} />
-              <div className="floating-booking">
-                {type === 0 && <BookingComponent haveclosebtn={true} />}
-                {type === 1 && (
-                  <div className="booking-step-2">
-                    <PlaceSeatComponent handleback={() => setType(0)} />
+            {isVisible && (
+                <>
+                  <div className="overlay" onClick={handleClose} />
+                  <div className="floating-booking">
+                    {type === 0 && <BookingComponent haveclosebtn={true} />}
+                    {type === 1 && (
+                        <div className="booking-step-2">
+                          <PlaceSeatComponent handleback={() => setType(0)} />
+                        </div>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="floating-booking-transperant ">
-                {type === 2 && <Trailer trailer={trailerlink}></Trailer>}
-              </div>
-            </>
-          )}
-        </div>
-      </ConfigProvider>
-    </GlobalContext.Provider>
+                  <div className="floating-booking-transperant ">
+                    {type === 2 && <Trailer trailer={trailerlink}></Trailer>}
+                  </div>
+                </>
+            )}
+          </div>
+        </ConfigProvider>
+      </GlobalContext.Provider>
   );
 };
 

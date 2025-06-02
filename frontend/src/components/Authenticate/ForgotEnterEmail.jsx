@@ -1,13 +1,30 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Button, ConfigProvider, Form, Input, Modal} from "antd";
 import { ArrowLeft } from 'lucide-react';
 import './Auth.css'
+import {forgotPassword} from "../../services/AuthService";
+import {toast} from "react-toastify";
 
-export default function ForgotEnterEmail({ open, onClose, onShowLogin }) {
+export default function ForgotEnterEmail({ open, onClose, onShowLogin, onSuccess }) {
     const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
 
-    const onFinish = (values) => {
-        console.log("Success:", values);
+    const onFinish = async (values) => {
+        setLoading(true);
+        try {
+            const response = await forgotPassword(values.email);
+            if (response.status === 200) {
+                if (onSuccess) onSuccess(values.email);
+                toast.success(response.message);
+            } else {
+                toast.error(response.message || "Failed to send reset email");
+            }
+        } catch (error) {
+            toast.error(error?.response?.data?.message || "Failed to send reset email");
+        }
+        finally {
+            setLoading(false);
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
@@ -63,6 +80,7 @@ export default function ForgotEnterEmail({ open, onClose, onShowLogin }) {
                             <Button
                                 type="primary"
                                 htmlType="submit"
+                                loading={loading}
                                 style={{
                                     width: "350px",
                                     height: "50px",
