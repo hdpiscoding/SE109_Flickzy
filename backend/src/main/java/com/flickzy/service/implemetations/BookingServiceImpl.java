@@ -46,9 +46,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingResponseDTO addBooking(BookingRequestDTO bookingRequestDTO, UUID userId) {
-        logger.info("Adding new booking: scheduleId={}, seatId={}, userId={}",
-                bookingRequestDTO.getScheduleId(), bookingRequestDTO.getSeatId(), userId);
+    public List<BookingResponseDTO> addBooking(BookingRequestDTO bookingRequestDTO, UUID userId) {
+        logger.info("Adding new bookings: scheduleId={}, userId={}", bookingRequestDTO.getScheduleId(), userId);
 
         // Validate Schedule
         Schedule schedule = scheduleRepository.findById(bookingRequestDTO.getScheduleId())
@@ -64,56 +63,60 @@ public class BookingServiceImpl implements BookingService {
                     return new EntityNotFoundException("User not found");
                 });
 
-        // Validate Seat
-        Seats seat = seatRepository.findById(bookingRequestDTO.getSeatId())
-                .orElseThrow(() -> {
-                    logger.error("Seat not found: {}", bookingRequestDTO.getSeatId());
-                    return new EntityNotFoundException("Seat not found");
-                });
+        List<BookingResponseDTO> responses = new java.util.ArrayList<>();
+        for (BookingRequestDTO.BookingInfo info : bookingRequestDTO.getBookingInfo()) {
+            // Validate Seat
+            Seats seat = seatRepository.findById(info.getSeatId())
+                    .orElseThrow(() -> {
+                        logger.error("Seat not found: {}", info.getSeatId());
+                        return new EntityNotFoundException("Seat not found");
+                    });
 
-        // Check if seat belongs to the schedule's room
-        if (!seat.getRoom().getRoomId().equals(schedule.getRoom().getRoomId())) {
-            logger.error("Seat does not belong to the schedule's room: seatId={}, roomId={}",
-                    seat.getSeatId(), schedule.getRoom().getRoomId());
-            throw new IllegalArgumentException("Seat does not belong to the schedule's room");
+            // Check if seat belongs to the schedule's room
+            if (!seat.getRoom().getRoomId().equals(schedule.getRoom().getRoomId())) {
+                logger.error("Seat does not belong to the schedule's room: seatId={}, roomId={}",
+                        seat.getSeatId(), schedule.getRoom().getRoomId());
+                throw new IllegalArgumentException("Seat does not belong to the schedule's room");
+            }
+
+            // Check if seat is already booked
+            long existingBookings = bookingRepository.count(
+                    BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId()));
+            if (existingBookings > 0) {
+                logger.error("Seat is already booked: seatId={}", seat.getSeatId());
+                throw new IllegalStateException("Seat is already booked");
+            }
+
+            // Remove price validation
+            // Integer expectedPrice = seat.getPrice() != null ? seat.getPrice() : seat.getSeatTypeId().getPrice();
+            // if (!info.getPrice().equals(expectedPrice.doubleValue())) {
+            //     logger.error("Invalid price: provided={}, expected={}", info.getPrice(), expectedPrice);
+            //     throw new IllegalArgumentException("Price does not match the seat's price");
+            // }
+
+            // Validate Schedule Time
+            LocalDateTime scheduleStart = schedule.getScheduleDate().atTime(schedule.getScheduleStart());
+            if (scheduleStart.isBefore(LocalDateTime.now())) {
+                logger.error("Cannot book a past schedule: scheduleId={}", schedule.getScheduleId());
+                throw new IllegalStateException("Cannot book a past schedule");
+            }
+
+            // Create Booking
+            Booking booking = Booking.builder()
+                    .user(user)
+                    .schedule(schedule)
+                    .seat(seat)
+                    .price(info.getPrice())
+                    .seatStatus(1) // CONFIRMED
+                    .build();
+
+            Booking savedBooking = bookingRepository.save(booking);
+            logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
+            responses.add(bookingMapper.toDto(savedBooking));
         }
-
-        // Check if seat is already booked
-        long existingBookings = bookingRepository.count(
-                BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId()));
-        if (existingBookings > 0) {
-            logger.error("Seat is already booked: seatId={}", seat.getSeatId());
-            throw new IllegalStateException("Seat is already booked");
-        }
-
-        // Validate Price
-        Integer expectedPrice = seat.getPrice() != null ? seat.getPrice() : seat.getSeatTypeId().getPrice();
-        if (!bookingRequestDTO.getPrice().equals(expectedPrice.doubleValue())) {
-            logger.error("Invalid price: provided={}, expected={}", bookingRequestDTO.getPrice(), expectedPrice);
-            throw new IllegalArgumentException("Price does not match the seat's price");
-        }
-
-        // Validate Schedule Time
-        LocalDateTime scheduleStart = schedule.getScheduleDate().atTime(schedule.getScheduleStart());
-        if (scheduleStart.isBefore(LocalDateTime.now())) {
-            logger.error("Cannot book a past schedule: scheduleId={}", schedule.getScheduleId());
-            throw new IllegalStateException("Cannot book a past schedule");
-        }
-
-        // Create Booking
-        Booking booking = Booking.builder()
-                .bookingId(UUID.randomUUID())
-                .user(user)
-                .schedule(schedule)
-                .seat(seat)
-                .price(bookingRequestDTO.getPrice())
-                .seatStatus(1) // CONFIRMED
-                .build();
-
-        Booking savedBooking = bookingRepository.save(booking);
-        logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
-        return bookingMapper.toDto(savedBooking);
+        return responses;
     }
+
     @Override
     public List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId) {
         logger.info("Fetching bookings for schedule: scheduleId={}", scheduleId);

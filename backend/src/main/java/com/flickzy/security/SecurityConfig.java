@@ -40,6 +40,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/reviews/summary").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/rooms/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/seats/room/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/brands").permitAll()
