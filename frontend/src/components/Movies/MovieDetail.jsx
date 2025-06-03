@@ -27,6 +27,7 @@ import {
     getMovieDetail,
     getAllMovieReviews,
     isUserReviewed,
+    canUserReview,
     createMovieReview,
     getAllMovieSchedule
 } from "../../services/MovieService";
@@ -222,15 +223,19 @@ export default function MovieDetail() {
             setCinemaBrands(cinemaBrandsResponse.data);
             setShowingMovies(showingMoviesResponse.data);
             if (isLoggedIn) {
-                const res = await isUserReviewed(movieId)
-                setIsUserReviewedState(res.isReviewed);
+                const [isRes, canRes] = await Promise.all([
+                    isUserReviewed(movieId),
+                    canUserReview(movieId)
+                ]);
+                setIsUserReviewedState(isRes.isReviewed);
+                setCanUserReviewState(canRes.canReview);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }
     const [isUserReviewedState, setIsUserReviewedState] = useState(false);
-    const [canUserReviewState, setCanUserReviewState] = useState(true);
+    const [canUserReviewState, setCanUserReviewState] = useState(false);
 
     const [openTrailer, setOpenTrailer] = useState(false);
     const handleViewTrailer = () => {
