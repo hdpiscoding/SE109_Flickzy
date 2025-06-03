@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { QRCodeCanvas } from "qrcode.react";
 import Button from "../OtherComponents/Button";
 import "./PaymentForm.css"; // Import CSS for styling
 import { useGlobalContext } from "../../Layout";
+import { getLink } from "../../services/PaymentService";
 export default function PaymentForm({ handleClose, seats, snacks }) {
   const { ticketData } = useGlobalContext();
+  const [qrCode, setQrCode] = useState(null);
   const handlePriceSeats = (seats) => {
     if (!Array.isArray(seats)) return 0;
     return seats.reduce((total, seat) => {
@@ -44,6 +47,19 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
     const url = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
     window.open(url, "_blank");
   };
+  useEffect(() => {
+    const fetchQRCode = async () => {
+      const sum = handlePriceSeats(seats) + handlePriceSnacks(snacks);
+      try {
+        const response = await getLink(sum, "Thanh toán vé xem phim");
+        setQrCode(response.payUrl);
+      } catch (error) {
+        console.error("Lỗi khi lấy link thanh toán:", error);
+      }
+    };
+
+    fetchQRCode();
+  }, []);
   return (
     <div
       onClick={handleClose} // Gọi handleClose khi nhấp vào nền
@@ -173,7 +189,7 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
                 {seats.map((seat, index) => (
                   <span key={index}>
                     {seat.name}
-                    {index < seats.length - 1 ? ", " : ""}
+                    {index < seats.length - 1 ? "\u00A0,\u00A0" : ""}{" "}
                   </span>
                 ))}
               </div>
@@ -220,7 +236,12 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
             </div>
 
             <div className="qr-box">
-              <img src="/images/momo-qr.png" alt="QR MoMo" className="qr-img" />
+              <QRCodeCanvas
+                value={qrCode}
+                size={200}
+                level="H"
+                includeMargin={true}
+              />
             </div>
             <div className="momo-note">
               Sử dụng App MoMo hoặc <br />
