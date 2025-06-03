@@ -32,27 +32,33 @@ export default function Blog() {
   useEffect(() => {}, []);
   const [title, setTitle] = React.useState("Latest");
   const [description, setDescription] = React.useState(
-    "Latest articles, reviews, and news about movies and series."
+    "Stay updated with the best movie blogs on the market, covering all genres and countries. Unravel intriguing and captivating film content."
   );
   const onChange = (key) => {
     switch (key) {
       case "1":
         setTitle("Latest");
         setDescription(
-          "Latest articles, reviews, and news about movies and series."
+          "Stay updated with the best movie blogs on the market, covering all genres and countries. Unravel intriguing and captivating film content."
         );
         break;
       case "2":
         setTitle("Theatrical movie");
-        setDescription("Theatrical movie reviews and news.");
+        setDescription(
+          "Blockbuster and theatrical releases that leave a strong impression—only on Flickzy."
+        );
         break;
       case "3":
         setTitle("Movie Collection");
-        setDescription("Movie collection reviews and news.");
+        setDescription(
+          "A collection of exciting movies, series, Netflix content, and more."
+        );
         break;
       case "4":
         setTitle("Movie Review");
-        setDescription("Movie reviews and news.");
+        setDescription(
+          "Great movie reviews, online films, theatrical releases, and much more..."
+        );
         break;
       default:
         break;

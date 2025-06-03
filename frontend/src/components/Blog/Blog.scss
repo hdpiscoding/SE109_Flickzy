@@ -1,15 +1,88 @@
 .container {
-    margin-top: 100px;
+    margin-top    : 32px;
+    max-width     : 1200px;
+    margin-left   : auto;
+    margin-right  : auto;
+    background    : #fff;
+    border-radius : 18px;
+    box-shadow    : 0 2px 16px rgba(0, 0, 0, 0.04);
+    padding       : 48px 32px 32px 32px;
+    display       : flex;
+    flex-direction: column;
+    align-items   : flex-start;
 
     .title {
-        font-size  : 2rem;
-        font-weight: 700;
-        color      : var(--color-primary);
+        font-size     : 3rem;
+        font-weight   : 800;
+        color         : #222;
+        margin-bottom : 8px;
+        letter-spacing: -1px;
+        line-height   : 1.1;
+        font-family   : 'Montserrat', 'Roboto', Arial, sans-serif;
     }
 
     .description {
-        font-size  : 1rem;
-        font-weight: 400;
-        color      : var(--color-secondary);
+        font-size    : 1.25rem;
+        font-weight  : 400;
+        color        : #888;
+        margin-bottom: 32px;
+        font-family  : 'Roboto', Arial, sans-serif;
+    }
+
+    // Ant Design Tabs custom style
+    .ant-tabs {
+        width: 100%;
+
+        .ant-tabs-nav {
+            margin-bottom: 32px;
+
+            .ant-tabs-nav-list {
+                gap: 32px;
+            }
+
+            .ant-tabs-tab {
+                font-size  : 1.15rem;
+                font-weight: 600;
+                color      : #222;
+                background : transparent;
+                padding    : 0 0 12px 0;
+                margin     : 0 24px 0 0;
+                border     : none;
+                transition : color 0.2s;
+            }
+
+            .ant-tabs-tab-active {
+                color      : #222;
+                font-weight: 700;
+                background : transparent;
+            }
+
+            .ant-tabs-ink-bar {
+                background   : #ffd600 !important; // vàng MoMo
+                height       : 3px !important;
+                border-radius: 2px 2px 0 0;
+            }
+        }
+
+        .ant-tabs-content-holder {
+            background: transparent;
+            padding   : 0;
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 900px) {
+    .container {
+        max-width: 100%;
+        padding  : 32px 8px 24px 8px;
+
+        .title {
+            font-size: 2rem;
+        }
+
+        .description {
+            font-size: 1rem;
+        }
     }
 }
