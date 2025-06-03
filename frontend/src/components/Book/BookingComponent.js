@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Card, List, Typography, Image, Row, Col, Spin, Empty } from "antd";
+import {
+  Card,
+  List,
+  Typography,
+  Image,
+  Row,
+  Col,
+  Spin,
+  Empty,
+  Input,
+} from "antd";
 import { EnvironmentOutlined } from "@ant-design/icons";
 import { FaRegMap } from "react-icons/fa6";
 import "./FloatingBooking.css";
-import Search from "antd/es/transfer/search";
 import { useGlobalContext } from "../../Layout";
 import { getAllBrands, getAllCinemas } from "../../services/BookingService";
 import { getScheduleByCinemaAndDate } from "../../services/ScheduleService";
@@ -13,12 +22,13 @@ const { Title, Text } = Typography;
 const dates = [];
 const weekdays = ["Today"];
 
-const times = [
-  { label: "2D Phụ đề", slots: ["21:50 ~ 23:58", "22:50 ~ 00:58"] },
-  { label: "2D Phụ đề | 4DX", slots: ["23:10 ~ 01:18"] },
-  { label: "2D Phụ đề | GOLD CLASS", slots: ["22:20 ~ 00:28"] },
-  { label: "2D Phụ đề | CINE SUITE", slots: ["23:30 ~ 01:30"] },
-];
+const formatTime = (time) => {
+  if (!time) return "";
+  const [hourStr, minuteStr] = time.split(":");
+  let hour = parseInt(hourStr, 10);
+  const minute = minuteStr;
+  return `${hour}:${minute}`;
+};
 
 export default function BookingComponent({ haveclosebtn }) {
   const [brands, setBrands] = useState([]);
@@ -29,11 +39,81 @@ export default function BookingComponent({ haveclosebtn }) {
   const [schedule, setSchedule] = useState([]);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
 
-  const { handleNav, handleClose } = context;
+  const { handleNav, handleClose, setTicketData } = context;
 
   const [selectedCinema, setSelectedCinema] = useState(null);
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
   const [provinces, setProvinces] = useState([]);
+  const [selectedProvince, setSelectedProvince] = useState("");
+  const [searchText, setSearchText] = useState("");
+  const [isNearYou, setIsNearYou] = useState(false);
+  const [loadingProvince, setLoadingProvince] = useState(false);
+
+  // Mở Google Maps địa chỉ rạp ở tab mới
+  const handleOpenMap = () => {
+    if (selectedCinema && selectedCinema.cinemaAddress) {
+      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        selectedCinema.cinemaAddress
+      )}`;
+      window.open(url, "_blank");
+    }
+  };
+
+  const getProvinceFromLocation = async () => {
+    setLoadingProvince(true);
+    setIsNearYou(true);
+    setSelectedProvince("");
+    if (!window.navigator.geolocation) {
+      alert("Trình duyệt không hỗ trợ định vị.");
+      setLoadingProvince(false);
+      setIsNearYou(false);
+      return;
+    }
+
+    window.navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&accept-language=vi`;
+          const res = await fetch(url, {
+            headers: {
+              "User-Agent": "YourAppName/1.0 (your@email.com)",
+            },
+          });
+          const data = await res.json();
+
+          if (data && data.address) {
+            let province =
+              data.address.state || data.address.region || data.address.city;
+            if (province) {
+              province = province
+                .replace(/^Tỉnh\s+/i, "")
+                .replace(/^Thành phố\s+/i, "");
+              setSelectedProvince(province);
+              setIsNearYou(false);
+            } else {
+              alert("Không xác định được tỉnh/thành phố.");
+              setIsNearYou(false);
+            }
+          } else {
+            alert("Không lấy được dữ liệu địa chỉ.");
+            setIsNearYou(false);
+          }
+        } catch (error) {
+          alert("Lỗi khi truy xuất dữ liệu từ OpenStreetMap.");
+          setIsNearYou(false);
+        } finally {
+          setLoadingProvince(false);
+        }
+      },
+      (err) => {
+        alert("Lỗi khi lấy vị trí: " + err.message);
+        setLoadingProvince(false);
+        setIsNearYou(false);
+      }
+    );
+  };
+
   const ageRatingColors = {
     P: "#4CAF50",
     "13+": "#FFA500",
@@ -45,7 +125,13 @@ export default function BookingComponent({ haveclosebtn }) {
     const fetchProvinces = async () => {
       try {
         const response = await fetch("https://provinces.open-api.vn/api/");
-        const data = await response.json();
+        let data = await response.json();
+        data = data.map((province) => {
+          let name = province.name
+            .replace(/^Tỉnh\s+/i, "")
+            .replace(/^Thành phố\s+/i, "");
+          return { ...province, name };
+        });
         setProvinces(data);
       } catch (error) {
         console.error("Error fetching provinces:", error);
@@ -62,7 +148,6 @@ export default function BookingComponent({ haveclosebtn }) {
           avatar:
             "https://static.vecteezy.com/system/resources/thumbnails/026/631/971/small/category-icon-symbol-design-illustration-vector.jpg",
         };
-
         setBrands([allBrand, ...data]);
       } catch (error) {
         console.error("Error fetching brands:", error);
@@ -99,22 +184,52 @@ export default function BookingComponent({ haveclosebtn }) {
     fetchProvinces();
   }, []);
 
-  const handleNavigate = () => {
+  const handleNavigate = (idx, scheduleInfo) => {
+    setTicketData({
+      cinema: selectedCinema,
+      brandId: selectedCinema.brandId,
+      scheduleInfo: scheduleInfo,
+      movieInfo: schedule[idx],
+    });
     handleNav(1);
   };
 
+  // Filter cinemas by brand, province (by cinema.province), and search text
   useEffect(() => {
-    if (selectedBrand === "all") {
-      setCinemas(allCinemas);
-      setSelectedCinema(allCinemas[0] || null);
-    } else {
-      const filteredCinemas = allCinemas.filter(
-        (cinema) => cinema.brandId === selectedBrand
-      );
-      setCinemas(filteredCinemas);
-      setSelectedCinema(filteredCinemas[0] || null);
+    let filtered = allCinemas;
+
+    if (selectedBrand !== "all") {
+      filtered = filtered.filter((cinema) => cinema.brandId === selectedBrand);
     }
-  }, [selectedBrand, allCinemas]);
+
+    if (selectedProvince) {
+      filtered = filtered.filter(
+        (cinema) =>
+          cinema.province &&
+          cinema.province.toLowerCase() === selectedProvince.toLowerCase()
+      );
+    }
+
+    if (searchText.trim() !== "") {
+      filtered = filtered.filter(
+        (cinema) =>
+          cinema.cinemaName &&
+          cinema.cinemaName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    setCinemas(filtered);
+    setSelectedCinema(filtered[0] || null);
+  }, [selectedBrand, allCinemas, selectedProvince, searchText]);
+
+  const handleProvinceChange = (e) => {
+    setIsNearYou(false);
+    setSelectedProvince(e.target.value);
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchText(e.target.value);
+  };
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -166,28 +281,102 @@ export default function BookingComponent({ haveclosebtn }) {
             <EnvironmentOutlined
               style={{ color: "#6cc832", marginRight: 8, fontSize: 22 }}
             />
-            <select
-              onChange={(e) =>
-                console.log("Selected province:", e.target.value)
-              }
+            <div
               style={{
-                padding: "8px",
                 borderRadius: "4px",
-                fontSize: "16px",
-                border: "1px solid #d9d9d9",
+                backgroundColor: selectedProvince ? "#6cc832" : "#d9d9d9",
+                transition: "background 0.2s",
+                padding: 0,
+                display: "flex",
+                alignItems: "center",
+                border: selectedProvince
+                  ? "1.5px solid #6cc832"
+                  : "1.5px solid #d9d9d9",
+                position: "relative",
               }}
             >
-              <option value="">Select province/city</option>
-              {provinces.map((province) => (
-                <option key={province.code} value={province.name}>
-                  {province.name}
-                </option>
-              ))}
-            </select>
-            <div className="neary">
-              Near You <FaRegMap />
+              <select
+                value={selectedProvince}
+                onChange={handleProvinceChange}
+                style={{
+                  padding: "8px",
+                  borderRadius: "4px",
+                  fontSize: "16px",
+                  border: "1px solid #d9d9d9",
+                  backgroundColor: "#fff",
+                  color: "#333",
+                  fontWeight: "normal",
+                  outline: "none",
+                  appearance: "none",
+                  minWidth: 180,
+                  cursor: "pointer",
+                }}
+              >
+                <option value="">Select province/city</option>
+                {provinces.map((province) => (
+                  <option key={province.code} value={province.name}>
+                    {province.name}
+                  </option>
+                ))}
+              </select>
+              {selectedProvince && (
+                <span
+                  onClick={() => setSelectedProvince("")}
+                  style={{
+                    position: "absolute",
+                    right: 8,
+                    top: "50%",
+                    transform: "translateY(-50%)",
+                    cursor: "pointer",
+                    color: "#888",
+                    fontWeight: "bold",
+                    fontSize: 14,
+                    background: "#fff",
+                    borderRadius: "50%",
+                    width: 24,
+                    height: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "1px solid #eee",
+                    zIndex: 2,
+                  }}
+                  title="Xóa chọn"
+                >
+                  <div>✕</div>
+                </span>
+              )}
+            </div>
+            <div
+              className="neary"
+              onClick={getProvinceFromLocation}
+              style={{
+                height: 45,
+                marginLeft: 8,
+                padding: "4px 12px",
+                borderRadius: 6,
+                background: isNearYou ? "#6cc832" : "#f5f5f5",
+                color: isNearYou ? "#fff" : "#333",
+                cursor: "pointer",
+                fontWeight: isNearYou ? "bold" : "normal",
+                display: "flex",
+                alignItems: "center",
+                transition: "background 0.2s, color 0.2s",
+                position: "relative",
+              }}
+            >
+              {loadingProvince && (
+                <Spin
+                  size="small"
+                  style={{
+                    marginRight: 8,
+                  }}
+                />
+              )}
+              Near You <FaRegMap style={{ marginLeft: 4, fontSize: 20 }} />
             </div>
           </div>
+
           {haveclosebtn && (
             <div
               onClick={handleClose}
@@ -257,48 +446,59 @@ export default function BookingComponent({ haveclosebtn }) {
         ))}
       </Row>
       <hr style={{ color: "gray", margin: " 16px 0 24px 0" }}></hr>
-
-      <Row gutter={[16, 16]}>
+      <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
         <Col xs={24} md={8}>
-          <Search />
-          <List
-            dataSource={cinemas}
-            renderItem={(cinema) => (
-              <List.Item
-                className={`cinema-item ${
-                  cinema.cinemaName === selectedCinema?.cinemaName
-                    ? "cinema-item-selected"
-                    : ""
-                }`}
-                style={{
-                  cursor: "pointer",
-                  borderRadius: 8,
-                  padding: "8px 8px",
-                  marginTop: 8,
-                }}
-                onClick={() => setSelectedCinema(cinema)}
-              >
-                <Text
+          <Spin spinning={loadingProvince}>
+            <Input
+              placeholder="Search cinema by name"
+              value={searchText}
+              onChange={handleSearchChange}
+              style={{ marginBottom: 8, borderRadius: 8 }}
+              allowClear
+            />
+            <List
+              style={{
+                maxHeight: 400,
+                overflowY: "auto",
+              }}
+              dataSource={cinemas}
+              renderItem={(cinema) => (
+                <List.Item
+                  className={`cinema-item ${
+                    cinema.cinemaName === selectedCinema?.cinemaName
+                      ? "cinema-item-selected"
+                      : ""
+                  }`}
                   style={{
-                    fontWeight:
-                      cinema.cinemaName === selectedCinema?.cinemaName
-                        ? "bold"
-                        : "normal",
+                    cursor: "pointer",
+                    borderRadius: 8,
+                    padding: "8px 8px",
+                    marginTop: 8,
                   }}
+                  onClick={() => setSelectedCinema(cinema)}
                 >
-                  {cinema.cinemaName}
-                </Text>
-              </List.Item>
-            )}
-          />
+                  <Text
+                    style={{
+                      fontWeight:
+                        cinema.cinemaName === selectedCinema?.cinemaName
+                          ? "bold"
+                          : "normal",
+                    }}
+                  >
+                    {cinema.cinemaName}
+                  </Text>
+                </List.Item>
+              )}
+            />
+          </Spin>
         </Col>
 
         <Col
           xs={24}
           md={16}
-          style={{ padding: "0 32px", transform: "translateY(-32px)" }}
+          style={{ padding: "0 32px", transform: "translateY(-20px)" }}
         >
-          <div style={{ margin: "16px 0" }}>
+          <div style={{ margin: "16px 0" }} onClick={handleOpenMap}>
             <Title level={4}>
               {selectedCinema?.cinemaName} movie showtimes
             </Title>
@@ -334,11 +534,15 @@ export default function BookingComponent({ haveclosebtn }) {
           <div
             style={{
               maxHeight: haveclosebtn ? "60vh" : 900,
+              minHeight: 300,
               overflowY: "auto",
               position: "relative",
             }}
           >
-            <Spin spinning={loadingSchedule}>
+            <Spin
+              spinning={loadingSchedule}
+              style={{ transform: "translateY(100px)" }}
+            >
               {!loadingSchedule && schedule.length === 0 ? (
                 <Empty
                   description="No schedule available"
@@ -393,16 +597,38 @@ export default function BookingComponent({ haveclosebtn }) {
                               fontSize: 16,
                               marginBottom: 0,
                               maxWidth: 400,
-                              whiteSpace: "normal", // Cho phép xuống dòng
-                              wordBreak: "break-word", // Ngắt từ nếu quá dài
+                              whiteSpace: "normal",
+                              wordBreak: "break-word",
                             }}
                           >
                             {item.movieName}
                           </div>
                           <Text type="secondary">{item.genresName}</Text>
                           <div style={{ marginTop: 16 }}>
-                            {times.map((time) => (
-                              <div key={time.label} style={{ marginBottom: 8 }}>
+                            {/* Nhóm schedules theo typeId */}
+                            {Object.values(
+                              item.schedules
+                                ? item.schedules.reduce((acc, sch) => {
+                                    if (!acc[sch.typeId]) {
+                                      acc[sch.typeId] = {
+                                        typeName: sch.typeName,
+                                        slots: [],
+                                      };
+                                    }
+                                    acc[sch.typeId].slots.push({
+                                      label: `${formatTime(
+                                        sch.scheduleStart
+                                      )} ~ ${formatTime(sch.scheduleEnd)}`,
+                                      schedule: sch,
+                                    });
+                                    return acc;
+                                  }, {})
+                                : {}
+                            ).map((group, groupIdx) => (
+                              <div
+                                key={group.typeName + groupIdx}
+                                style={{ marginBottom: 8 }}
+                              >
                                 <div
                                   style={{
                                     fontSize: 14,
@@ -410,7 +636,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                     marginBottom: 4,
                                   }}
                                 >
-                                  {time.label}
+                                  {group.typeName}
                                 </div>
                                 <div
                                   style={{
@@ -419,11 +645,12 @@ export default function BookingComponent({ haveclosebtn }) {
                                     flexWrap: "wrap",
                                   }}
                                 >
-                                  {time.slots.map((slot) => (
+                                  {group.slots.map((slot, slotIdx) => (
                                     <div
-                                      key={slot}
-                                      className="slot-button"
-                                      onClick={handleNavigate}
+                                      key={slot.label + slotIdx}
+                                      onClick={() =>
+                                        handleNavigate(idx, slot.schedule)
+                                      }
                                       style={{
                                         fontSize: 16,
                                         padding: "4px 16px",
@@ -434,7 +661,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                         borderRadius: 8,
                                       }}
                                     >
-                                      {slot}
+                                      {slot.label}
                                     </div>
                                   ))}
                                 </div>

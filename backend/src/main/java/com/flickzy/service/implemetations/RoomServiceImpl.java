@@ -88,10 +88,10 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public void deleteRoom(@NotNull UUID roomId) {
-        if (!roomRepository.existsById(roomId)) {
-            throw new RoomNotFoundException(roomId);
-        }
-        roomRepository.deleteById(roomId);
+        Room room = roomRepository.findById(roomId)
+                .orElseThrow(() -> new RoomNotFoundException(roomId));
+        room.setDelete(true);
+        roomRepository.save(room);
     }
 
     /**
@@ -109,9 +109,11 @@ public class RoomServiceImpl implements RoomService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
         Page<Room> roomPage = roomRepository.findAll(pageable);
+
         List<RoomDTO> roomDTOs = roomPage.getContent().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
+        
 
         return PaginatedResponse.<RoomDTO>builder()
                 .data(roomDTOs)
@@ -146,6 +148,7 @@ public class RoomServiceImpl implements RoomService {
                 .roomType(room.getRoomType())
                 .width(room.getWidth())
                 .height(room.getHeight())
+                .isDelete(room.isDelete())
                 .build();
     }
 

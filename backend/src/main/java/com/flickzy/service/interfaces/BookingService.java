@@ -1,5 +1,4 @@
 package com.flickzy.service.interfaces;
-
 import com.flickzy.dto.BookingRequestDTO;
 import com.flickzy.dto.BookingResponseDTO;
 

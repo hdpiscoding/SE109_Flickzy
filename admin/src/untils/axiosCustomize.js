@@ -1,7 +1,6 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
-
 const getToken = () => {
   return useAuthStore.getState().token;
 };
@@ -16,30 +15,27 @@ const instance = axios.create({
 
 // Add a request interceptor
 instance.interceptors.request.use(
-    (config) => {
-      const token = getToken();
-      if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // Add a response interceptor
 instance.interceptors.response.use(
   function (response) {
-    // Any status code that lie within the range of 2xx cause this function to trigger
-    // Do something with response data
     return response.data;
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
-    // Do something with response error
     console.log("API error", error);
     return Promise.reject(error);
   }
 );
+
 export default instance;

@@ -164,7 +164,9 @@ export default function RectangleGrid() {
     const fetchSeatTypes = async () => {
       const res = await getAllSeatTypes();
 
-      setPredefinedRectangles(res);
+      const data = res.data.data;
+
+      setPredefinedRectangles(data);
     };
 
     fetchSeatTypes();

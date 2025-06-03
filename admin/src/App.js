@@ -13,11 +13,8 @@ import {
 } from "@ant-design/icons";
 import {
   Avatar,
-  Breadcrumb,
   Button,
-  Col,
   Dropdown,
-  Image,
   Layout,
   Menu,
   Row,
@@ -27,7 +24,7 @@ import {
 } from "antd";
 import { useNavigate } from "react-router";
 import { Outlet } from "react-router";
-import {toast} from "react-toastify";
+import { toast } from "react-toastify";
 import useAuthStore from "./store/useAuthStore";
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -66,10 +63,10 @@ const items = [
 
 const menuProps = [
   {
-    key: 'signout',
+    key: "signout",
     label: "Đăng xuất",
     icon: React.createElement(LogoutOutlined),
-    danger: true
+    danger: true,
   },
 ];
 
@@ -79,7 +76,7 @@ const App = () => {
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const {user, logout} = useAuthStore();
+  const { user, logout } = useAuthStore();
 
   const handleMenuClick = ({ key }) => {
     if (key === "signout") {
@@ -103,21 +100,12 @@ const App = () => {
           breakpoint="lg"
           collapsedWidth="50px"
           onBreakpoint={(broken) => {
-            console.log(broken);
+            setIsShowLogo(!broken);
           }}
           onCollapse={(collapsed, type) => {
-            console.log(collapsed, type);
-            setIsShowLogo(!isShowLogo);
+            setIsShowLogo(!collapsed);
           }}>
-          {isShowLogo && (
-            // <Image
-            //   src={require("./assets/images/TaskMate.png")}
-            //   width={120}
-            //   style={{ margin: 27 }}
-            // />
-            <div></div>
-          )}
-
+          {isShowLogo && <div></div>}
           <Menu
             theme="light"
             mode="vertical"
@@ -149,7 +137,6 @@ const App = () => {
                 case "6":
                   nav("/blogs");
                   break;
-
                 default:
                   break;
               }
@@ -169,11 +156,11 @@ const App = () => {
                   fontSize: "1rem",
                   marginLeft: "1rem",
                   fontWeight: "bold",
-                }}
-              >
+                }}>
                 Admin
               </span>
-              <Dropdown overlay={<Menu onClick={handleMenuClick} items={menuProps} />}>
+              <Dropdown
+                overlay={<Menu onClick={handleMenuClick} items={menuProps} />}>
                 <div>
                   <Button>
                     <Space>
@@ -205,4 +192,5 @@ const App = () => {
     </ConfigProvider>
   );
 };
+
 export default App;

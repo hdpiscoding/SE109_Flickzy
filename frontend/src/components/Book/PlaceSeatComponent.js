@@ -1,313 +1,284 @@
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "../OtherComponents/Button";
 import { IoArrowBack } from "react-icons/io5";
-import "./FloatingBooking.css"; // Import CSS for styling
+import "./FloatingBooking.css";
 import Snack from "./Snack";
 import PaymentForm from "./PaymentForm";
-import { Spin } from "antd"; // Import Spin from Ant Design
+import { Spin } from "antd";
 import { useGlobalContext } from "../../Layout";
-import { getARoom, getAllSeatsByRoomId } from "../../services/BookingService";
-import { calc } from "antd/es/theme/internal";
+import {
+  getARoom,
+  getAllSeatsByRoomId,
+  getUnavaiSeat,
+} from "../../services/BookingService";
+
 export default function PlaceSeatComponent() {
-  const [roomId, setRoomId] = useState("cccda124-8dd8-44cc-8bc9-1ff692193e05");
-  const [scheduleInfo, setScheduleInfo] = useState({
-    scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
-    scheduleDate: "2025-05-23",
-    scheduleStart: "17:00:00",
-    scheduleEnd: "19:00:00",
-    roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
-    roomType: "Phòng chiếu IMAX with Laser",
-  });
-  const moviesInfo = {
-    movieId: "636411cd-e9ff-46f3-b542-fc21d818a7bc",
-    movieName: "Until Dawn: Bí Mật Kinh Hoàng",
-    ageRating: "18+",
-    moviePoster:
-      "https://cinema.momocdn.net/img/76503184372632094-untilll.png?size=M",
-    genresName: "Kinh dị",
-    schedules: [
-      {
-        scheduleId: "a76571de-dd11-4f91-b3a4-2fd80a33ddc5",
-        scheduleDate: "2025-05-23",
-        scheduleStart: "17:00:00",
-        scheduleEnd: "19:00:00",
-        roomId: "cccda124-8dd8-44cc-8bc9-1ff692193e05",
-        roomType: null,
-      },
-    ],
-  };
-  const { handleBack, handleNav, handleClose, step1 } = useGlobalContext();
+  const { handleBack, handleNav, handleClose, step1, ticketData } =
+    useGlobalContext();
+  const [brandId] = useState(ticketData.brandId);
+  const [scheduleInfo, setScheduleInfo] = useState(ticketData.scheduleInfo);
+  const moviesInfo = ticketData.movieInfo;
+  const [snacks, setSnacks] = useState([]);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState(false); // Trạng thái hiển thị modal
-  const [isPayFormVisible, setIsPayFormVisible] = useState(false); // Trạng thái hiển thị form thanh toán
-  const [screenLength, setScreenLength] = useState(0.7);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isPayFormVisible, setIsPayFormVisible] = useState(false);
+  const [screenLength] = useState(0.7);
   const [seat, setSeat] = useState([]);
   const [seatType, setSeatType] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
-  const booking = [1, 2, 3];
+  const [booking, setBooking] = useState([]);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
   const ageRatingColors = {
     P: "#4CAF50",
     "13+": "#FFA500",
     "16+": "#FF8C00",
     "18+": "#FF3B30",
   };
+
+  // Fetch data
   useEffect(() => {
-    //Api get a room
-    const fetchRoomData = async () => {
-      const response = await getARoom(scheduleInfo.roomId);
-      setHeight(response.data.height);
-      setWidth(response.data.width);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [unavailRes, roomRes, seatRes] = await Promise.all([
+          getUnavaiSeat(scheduleInfo.scheduleId),
+          getARoom(scheduleInfo.roomId),
+          getAllSeatsByRoomId(scheduleInfo.roomId),
+        ]);
+        setBooking(unavailRes.data.map((seat) => seat.seatId));
+        setHeight(roomRes.data.height);
+        setWidth(roomRes.data.width);
+        setSeat(seatRes.data);
+
+        // Format schedule info
+        const formatTime = (timeStr) => {
+          if (!timeStr) return "";
+          const [hour, minute] = timeStr.split(":");
+          return `${hour}:${minute}`;
+        };
+        const formatDate = (dateStr) => {
+          if (!dateStr) return "";
+          const dateObj = new Date(dateStr);
+          const today = new Date();
+          const isToday =
+            dateObj.getDate() === today.getDate() &&
+            dateObj.getMonth() === today.getMonth() &&
+            dateObj.getFullYear() === today.getFullYear();
+          const dayNames = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+          ];
+          const dayName = isToday ? "Today" : dayNames[dateObj.getDay()];
+          const day = String(dateObj.getDate()).padStart(2, "0");
+          const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+          return `${dayName}, ${day}/${month}`;
+        };
+        setScheduleInfo({
+          scheduleId: scheduleInfo.scheduleId,
+          scheduleDate: formatDate(scheduleInfo.scheduleDate),
+          scheduleStart: formatTime(scheduleInfo.scheduleStart),
+          scheduleEnd: formatTime(scheduleInfo.scheduleEnd),
+          roomId: scheduleInfo.roomId,
+          roomType: scheduleInfo.roomType,
+        });
+      } catch (err) {
+        // handle error
+      }
+      setIsLoading(false);
     };
-    const fetchSeatData = async () => {
-      const response = await getAllSeatsByRoomId(scheduleInfo.roomId);
-      setSeat(response.data);
-    };
-    const formatData = () => {
-      // Format start and end time as HH:mm
-      const formatTime = (timeStr) => {
-        if (!timeStr) return "";
-        const [hour, minute] = timeStr.split(":");
-        return `${hour}:${minute}`;
-      };
-
-      // Format date as "Today, dd/MM" or "Saturday, dd/MM"
-      const formatDate = (dateStr) => {
-        if (!dateStr) return "";
-        const dateObj = new Date(dateStr);
-        const today = new Date();
-        const isToday =
-          dateObj.getDate() === today.getDate() &&
-          dateObj.getMonth() === today.getMonth() &&
-          dateObj.getFullYear() === today.getFullYear();
-
-        const dayNames = [
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-        ];
-        const dayName = isToday ? "Today" : dayNames[dateObj.getDay()];
-        const day = String(dateObj.getDate()).padStart(2, "0");
-        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-        return `${dayName}, ${day}/${month}`;
-      };
-
-      const formatSchedule = {
-        scheduleId: scheduleInfo.scheduleId,
-        scheduleDate: formatDate(scheduleInfo.scheduleDate),
-        scheduleStart: formatTime(scheduleInfo.scheduleStart),
-        scheduleEnd: formatTime(scheduleInfo.scheduleEnd),
-        roomId: scheduleInfo.roomId,
-        roomType: scheduleInfo.roomType,
-      };
-      setScheduleInfo(formatSchedule);
-    };
-    formatData();
-
-    fetchRoomData();
-    fetchSeatData();
+    fetchData();
+    // eslint-disable-next-line
   }, []);
-  useEffect(() => {
-    const getAllSeatStyle = () => {
-      const uniqueSeatTypes = [];
-      seat.forEach((seatItem) => {
-        if (
-          seatItem.seatTypeId &&
-          !uniqueSeatTypes.some(
-            (type) => type.seatTypeId === seatItem.seatTypeId.seatTypeId
-          )
-        ) {
-          uniqueSeatTypes.push(seatItem.seatTypeId);
-        }
-      });
 
-      setSeatType(uniqueSeatTypes);
-    };
-    getAllSeatStyle();
-    setIsLoading(false);
-  }, [seat]);
+  // Get unique seat types
   useEffect(() => {
-    const total = selectedSeats.reduce(
-      (sum, seat) => sum + (seat.seatTypeId.price || 0),
-      0
+    if (!seat.length) return;
+    const uniqueSeatTypes = [];
+    seat.forEach((seatItem) => {
+      if (
+        seatItem.seatTypeId &&
+        !uniqueSeatTypes.some(
+          (type) => type.seatTypeId === seatItem.seatTypeId.seatTypeId
+        )
+      ) {
+        uniqueSeatTypes.push(seatItem.seatTypeId);
+      }
+    });
+    setSeatType(uniqueSeatTypes);
+  }, [seat]);
+
+  // Calculate total
+  useEffect(() => {
+    setTotalAmount(
+      selectedSeats.reduce((sum, seat) => sum + (seat.seatTypeId.price || 0), 0)
     );
-    setTotalAmount(total);
   }, [selectedSeats]);
 
-  const handleBuyNowClick = () => {
-    setIsModalVisible(true); // Hiển thị modal
-  };
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false); // Đóng modal
-  };
-  // hàm gọi  mở giao diện để thanh toán
-  const handlePay = () => {
-    setIsPayFormVisible(true); // Hiển thị form thanh toán
-  };
-
-  const handleClosePayForm = () => {
-    setIsPayFormVisible(false); // Đóng form thanh toán
-  };
-
+  // Seat style
   const getSeatStyle = (seatItem) => {
     const type = seatItem.seatTypeId;
-    const isUnavailable = booking.includes(seatItem.seat_id);
-    const isSelected = selectedSeats.includes(seatItem);
-
+    const isUnavailable = booking.includes(seatItem.seatId);
+    const isSelected = selectedSeats.some((s) => s.seatId === seatItem.seatId);
     return {
       gridRow: `${seatItem.row} / span ${type?.height || 1}`,
       gridColumn: `${seatItem.columnn} / span ${type?.width || 1}`,
-      backgroundColor: isUnavailable ? "gray" : type?.color || "gray",
-
+      backgroundColor: isUnavailable
+        ? "gray"
+        : isSelected
+        ? "#b7e4c7"
+        : type?.color || "gray",
       borderRadius: "4px",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      cursor: isUnavailable ? "default" : "pointer",
-      opacity: isSelected ? 0.4 : 1,
+      cursor: isUnavailable ? "not-allowed" : "pointer",
+      opacity: isUnavailable ? 0.5 : 1,
+      color: isSelected ? "#222" : "#fff",
+      border: isSelected ? "2px solid #4B8C22" : "1px solid #ccc",
+      fontWeight: isSelected ? "bold" : "bold",
+      transition: "all 0.2s",
+      userSelect: "none",
     };
   };
 
+  // Seat click
   const handleSeatClick = (seatItem) => {
-    if (booking.includes(seatItem.seat_id)) {
-      return; // Không làm gì nếu ghế không khả dụng
-    }
-
-    const isSelected = selectedSeats.includes(seatItem);
+    if (booking.includes(seatItem.seatId)) return;
+    const isSelected = selectedSeats.some((s) => s.seatId === seatItem.seatId);
     if (isSelected) {
-      setSelectedSeats((prev) => prev.filter((s) => s !== seatItem)); // Bỏ chọn ghế
+      setSelectedSeats((prev) =>
+        prev.filter((s) => s.seatId !== seatItem.seatId)
+      );
     } else {
       if (selectedSeats.length >= 8) {
-        alert("Maxiumum 8 seats can be selected"); // Thông báo nếu đã chọn đủ số ghế
+        alert("Maxiumum 8 seats can be selected");
       } else {
         setSelectedSeats((prev) => [...prev, seatItem]);
-      } // Chọn ghế
+      }
     }
   };
+
+  // Buy now
+  const handleBuyNowClick = () => {
+    if (selectedSeats.length === 0) {
+      alert("Please select at least one seat");
+      return;
+    }
+    setIsModalVisible(true);
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100vh", // Chiều cao toàn màn hình
-      }}
-    >
-      {isLoading ? (
+        height: "97vh",
+        position: "relative",
+      }}>
+      {/* Header luôn hiển thị */}
+      <div
+        style={{
+          display: "flex",
+          flex: "0 0 auto",
+          margin: 8,
+          alignContent: "center",
+          alignItems: "center",
+        }}>
+        {step1 ? (
+          <div onClick={handleBack}>
+            <IoArrowBack
+              onClick={handleNav(0)}
+              className="back_btn"
+              style={{
+                fontSize: 30,
+                cursor: "pointer",
+                color: "gray",
+                padding: 6,
+                borderRadius: 20,
+              }}
+            />{" "}
+          </div>
+        ) : null}
+
         <div
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100vh",
-          }}
-        >
-          <Spin size="large" /> {/* Hiển thị vòng tròn loading */}
+            flex: 1,
+            textAlign: "center",
+            fontSize: 18,
+            fontWeight: "bold",
+          }}>
+          Buy ticket
         </div>
-      ) : (
-        <>
+        <div
+          onClick={handleClose}
+          className="close_btn"
+          style={{
+            fontSize: 22,
+            fontWeight: "bold",
+            color: "gray",
+            cursor: "pointer",
+            marginRight: 8,
+          }}>
+          ✕
+        </div>
+      </div>
+
+      {/* Nội dung và phần dưới */}
+      <div
+        style={{
+          backgroundColor: "#F4F4F4",
+          flex: "1 1 auto",
+          overflowY: "auto",
+          position: "relative",
+        }}>
+        {isLoading ? (
           <div
             style={{
+              minHeight: 300,
               display: "flex",
-              flex: "0 0 auto",
-              margin: 8,
-              alignContent: "center",
+              justifyContent: "center",
               alignItems: "center",
-            }}
-          >
-            {step1 ? (
-              <div onClick={handleBack}>
-                <IoArrowBack
-                  onClick={handleNav(0)}
-                  className="back_btn"
-                  style={{
-                    fontSize: 22,
-                    cursor: "pointer",
-                    color: "gray",
-                    padding: 6,
-                    borderRadius: 20,
-                  }}
-                />{" "}
-              </div>
-            ) : (
-              <></>
-            )}
-
-            <div
-              style={{
-                flex: 1,
-                textAlign: "center",
-                fontSize: 18,
-                fontWeight: "bold",
-              }}
-            >
-              {" "}
-              Buy ticket
-            </div>
-            <div
-              onClick={handleClose}
-              className="close_btn"
-              style={{
-                fontSize: 22,
-                fontWeight: "bold",
-                color: "gray",
-                cursor: "pointer",
-                marginRight: 8,
-              }}
-            >
-              ✕
-            </div>
+            }}>
+            <Spin size="large" />
           </div>
-
-          <div
-            style={{
-              backgroundColor: "#F4F4F4",
-              flex: "1 1 auto", // Phần này sẽ co giãn
-              overflowY: "auto", // Thêm cuộn dọc nếu nội dung quá lớn
-            }}
-          >
+        ) : (
+          <>
             <div
               style={{
                 backgroundColor: "#F4F4F4",
-
                 padding: "10px",
                 display: "flex",
                 justifyContent: "center",
-              }}
-            >
+              }}>
               <div
                 style={{
                   alignContent: "center",
-
                   justifyContent: "center",
                   display: "flex",
                   flexDirection: "column",
-
                   alignItems: "center",
-                  // Adjust the height as needed
-                }}
-              >
+                }}>
                 <div
                   style={{
                     backgroundColor: "gray",
                     height: 5,
                     width: (35 * width + 6 * (width - 1) + 20) * screenLength,
-                  }}
-                ></div>
+                  }}></div>
                 <div
                   style={{
                     textAlign: "center",
                     margin: "8px 0px 16px 0px",
                     fontSize: 16,
                     color: "gray",
-                  }}
-                >
+                  }}>
                   Screen
                 </div>
                 <div
@@ -323,19 +294,16 @@ export default function PlaceSeatComponent() {
                     cursor: "pointer",
                     padding: "10px",
                     fontSize: 14,
-
                     width: "fit-content",
                     height: "fit-content",
                     borderRadius: "16px",
-                    alignSelf: "center", // Center vertically
-                  }}
-                >
+                    alignSelf: "center",
+                  }}>
                   {seat.map((s) => (
                     <div
                       key={s.seat_id}
                       style={getSeatStyle(s)}
-                      onClick={() => handleSeatClick(s)}
-                    >
+                      onClick={() => handleSeatClick(s)}>
                       {s.name}
                     </div>
                   ))}
@@ -346,31 +314,26 @@ export default function PlaceSeatComponent() {
               style={{
                 display: "flex",
                 backgroundColor: "#F4F4F4",
-
                 justifyContent: "center",
                 padding: "8px",
                 color: "gray",
                 fontSize: 16,
                 transform: "translateY(-8px)",
-              }}
-            >
+              }}>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   marginRight: 16,
-                }}
-              >
+                }}>
                 <div
                   style={{
                     width: 20,
                     height: 20,
-
                     backgroundColor: "gray",
                     borderRadius: "4px",
                     marginRight: 8,
-                  }}
-                ></div>
+                  }}></div>
                 <span>Unavailable</span>
               </div>
               {seatType.map((type) => (
@@ -380,37 +343,46 @@ export default function PlaceSeatComponent() {
                     display: "flex",
                     alignItems: "center",
                     marginRight: 16,
-                  }}
-                >
+                  }}>
                   <div
                     style={{
                       width: `calc(${type.width * 20}px)`,
                       height: `calc(${type.height * 20}px)`,
-
                       backgroundColor: type.color,
                       borderRadius: "4px",
                       marginRight: 8,
-                    }}
-                  ></div>{" "}
+                    }}></div>{" "}
                   <span
-                    style={{ textDecoration: "underline", cursor: "pointer" }}
-                  >
+                    style={{ textDecoration: "underline", cursor: "pointer" }}>
                     {type.name}
                   </span>
                 </div>
               ))}
-            </div>{" "}
-          </div>
+            </div>
+          </>
+        )}
+      </div>
 
+      {/* Phần dưới cùng */}
+      <div
+        className="floating-booking-bottom"
+        style={{
+          borderRadius: "0 0 16px 16px",
+          padding: "16px 16px",
+          flex: "0 0 auto",
+          height: "fit-content",
+          background: "#fff",
+        }}>
+        {isLoading ? (
           <div
-            className="floating-booking-bottom"
             style={{
-              flex: "0 0 auto", // Phần này cố định
-              height: "fit-content",
-              borderRadius: "0 0 16px 16px",
-              padding: "16px 16px",
-            }}
-          >
+              minHeight: 100,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}></div>
+        ) : (
+          <>
             <div style={{ display: "flex", gap: 8 }}>
               <div
                 style={{
@@ -424,20 +396,16 @@ export default function PlaceSeatComponent() {
                   width: 30,
                   lineHeight: "20px",
                   height: "fit-content",
-
                   textAlign: "center",
-                }}
-              >
+                }}>
                 {moviesInfo.ageRating}
               </div>
               <div
                 style={{
                   fontSize: 20,
-
                   fontWeight: "bold",
                   fontFamily: '"Aminute", sans-serif',
-                }}
-              >
+                }}>
                 {moviesInfo.movieName}
               </div>
             </div>
@@ -448,8 +416,7 @@ export default function PlaceSeatComponent() {
                 color: "#4B8C22",
                 fontFamily: '"Aminute", sans-serif',
                 marginTop: 8,
-              }}
-            >
+              }}>
               {scheduleInfo.scheduleStart} ~ {scheduleInfo.scheduleEnd} ·{" "}
               {scheduleInfo.scheduleDate}· {scheduleInfo.roomType} · 2D Phụ đề
             </div>
@@ -459,42 +426,37 @@ export default function PlaceSeatComponent() {
                 height: "1px",
                 border: "none",
                 marginTop: 8,
-              }}
-            ></hr>
+              }}></hr>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}
-            >
-              {" "}
+              }}>
               <div
                 style={{
                   margin: "8px 0px",
                   color: "#7B7B7B",
                   fontWeight: "bold",
-                }}
-              >
+                }}>
                 Seats
               </div>
               <div
                 style={{
                   display: "flex",
                   gap: 8,
-                }}
-              >
+                }}>
                 {selectedSeats.map((id) => {
                   return (
                     <div
+                      key={id.seat_id}
                       style={{
                         color: "#4B8C22",
                         border: "1px solid #4B8C22",
                         borderRadius: "4px",
                         fontWeight: "bold",
                         padding: "4px 8px",
-                      }}
-                    >
+                      }}>
                       {id?.name}
                     </div>
                   );
@@ -508,19 +470,15 @@ export default function PlaceSeatComponent() {
                 height: "1px",
                 border: "none",
                 marginBottom: 8,
-              }}
-            ></hr>
+              }}></hr>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}
-            >
+              }}>
               <div>
-                {" "}
                 <div style={{ color: "#7B7B7B", fontWeight: "bold" }}>
-                  {" "}
                   Price
                 </div>
                 <div
@@ -528,38 +486,38 @@ export default function PlaceSeatComponent() {
                     fontSize: 22,
                     fontWeight: "bold",
                     marginTop: 5,
-                  }}
-                >
+                  }}>
                   {totalAmount} đ
                 </div>
               </div>
               <Button
                 text="Buy Now"
                 fontSize={17}
-                onClick={handleBuyNowClick}
-              ></Button>{" "}
+                onClick={handleBuyNowClick}></Button>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
 
       {isModalVisible && (
         <Snack
           handleClose={() => {
             setIsModalVisible(false);
           }}
-          handleOpenPaymentForm={() => {
+          handleOpenPaymentForm={(snacks) => {
             setIsPayFormVisible(true);
+            setSnacks(snacks);
           }}
           initAmount={totalAmount}
-        ></Snack>
+          brandId={brandId}></Snack>
       )}
       {isPayFormVisible && (
         <PaymentForm
+          seats={selectedSeats}
           handleClose={() => {
             setIsPayFormVisible(false);
           }}
-        ></PaymentForm>
+          snacks={snacks}></PaymentForm>
       )}
     </div>
   );

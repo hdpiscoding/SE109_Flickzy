@@ -143,7 +143,6 @@ public class MovieServiceImpl implements MovieService {
                 .stream()
                 .peek(movie -> {
                     movie.setMovieDescription(null);
-                    movie.setMovieContent(null);
                     movie.setMovieNation(null);
                     movie.setMovieActors(null);
                     movie.setMovieDirector(null);

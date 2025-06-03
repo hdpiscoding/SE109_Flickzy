@@ -154,3 +154,7 @@ body {
 .close_btn:hover {
   color: #f52e2e !important;
 }
+html,
+body {
+  background: #111 !important;
+}

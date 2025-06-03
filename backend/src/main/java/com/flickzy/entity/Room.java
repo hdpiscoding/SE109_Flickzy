@@ -43,6 +43,8 @@ public class Room extends BaseEntity {
 
     @Column(nullable = false)
     int height;
+    @Column(name="is_delete")
+    boolean isDelete;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

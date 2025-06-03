@@ -34,15 +34,16 @@ export default function NewRoom2({ rectangles, height, width }) {
         roomType: roomType,
         height: height,
         width: width,
+        cinemaId: "0d31a0d1-c9fb-459b-b673-7a8070ec077d",
       });
 
       for (const rect of rectangles) {
         await addSeat({
-          seatTypeId: rect.seatTypeId,
-          room: createRoomRes.roomId,
-          row: rect.row,
-          columnn: rect.col,
-          name: rect.name,
+          seatTypeId: String(rect.seatTypeId), // đảm bảo là string
+          roomId: String(createRoomRes.data.roomId), // đảm bảo là string
+          row: Number(rect.row), // đảm bảo là number
+          column: Number(rect.col), // đảm bảo là number
+          name: String(rect.name), // đảm bảo là string
         });
       }
 
@@ -50,7 +51,7 @@ export default function NewRoom2({ rectangles, height, width }) {
       window.location.href = "/room";
     } catch (error) {
       console.error("Error inserting data:", error);
-      alert("Failed to create room. Please try again.");
+      alert(error);
     } finally {
       setIsLoading(false); // Kết thúc loading
     }
@@ -192,7 +193,9 @@ export default function NewRoom2({ rectangles, height, width }) {
                   backgroundColor: rect.color,
                   border: "1px solid black",
                 }}
-              ></div>
+              >
+                {rectangles.name}
+              </div>
             ))}
           </div>
 

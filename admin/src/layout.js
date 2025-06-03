@@ -19,10 +19,13 @@ const Layout = () => {
     <>
       <Routes>
         <Route path="login" element={<Login />} />
-        <Route path="/" element={
-          <ProtectedRoute>
-            <App />
-          </ProtectedRoute>}>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <App />
+            </ProtectedRoute>
+          }>
           <Route index element={<Cinema />} />
           <Route path="brands" element={<Brands />} />
           <Route path="movies" element={<Movies />} />
