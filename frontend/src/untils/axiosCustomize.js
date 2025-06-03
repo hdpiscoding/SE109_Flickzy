@@ -1,14 +1,13 @@
 import axios from "axios";
 import useAuthStore from "../store/useAuthStore";
 
-
 const getToken = () => {
-    // useAuthStore.getState() gives you the current state
-    return useAuthStore.getState().token;
+  // useAuthStore.getState() gives you the current state
+  return useAuthStore.getState().token;
 };
 
 const instance = axios.create({
-  baseURL: "http://localhost:8386/api/",
+  baseURL: "http://localhost:8386/api",
   timeout: 1000000,
   headers: {
     "Content-Type": "application/json; charset=utf-8",
@@ -17,16 +16,16 @@ const instance = axios.create({
 
 // Add a request interceptor
 instance.interceptors.request.use(
-    (config) => {
-        const token = getToken();
-        if (token) {
-        config.headers['Authorization'] = `Bearer ${token}`;
-      }
-      return config;
-    },
-    (error) => {
-      return Promise.reject(error);
+  (config) => {
+    const token = getToken();
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
 );
 
 // Add a response interceptor

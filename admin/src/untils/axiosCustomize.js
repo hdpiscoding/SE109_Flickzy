@@ -6,7 +6,7 @@ const getToken = () => {
 };
 
 const instance = axios.create({
-  baseURL: "http://localhost:8386/api/",
+  baseURL: "http://localhost:8386/api",
   timeout: 1000000,
   headers: {
     "Content-Type": "application/json; charset=utf-8",

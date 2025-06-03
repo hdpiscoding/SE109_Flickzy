@@ -97,34 +97,34 @@ public class PaymentController {
         return sb.toString();
     }
 
-@PostMapping("/callback")
-public ResponseEntity<?> momoCallback(@RequestBody Map<String, Object> body,Authentication authentication) {
-    System.out.println("MoMo Callback Body: " + body);
+// @PostMapping("/callback")
+// public ResponseEntity<?> momoCallback(@RequestBody Map<String, Object> body,Authentication authentication) {
+//     System.out.println("MoMo Callback Body: " + body);
 
-    try {
-        // Lấy extraData từ body (là chuỗi JSON)
-        String extraDataJson = (String) body.get("extraData");
-        if (extraDataJson == null) {
-            return ResponseEntity.badRequest().body("Missing extraData");
-        }
+//     try {
+//         // Lấy extraData từ body (là chuỗi JSON)
+//         String extraDataJson = (String) body.get("extraData");
+//         if (extraDataJson == null) {
+//             return ResponseEntity.badRequest().body("Missing extraData");
+//         }
 
-        // Parse extraData thành BookingRequestDTO (hoặc object phù hợp)
-        ObjectMapper mapper = new ObjectMapper();
-        BookingRequestDTO bookingRequestDTO = mapper.readValue(extraDataJson, BookingRequestDTO.class);
-    String email = authentication.getName();
-        Users user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
-        UUID userId = user.getId();
-        // Lấy userId từ extraData hoặc logic khác (ví dụ: bookingRequestDTO.getUserId())
-        // Nếu không có userId, bạn cần truyền userId vào extraData khi tạo payment
+//         // Parse extraData thành BookingRequestDTO (hoặc object phù hợp)
+//         ObjectMapper mapper = new ObjectMapper();
+//         BookingRequestDTO bookingRequestDTO = mapper.readValue(extraDataJson, BookingRequestDTO.class);
+//     String email = authentication.getName();
+//         Users user = userRepository.findByEmail(email)
+//                 .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
+//         UUID userId = user.getId();
+//         // Lấy userId từ extraData hoặc logic khác (ví dụ: bookingRequestDTO.getUserId())
+//         // Nếu không có userId, bạn cần truyền userId vào extraData khi tạo payment
 
-        // Gọi service booking
-        BookingResponseDTO response = bookingService.addBooking(bookingRequestDTO, userId);
-
-        return ResponseEntity.ok(response);
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Callback error: " + e.getMessage());
-    }
-}
+//         // Gọi service booking
+//         BookingResponseDTO response = bookingService.addBooking(bookingRequestDTO, userId);
+// // 
+//         return ResponseEntity.ok(response);
+//     } catch (Exception e) {
+//         e.printStackTrace();
+//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Callback error: " + e.getMessage());
+//     }
+// }
 }
