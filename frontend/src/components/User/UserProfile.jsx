@@ -190,7 +190,7 @@ export default function UserProfile() {
                 }
             }}
         >
-            <div style={{display: 'grid', gridTemplateColumns: '1.5fr 9fr 1.5fr'}}>
+            <div style={{display: 'grid', gridTemplateColumns: '1.5fr 9fr 1.5fr', backgroundColor: '#fff'}}>
                 <div style={{ gridColumnStart: 2, marginTop: '60px', background: '#fff', padding: 32, borderRadius: 8 }}>
                     <Tabs
                         defaultActiveKey="1"

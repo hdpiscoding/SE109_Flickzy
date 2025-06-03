@@ -29,7 +29,7 @@ import {
     isUserReviewed,
     canUserReview,
     createMovieReview,
-    getAllMovieSchedule
+    getAllMovieSchedule, getReviewSummary
 } from "../../services/MovieService";
 import {useParams} from "react-router-dom";
 import {toast} from "react-toastify";
@@ -148,14 +148,20 @@ function genresToString(genres) {
 const ScheduleContainer = (props) => {
     const context = useGlobalContext();
     const { handleNav, handleClose, setTicketData } = context;
+    const {isLoggedIn} = useAuthStore();
     const handleBooking = (schedule) => {
-        setTicketData({
-            cinema: props.cinema,
-            brandId: props.brand.id,
-            scheduleInfo: schedule,
-            movieInfo: props.movie,
-        });
-        handleNav(1);
+        if (isLoggedIn) {
+            setTicketData({
+                cinema: props.cinema,
+                brandId: props.brand.id,
+                scheduleInfo: schedule,
+                movieInfo: props.movie,
+            });
+            handleNav(1);
+        }
+        else {
+            toast.error("Vui lòng đăng nhập để đặt vé");
+        }
     }
     return (
         <div style={{display: 'flex', flexWrap: 'wrap', gap: '20px', maxWidth: '700px'}}>
@@ -181,7 +187,7 @@ export default function MovieDetail() {
     const [currentPage, setCurrentPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
     const [totalElements, setTotalElements] = useState(0);
-
+    const [summary, setSummary] = useState("Hiện tại chưa có đánh giá nào cho bộ phim này.");
 
     useEffect(() => {
         fetchReviews(currentPage, pageSize);
@@ -197,6 +203,21 @@ export default function MovieDetail() {
             setTotalElements(0);
         }
     };
+
+    const fetchReviewSummary = async () => {
+        try {
+            const res = await getReviewSummary(movieId);
+            if (res.status === 200)
+                setSummary(res.data.summary || "");
+        }
+        catch (error) {
+            console.error("Error fetching review summary:", error);
+        }
+    }
+
+    useEffect(() => {
+        fetchReviewSummary();
+    }, [reviews]);
 
 
     useEffect(() => {
@@ -348,7 +369,7 @@ export default function MovieDetail() {
                 }
             },
         }}>
-            <main>
+            <main style={{backgroundColor: '#fff'}}>
                 <Flex vertical>
                     <div style={{position: 'relative', backgroundSize: 'cover', backgroundPosition: 'center', height: "fit-content", backgroundImage: `url(${movie.movieBackground})`, paddingTop: '20px', paddingBottom: '20px'}}>
                         <div style={{position: 'absolute', top: '0', left: '0', width: "100%", height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.8)', zIndex: 1}} />
@@ -468,7 +489,7 @@ export default function MovieDetail() {
 
                                 <Flex vertical>
                                     <h3 style={{color: '#6cc832'}}>Tổng hợp đánh giá từ AI 🤖</h3>
-                                    <p style={{color: '#a09f9d', fontSize: '16px', fontWeight: 400, fontStyle: 'italic', marginTop: '4px'}}>Đánh giá từ AI về nội dung phim</p>
+                                    <p style={{color: '#a09f9d', fontSize: '16px', fontWeight: 400, fontStyle: 'italic', marginTop: '4px'}}>{summary}</p>
                                 </Flex>
 
                                 <Divider style={{backgroundColor: '#d6d1d4'}}/>

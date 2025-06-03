@@ -46,3 +46,7 @@ export const getAllMovieSchedule = async (filter) => {
   const response = await instance.post(`/v1/schedule-by-movie`, filter);
   return response.data;
 };
+
+export const getReviewSummary = async (movieId) => {
+  return await instance.post(`/v1/reviews/summary`, { movieId });
+}
