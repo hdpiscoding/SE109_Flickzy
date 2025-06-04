@@ -30,11 +30,11 @@ const formatTime = (time) => {
   return `${hour}:${minute}`;
 };
 
-export default function BookingComponent({ haveclosebtn }) {
+export default function BookingComponent({ haveclosebtn, brandId }) {
   const [brands, setBrands] = useState([]);
   const [cinemas, setCinemas] = useState([]);
   const [allCinemas, setAllCinemas] = useState([]);
-  const [selectedBrand, setSelectedBrand] = useState("all");
+  const [selectedBrand, setSelectedBrand] = useState(brandId || "all");
   const context = useGlobalContext();
   const [schedule, setSchedule] = useState([]);
   const [loadingSchedule, setLoadingSchedule] = useState(false);
@@ -137,22 +137,7 @@ export default function BookingComponent({ haveclosebtn }) {
         console.error("Error fetching provinces:", error);
       }
     };
-    const fetchBrands = async () => {
-      try {
-        const response = await getAllBrands();
-        const data = response.data.data;
 
-        const allBrand = {
-          id: "all",
-          name: "All",
-          avatar:
-            "https://static.vecteezy.com/system/resources/thumbnails/026/631/971/small/category-icon-symbol-design-illustration-vector.jpg",
-        };
-        setBrands([allBrand, ...data]);
-      } catch (error) {
-        console.error("Error fetching brands:", error);
-      }
-    };
     const fetchCinemas = async () => {
       try {
         const response = await getAllCinemas();
@@ -180,7 +165,6 @@ export default function BookingComponent({ haveclosebtn }) {
     };
     fetchDates();
     fetchCinemas();
-    fetchBrands();
     fetchProvinces();
   }, []);
 
@@ -258,6 +242,10 @@ export default function BookingComponent({ haveclosebtn }) {
     fetchSchedule();
   }, [selectedCinema, selectedDateIndex]);
 
+  useEffect(() => {
+    setSelectedBrand(brandId);
+  }, [brandId]);
+
   return (
     <div
       style={{
@@ -266,8 +254,7 @@ export default function BookingComponent({ haveclosebtn }) {
         padding: 20,
         minWidth: 1000,
         backgroundColor: "transparent",
-      }}
-    >
+      }}>
       <Row align="middle" style={{ marginBottom: 16 }}>
         <div
           style={{
@@ -275,8 +262,7 @@ export default function BookingComponent({ haveclosebtn }) {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-          }}
-        >
+          }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <EnvironmentOutlined
               style={{ color: "#6cc832", marginRight: 8, fontSize: 22 }}
@@ -293,8 +279,7 @@ export default function BookingComponent({ haveclosebtn }) {
                   ? "1.5px solid #6cc832"
                   : "1.5px solid #d9d9d9",
                 position: "relative",
-              }}
-            >
+              }}>
               <select
                 value={selectedProvince}
                 onChange={handleProvinceChange}
@@ -310,8 +295,7 @@ export default function BookingComponent({ haveclosebtn }) {
                   appearance: "none",
                   minWidth: 180,
                   cursor: "pointer",
-                }}
-              >
+                }}>
                 <option value="">Select province/city</option>
                 {provinces.map((province) => (
                   <option key={province.code} value={province.name}>
@@ -341,8 +325,7 @@ export default function BookingComponent({ haveclosebtn }) {
                     border: "1px solid #eee",
                     zIndex: 2,
                   }}
-                  title="Xóa chọn"
-                >
+                  title="Xóa chọn">
                   <div>✕</div>
                 </span>
               )}
@@ -363,8 +346,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 alignItems: "center",
                 transition: "background 0.2s, color 0.2s",
                 position: "relative",
-              }}
-            >
+              }}>
               {loadingProvince && (
                 <Spin
                   size="small"
@@ -386,66 +368,12 @@ export default function BookingComponent({ haveclosebtn }) {
                 color: "gray",
                 cursor: "pointer",
                 fontWeight: "bold",
-              }}
-            >
+              }}>
               ✕
             </div>
           )}
         </div>
       </Row>
-      <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
-        {brands.map((brand) => (
-          <div
-            className={`cinema-card${
-              selectedBrand === brand.id ? " cinema-card-selected" : ""
-            }`}
-            key={brand.id}
-            onClick={() => setSelectedBrand(brand.id)}
-            style={{
-              border:
-                selectedBrand === brand.id
-                  ? "2px solid #6cc832"
-                  : "1px solid #eee",
-              boxShadow:
-                selectedBrand === brand.id
-                  ? "0 2px 8px rgba(108,200,50,0.15)"
-                  : "0 1px 4px rgba(0,0,0,0.08)",
-              borderRadius: 8,
-              padding: 4,
-              cursor: "pointer",
-              background: selectedBrand === brand.id ? "#f6fff2" : "#fff",
-              transition: "all 0.2s",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <img
-              src={brand.avatar}
-              style={{
-                width: brand.id === "all" ? 35 : 60,
-                height: brand.id === "all" ? 35 : 60,
-                objectFit: "cover",
-                borderRadius: 8,
-              }}
-              alt={brand.name}
-            />
-            <div
-              style={{
-                textAlign: "center",
-                fontWeight: selectedBrand === brand.id ? "bold" : "normal",
-                color: selectedBrand === brand.id ? "#6cc832" : "#333",
-                fontSize: 13,
-                marginTop: 4,
-              }}
-            >
-              {brand.name}
-            </div>
-          </div>
-        ))}
-      </Row>
-      <hr style={{ color: "gray", margin: " 16px 0 24px 0" }}></hr>
       <Row gutter={[16, 16]} style={{ marginBottom: 16, marginLeft: 2 }}>
         <Col xs={24} md={8}>
           <Spin spinning={loadingProvince}>
@@ -475,16 +403,14 @@ export default function BookingComponent({ haveclosebtn }) {
                     padding: "8px 8px",
                     marginTop: 8,
                   }}
-                  onClick={() => setSelectedCinema(cinema)}
-                >
+                  onClick={() => setSelectedCinema(cinema)}>
                   <Text
                     style={{
                       fontWeight:
                         cinema.cinemaName === selectedCinema?.cinemaName
                           ? "bold"
                           : "normal",
-                    }}
-                  >
+                    }}>
                     {cinema.cinemaName}
                   </Text>
                 </List.Item>
@@ -496,8 +422,7 @@ export default function BookingComponent({ haveclosebtn }) {
         <Col
           xs={24}
           md={16}
-          style={{ padding: "0 32px", transform: "translateY(-20px)" }}
-        >
+          style={{ padding: "0 32px", transform: "translateY(-20px)" }}>
           <div style={{ margin: "16px 0" }} onClick={handleOpenMap}>
             <Title level={4}>
               {selectedCinema?.cinemaName} movie showtimes
@@ -509,8 +434,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 textDecoration: "underline",
                 marginLeft: 8,
                 cursor: "pointer",
-              }}
-            >
+              }}>
               Map
             </Text>
           </div>
@@ -522,8 +446,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 className={
                   index === selectedDateIndex ? "primarybtnn" : "defaultbtnn"
                 }
-                onClick={() => setSelectedDateIndex(index)}
-              >
+                onClick={() => setSelectedDateIndex(index)}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontWeight: "bold", fontSize: 20 }}>{date}</div>
                   <div>{weekdays[index]}</div>
@@ -537,12 +460,10 @@ export default function BookingComponent({ haveclosebtn }) {
               minHeight: 300,
               overflowY: "auto",
               position: "relative",
-            }}
-          >
+            }}>
             <Spin
               spinning={loadingSchedule}
-              style={{ transform: "translateY(100px)" }}
-            >
+              style={{ transform: "translateY(100px)" }}>
               {!loadingSchedule && schedule.length === 0 ? (
                 <Empty
                   description="No schedule available"
@@ -553,14 +474,12 @@ export default function BookingComponent({ haveclosebtn }) {
                   style={{
                     maxHeight: haveclosebtn ? "60vh" : 900,
                     overflowY: "auto",
-                  }}
-                >
+                  }}>
                   {schedule.map((item, idx) => (
                     <Card
                       bordered
                       style={{ marginTop: 16 }}
-                      key={item.id || idx}
-                    >
+                      key={item.id || idx}>
                       <Row gutter={16}>
                         <Col>
                           <Image
@@ -587,8 +506,7 @@ export default function BookingComponent({ haveclosebtn }) {
                               borderRadius: 2,
                               width: 30,
                               textAlign: "center",
-                            }}
-                          >
+                            }}>
                             {item.ageRating}
                           </div>
                           <div
@@ -599,8 +517,7 @@ export default function BookingComponent({ haveclosebtn }) {
                               maxWidth: 400,
                               whiteSpace: "normal",
                               wordBreak: "break-word",
-                            }}
-                          >
+                            }}>
                             {item.movieName}
                           </div>
                           <Text type="secondary">{item.genresName}</Text>
@@ -627,15 +544,13 @@ export default function BookingComponent({ haveclosebtn }) {
                             ).map((group, groupIdx) => (
                               <div
                                 key={group.typeName + groupIdx}
-                                style={{ marginBottom: 8 }}
-                              >
+                                style={{ marginBottom: 8 }}>
                                 <div
                                   style={{
                                     fontSize: 14,
                                     fontWeight: "bold",
                                     marginBottom: 4,
-                                  }}
-                                >
+                                  }}>
                                   {group.typeName}
                                 </div>
                                 <div
@@ -643,8 +558,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                     display: "flex",
                                     gap: 8,
                                     flexWrap: "wrap",
-                                  }}
-                                >
+                                  }}>
                                   {group.slots.map((slot, slotIdx) => (
                                     <div
                                       key={slot.label + slotIdx}
@@ -659,8 +573,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                         cursor: "pointer",
                                         fontWeight: "bold",
                                         borderRadius: 8,
-                                      }}
-                                    >
+                                      }}>
                                       {slot.label}
                                     </div>
                                   ))}

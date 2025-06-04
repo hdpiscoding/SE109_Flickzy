@@ -165,7 +165,7 @@ const App = () => {
                   <Button>
                     <Space>
                       <Avatar size="small" icon={<UserOutlined />} />
-                      {isShowLogo && <span>{user.email}</span>}
+                      {isShowLogo && <span>{user?.email}</span>}
                       <DownOutlined />
                     </Space>
                   </Button>

@@ -61,7 +61,9 @@ export default function Cinemas() {
             <div className="schedule-title">
               Lịch chiếu phim {cinemaBrand?.brandName}
             </div>
-            <BookingComponent haveclosebtn={false}></BookingComponent>
+            <BookingComponent
+              haveclosebtn={false}
+              brandId={id}></BookingComponent>
           </div>
           <div className="markdown">
             <ReactMarkdown>{cinemaBrand?.description}</ReactMarkdown>
