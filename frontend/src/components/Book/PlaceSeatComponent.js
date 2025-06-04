@@ -11,6 +11,7 @@ import {
   getAllSeatsByRoomId,
   getUnavaiSeat,
 } from "../../services/BookingService";
+import { toast } from "react-toastify";
 
 export default function PlaceSeatComponent() {
   const { handleBack, handleNav, handleClose, step1, ticketData } =
@@ -36,6 +37,10 @@ export default function PlaceSeatComponent() {
     "13+": "#FFA500",
     "16+": "#FF8C00",
     "18+": "#FF3B30",
+  };
+  const formatMoney = (amount) => {
+    if (typeof amount !== "number") return amount;
+    return amount.toLocaleString("vi-VN") + " đ";
   };
 
   // Fetch data
@@ -159,7 +164,7 @@ export default function PlaceSeatComponent() {
       );
     } else {
       if (selectedSeats.length >= 8) {
-        alert("Maxiumum 8 seats can be selected");
+        toast.error("Maxiumum 8 seats can be selected");
       } else {
         setSelectedSeats((prev) => [...prev, seatItem]);
       }
@@ -169,7 +174,7 @@ export default function PlaceSeatComponent() {
   // Buy now
   const handleBuyNowClick = () => {
     if (selectedSeats.length === 0) {
-      alert("Please select at least one seat");
+      toast.error("Please select at least one seat");
       return;
     }
     setIsModalVisible(true);
@@ -182,7 +187,8 @@ export default function PlaceSeatComponent() {
         flexDirection: "column",
         height: "97vh",
         position: "relative",
-      }}>
+      }}
+    >
       {/* Header luôn hiển thị */}
       <div
         style={{
@@ -191,7 +197,8 @@ export default function PlaceSeatComponent() {
           margin: 8,
           alignContent: "center",
           alignItems: "center",
-        }}>
+        }}
+      >
         {step1 ? (
           <div onClick={handleBack}>
             <IoArrowBack
@@ -214,7 +221,8 @@ export default function PlaceSeatComponent() {
             textAlign: "center",
             fontSize: 18,
             fontWeight: "bold",
-          }}>
+          }}
+        >
           Buy ticket
         </div>
         <div
@@ -226,7 +234,8 @@ export default function PlaceSeatComponent() {
             color: "gray",
             cursor: "pointer",
             marginRight: 8,
-          }}>
+          }}
+        >
           ✕
         </div>
       </div>
@@ -238,7 +247,8 @@ export default function PlaceSeatComponent() {
           flex: "1 1 auto",
           overflowY: "auto",
           position: "relative",
-        }}>
+        }}
+      >
         {isLoading ? (
           <div
             style={{
@@ -246,7 +256,8 @@ export default function PlaceSeatComponent() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-            }}>
+            }}
+          >
             <Spin size="large" />
           </div>
         ) : (
@@ -257,7 +268,8 @@ export default function PlaceSeatComponent() {
                 padding: "10px",
                 display: "flex",
                 justifyContent: "center",
-              }}>
+              }}
+            >
               <div
                 style={{
                   alignContent: "center",
@@ -265,20 +277,23 @@ export default function PlaceSeatComponent() {
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                }}>
+                }}
+              >
                 <div
                   style={{
                     backgroundColor: "gray",
                     height: 5,
                     width: (35 * width + 6 * (width - 1) + 20) * screenLength,
-                  }}></div>
+                  }}
+                ></div>
                 <div
                   style={{
                     textAlign: "center",
                     margin: "8px 0px 16px 0px",
                     fontSize: 16,
                     color: "gray",
-                  }}>
+                  }}
+                >
                   Screen
                 </div>
                 <div
@@ -298,12 +313,14 @@ export default function PlaceSeatComponent() {
                     height: "fit-content",
                     borderRadius: "16px",
                     alignSelf: "center",
-                  }}>
+                  }}
+                >
                   {seat.map((s) => (
                     <div
                       key={s.seat_id}
                       style={getSeatStyle(s)}
-                      onClick={() => handleSeatClick(s)}>
+                      onClick={() => handleSeatClick(s)}
+                    >
                       {s.name}
                     </div>
                   ))}
@@ -319,13 +336,15 @@ export default function PlaceSeatComponent() {
                 color: "gray",
                 fontSize: 16,
                 transform: "translateY(-8px)",
-              }}>
+              }}
+            >
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   marginRight: 16,
-                }}>
+                }}
+              >
                 <div
                   style={{
                     width: 20,
@@ -333,7 +352,8 @@ export default function PlaceSeatComponent() {
                     backgroundColor: "gray",
                     borderRadius: "4px",
                     marginRight: 8,
-                  }}></div>
+                  }}
+                ></div>
                 <span>Unavailable</span>
               </div>
               {seatType.map((type) => (
@@ -343,7 +363,8 @@ export default function PlaceSeatComponent() {
                     display: "flex",
                     alignItems: "center",
                     marginRight: 16,
-                  }}>
+                  }}
+                >
                   <div
                     style={{
                       width: `calc(${type.width * 20}px)`,
@@ -351,9 +372,11 @@ export default function PlaceSeatComponent() {
                       backgroundColor: type.color,
                       borderRadius: "4px",
                       marginRight: 8,
-                    }}></div>{" "}
+                    }}
+                  ></div>{" "}
                   <span
-                    style={{ textDecoration: "underline", cursor: "pointer" }}>
+                    style={{ textDecoration: "underline", cursor: "pointer" }}
+                  >
                     {type.name}
                   </span>
                 </div>
@@ -372,7 +395,8 @@ export default function PlaceSeatComponent() {
           flex: "0 0 auto",
           height: "fit-content",
           background: "#fff",
-        }}>
+        }}
+      >
         {isLoading ? (
           <div
             style={{
@@ -380,7 +404,8 @@ export default function PlaceSeatComponent() {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-            }}></div>
+            }}
+          ></div>
         ) : (
           <>
             <div style={{ display: "flex", gap: 8 }}>
@@ -397,7 +422,8 @@ export default function PlaceSeatComponent() {
                   lineHeight: "20px",
                   height: "fit-content",
                   textAlign: "center",
-                }}>
+                }}
+              >
                 {moviesInfo.ageRating}
               </div>
               <div
@@ -405,7 +431,8 @@ export default function PlaceSeatComponent() {
                   fontSize: 20,
                   fontWeight: "bold",
                   fontFamily: '"Aminute", sans-serif',
-                }}>
+                }}
+              >
                 {moviesInfo.movieName}
               </div>
             </div>
@@ -416,7 +443,8 @@ export default function PlaceSeatComponent() {
                 color: "#4B8C22",
                 fontFamily: '"Aminute", sans-serif',
                 marginTop: 8,
-              }}>
+              }}
+            >
               {scheduleInfo.scheduleStart} ~ {scheduleInfo.scheduleEnd} ·{" "}
               {scheduleInfo.scheduleDate}· {scheduleInfo.roomType} · 2D Phụ đề
             </div>
@@ -426,26 +454,30 @@ export default function PlaceSeatComponent() {
                 height: "1px",
                 border: "none",
                 marginTop: 8,
-              }}></hr>
+              }}
+            ></hr>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}>
+              }}
+            >
               <div
                 style={{
                   margin: "8px 0px",
                   color: "#7B7B7B",
                   fontWeight: "bold",
-                }}>
+                }}
+              >
                 Seats
               </div>
               <div
                 style={{
                   display: "flex",
                   gap: 8,
-                }}>
+                }}
+              >
                 {selectedSeats.map((id) => {
                   return (
                     <div
@@ -456,7 +488,8 @@ export default function PlaceSeatComponent() {
                         borderRadius: "4px",
                         fontWeight: "bold",
                         padding: "4px 8px",
-                      }}>
+                      }}
+                    >
                       {id?.name}
                     </div>
                   );
@@ -470,13 +503,15 @@ export default function PlaceSeatComponent() {
                 height: "1px",
                 border: "none",
                 marginBottom: 8,
-              }}></hr>
+              }}
+            ></hr>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}>
+              }}
+            >
               <div>
                 <div style={{ color: "#7B7B7B", fontWeight: "bold" }}>
                   Price
@@ -486,14 +521,16 @@ export default function PlaceSeatComponent() {
                     fontSize: 22,
                     fontWeight: "bold",
                     marginTop: 5,
-                  }}>
-                  {totalAmount} đ
+                  }}
+                >
+                  {formatMoney(totalAmount)}
                 </div>
               </div>
               <Button
                 text="Buy Now"
                 fontSize={17}
-                onClick={handleBuyNowClick}></Button>
+                onClick={handleBuyNowClick}
+              ></Button>
             </div>
           </>
         )}
@@ -509,7 +546,8 @@ export default function PlaceSeatComponent() {
             setSnacks(snacks);
           }}
           initAmount={totalAmount}
-          brandId={brandId}></Snack>
+          brandId={brandId}
+        ></Snack>
       )}
       {isPayFormVisible && (
         <PaymentForm
@@ -517,7 +555,8 @@ export default function PlaceSeatComponent() {
           handleClose={() => {
             setIsPayFormVisible(false);
           }}
-          snacks={snacks}></PaymentForm>
+          snacks={snacks}
+        ></PaymentForm>
       )}
     </div>
   );
