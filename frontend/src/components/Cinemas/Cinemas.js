@@ -4,7 +4,7 @@ import "./Cinemas.scss";
 import { Col, Image, Row } from "antd";
 import { useParams } from "react-router-dom";
 import { getACinemaBrand } from "../../services/CinemaService";
-import BookingComponent from "../Book/BookingComponent";
+import BookingComponent from "./BookingComponent";
 
 export default function Cinemas() {
   const { id } = useParams();
@@ -28,7 +28,7 @@ export default function Cinemas() {
   }, [cinemaBrand]);
 
   return (
-    <div>
+    <div className="cinemas-wrapper">
       <div className="cinema-container">
         <div
           className="cinema-headerr"

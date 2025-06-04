@@ -35,6 +35,10 @@ public class Booking extends BaseEntity {
     @Column(columnDefinition = "text")
     String snacks; // JSON array as text
 
+    // Add momoID field
+    @Column(name = "momo_id")
+    String momoID;
+
     Double price;
 
     Integer seatStatus;

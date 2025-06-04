@@ -10,6 +10,7 @@ public class BookingRequestDTO {
     private UUID scheduleId;
     private List<SeatDTO> seats;
     private List<SnackDTO> snacks;
+    private String momoID; // Add this field
 
     @Data
     public static class SeatDTO {

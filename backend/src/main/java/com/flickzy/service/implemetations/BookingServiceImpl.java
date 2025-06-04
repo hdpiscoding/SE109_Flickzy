@@ -101,6 +101,7 @@ public class BookingServiceImpl implements BookingService {
                 .snacks(snacksJson)
                 .price(totalPrice)
                 .seatStatus(1) // CONFIRMED
+                .momoID(bookingRequestDTO.getMomoID()) // Add this line
                 .build();
 
         Booking savedBooking = bookingRepository.save(booking);
