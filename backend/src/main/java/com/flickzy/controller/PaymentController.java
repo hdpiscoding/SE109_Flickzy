@@ -13,6 +13,7 @@ import java.util.*;
 import lombok.RequiredArgsConstructor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flickzy.base.BaseController;
 import com.flickzy.dto.BookingRequestDTO;
 import com.flickzy.dto.BookingResponseDTO;
 import com.flickzy.dto.MoMoPaymentRequest;
@@ -21,7 +22,7 @@ import com.flickzy.entity.Users;
 @RestController
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
-public class PaymentController {
+public class PaymentController extends BaseController {
         private final BookingService bookingService;
 
     private final UserRepository userRepository;
@@ -38,7 +39,7 @@ public class PaymentController {
             String secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
             String orderInfo = paymentRequest.getPaymentinfo();
             String redirectUrl = "https://momo.vn/return";
-            String ipnUrl = "https://db67-2a09-bac5-d46c-2646-00-3d0-10.ngrok-free.app/api/v1/payment/callback";
+            String ipnUrl = "https://eff6-14-169-74-244.ngrok-free.app/api/v1/payment/callback";
             String requestType = "captureWallet";
             String extraData =  new ObjectMapper().writeValueAsString(paymentRequest.getExtraData());
             String requestId = partnerCode + System.currentTimeMillis();
@@ -97,34 +98,32 @@ public class PaymentController {
         return sb.toString();
     }
 
-// @PostMapping("/callback")
-// public ResponseEntity<?> momoCallback(@RequestBody Map<String, Object> body,Authentication authentication) {
-//     System.out.println("MoMo Callback Body: " + body);
-
-//     try {
-//         // Lấy extraData từ body (là chuỗi JSON)
-//         String extraDataJson = (String) body.get("extraData");
-//         if (extraDataJson == null) {
-//             return ResponseEntity.badRequest().body("Missing extraData");
-//         }
-
-//         // Parse extraData thành BookingRequestDTO (hoặc object phù hợp)
-//         ObjectMapper mapper = new ObjectMapper();
-//         BookingRequestDTO bookingRequestDTO = mapper.readValue(extraDataJson, BookingRequestDTO.class);
-//     String email = authentication.getName();
-//         Users user = userRepository.findByEmail(email)
-//                 .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
-//         UUID userId = user.getId();
-//         // Lấy userId từ extraData hoặc logic khác (ví dụ: bookingRequestDTO.getUserId())
-//         // Nếu không có userId, bạn cần truyền userId vào extraData khi tạo payment
-
-//         // Gọi service booking
-//         BookingResponseDTO response = bookingService.addBooking(bookingRequestDTO, userId);
-// // 
-//         return ResponseEntity.ok(response);
-//     } catch (Exception e) {
-//         e.printStackTrace();
-//         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Callback error: " + e.getMessage());
-//     }
-// }
+    @PostMapping("/callback")
+    
+    public ResponseEntity<?> momoCallback(@RequestBody Map<String, Object> body, Authentication authentication) {
+        System.out.println("MoMo Callback Body: " + body);
+    
+        try {
+            // Lấy extraData từ body (là chuỗi JSON)
+            String extraDataJson = (String) body.get("extraData");
+            if (extraDataJson == null) {
+                return ResponseEntity.badRequest().body("Missing extraData");
+            }
+    
+            // Parse extraData thành BookingRequestDTO
+            ObjectMapper mapper = new ObjectMapper();
+            BookingRequestDTO bookingRequestDTO = mapper.readValue(extraDataJson, BookingRequestDTO.class);
+    
+            // Lấy user từ authentication
+           
+            UUID userId = bookingRequestDTO.getUserId();
+            bookingRequestDTO.setMomoID(body.get("orderId").toString());
+            // Gọi service giống addBooking
+            List<BookingResponseDTO> response = bookingService.addBooking(bookingRequestDTO, userId);
+            return buildResponse(response, HttpStatus.CREATED, "Booking(s) added successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Callback error: " + e.getMessage());
+        }
+    }
 }

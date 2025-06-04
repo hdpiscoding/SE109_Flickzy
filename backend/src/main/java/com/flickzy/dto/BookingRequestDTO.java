@@ -10,6 +10,7 @@ public class BookingRequestDTO {
     private UUID scheduleId;
     private List<SeatDTO> seats;
     private List<SnackDTO> snacks;
+    private UUID userId;
     private String momoID; // Add this field
 
     @Data
@@ -20,6 +21,7 @@ public class BookingRequestDTO {
         private String row;
         private String column;
         private String room_id;
+         // Assuming you want to track the user who booked the seat
         private String seat_type_id;
     }
 
