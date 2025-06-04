@@ -22,6 +22,24 @@ public class BookingResponseDTO {
     private CinemaInfoDTO cinemaInfo;
     private SeatInfoDTO seat;
 
+    // Add these fields for JSON seats/snacks
+    private String seats;
+    private String snacks;
+
+    // Add getters and setters for seats and snacks
+    public String getSeats() {
+        return seats;
+    }
+    public void setSeats(String seats) {
+        this.seats = seats;
+    }
+    public String getSnacks() {
+        return snacks;
+    }
+    public void setSnacks(String snacks) {
+        this.snacks = snacks;
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
