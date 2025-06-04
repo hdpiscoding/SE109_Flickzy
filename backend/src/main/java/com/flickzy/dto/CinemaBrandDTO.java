@@ -28,4 +28,5 @@ public class CinemaBrandDTO {
 
     String description;
     String intro;
+    private Integer cinemaCount;
 }

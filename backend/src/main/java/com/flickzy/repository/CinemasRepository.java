@@ -13,4 +13,5 @@ import java.util.UUID;
 @Repository
 public interface CinemasRepository extends JpaRepository<Cinemas, UUID> {
     Page<Cinemas> findAllByCinemaBrand_IdIn(List<UUID> brandIds, Pageable pageable);
+    int countByCinemaBrand_Id(UUID cinemaBrand);
 }
