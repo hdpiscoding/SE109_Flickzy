@@ -1,4 +1,5 @@
 import React from "react";
+import { ToastContainer } from "react-toastify";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 const Layout = React.lazy(() => import("./Layout"));
 const Home = React.lazy(() => import("./components/Home/Home"));
@@ -11,17 +12,21 @@ const UserProfile = React.lazy(() => import("./components/User/UserProfile"));
 
 function App() {
   return (
-    <Routes className="rootApp">
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="movie" element={<Movies />} />
-        <Route path="cinema/:id" element={<Cinema />} />
-        <Route path="blog" element={<Blog />} />
-        <Route path="blog/:id" element={<DetailBlog />} />
-        <Route path="movie/:movieId" element={<MovieDetail />} />
-        <Route path="user/profile" element={<UserProfile />} />
-      </Route>
-    </Routes>
+    <>
+      {" "}
+      <ToastContainer position="top-right" />
+      <Routes className="rootApp">
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />} />
+          <Route path="movie" element={<Movies />} />
+          <Route path="cinema/:id" element={<Cinema />} />
+          <Route path="blog" element={<Blog />} />
+          <Route path="blog/:id" element={<DetailBlog />} />
+          <Route path="movie/:movieId" element={<MovieDetail />} />
+          <Route path="user/profile" element={<UserProfile />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 

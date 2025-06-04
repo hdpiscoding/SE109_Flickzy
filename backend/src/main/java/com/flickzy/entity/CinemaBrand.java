@@ -39,6 +39,8 @@ public class CinemaBrand extends BaseEntity {
 
     @Column(columnDefinition = "text")
     String description;
+    @Column(columnDefinition = "text")
+    String intro;
 
     @OneToMany(mappedBy = "cinemaBrand", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore

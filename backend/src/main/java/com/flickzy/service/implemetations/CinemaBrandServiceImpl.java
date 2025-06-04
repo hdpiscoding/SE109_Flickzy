@@ -53,6 +53,9 @@ public class CinemaBrandServiceImpl implements CinemaBrandService {
                     if (cinemaBrandDTO.getDescription() != null) {
                         existingBrand.setDescription(cinemaBrandDTO.getDescription());
                     }
+                    if (cinemaBrandDTO.getIntro() != null) {
+                        existingBrand.setIntro(cinemaBrandDTO.getIntro());
+                    }
                     return toDTO(cinemaBrandRepository.save(existingBrand));
                 })
                 .orElseThrow(() -> new CinemaBrandNotFoundException(id));
@@ -103,6 +106,7 @@ public class CinemaBrandServiceImpl implements CinemaBrandService {
                 .avatar(cinemaBrand.getAvatar())
                 .cover(cinemaBrand.getCover())
                 .description(cinemaBrand.getDescription())
+                .intro(cinemaBrand.getIntro())
                 .build();
     }
 
@@ -112,6 +116,7 @@ public class CinemaBrandServiceImpl implements CinemaBrandService {
                 .avatar(cinemaBrandDTO.getAvatar())
                 .cover(cinemaBrandDTO.getCover())
                 .description(cinemaBrandDTO.getDescription())
+                .intro(cinemaBrandDTO.getIntro())
                 .build();
     }
 }

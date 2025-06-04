@@ -27,4 +27,5 @@ public class CinemaBrandDTO {
     String cover;
 
     String description;
+    String intro;
 }

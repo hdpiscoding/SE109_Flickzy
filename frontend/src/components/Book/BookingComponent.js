@@ -248,6 +248,7 @@ export default function BookingComponent({ haveclosebtn }) {
           formattedInputDate
         );
         const data = response.data;
+
         setSchedule(data);
       } catch (error) {
         setSchedule([]);
