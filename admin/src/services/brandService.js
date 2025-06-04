@@ -1,7 +1,8 @@
-import axios from "../untils/axiosCustomizeHung";
+import axios from "../untils/axiosCustomize";
 
 export const getAllBrand = async () => {
   const response = await axios.get("/v1/brands");
+  console.log("getAllBrand response:", response);
   return response.data;
 };
 export const getABrand = async (id) => {

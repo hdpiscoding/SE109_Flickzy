@@ -18,6 +18,7 @@ const EditBrandModal = ({ brand, onSuccess }) => {
   const [avatarFile, setAvatarFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [description, setDescription] = useState("");
+  const [intro, setIntro] = useState(""); // Thêm state cho intro
   const [form] = Form.useForm();
   const [uploading, setUploading] = useState(false);
 
@@ -25,10 +26,12 @@ const EditBrandModal = ({ brand, onSuccess }) => {
     if (brand) {
       form.setFieldsValue({
         brandName: brand.brandName,
+        intro: brand.intro || "", // set intro vào form
       });
       setAvatarFile(brand.avatar || null); // public_id string
       setCoverFile(brand.cover || null); // public_id string
       setDescription(brand.description || "");
+      setIntro(brand.intro || ""); // set intro vào state
     }
   }, [brand, form]);
 
@@ -56,6 +59,7 @@ const EditBrandModal = ({ brand, onSuccess }) => {
         brandName: values.brandName,
         avatar: avatarPublicId,
         cover: coverPublicId,
+        intro: intro, // Thêm intro vào dữ liệu gửi lên
         description: description,
       };
       await editABrand(brand.id, brandData);
@@ -121,6 +125,21 @@ const EditBrandModal = ({ brand, onSuccess }) => {
                 { required: true, message: "Please input the brand name!" },
               ]}>
               <Input placeholder="Brand Name" />
+            </Form.Item>
+          </Col>
+        </Row>
+        {/* Thêm trường Intro phía trên Description */}
+        <Row gutter={24}>
+          <Col span={24}>
+            <Form.Item
+              label="Intro"
+              name="intro"
+              rules={[{ required: true, message: "Please input the intro!" }]}>
+              <Input
+                placeholder="Short introduction"
+                value={intro}
+                onChange={(e) => setIntro(e.target.value)}
+              />
             </Form.Item>
           </Col>
         </Row>
