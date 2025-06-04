@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Spin } from "antd";
 import Button from "../OtherComponents/Button";
 import { getAllBlog } from "../../services/BlogService";
+import { useNavigate } from "react-router-dom";
 
 const BlogHome = () => {
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
@@ -41,6 +42,10 @@ const BlogHome = () => {
               <Col key={blog.id} xs={24} sm={12} lg={6}>
                 <Card
                   hoverable
+                  onClick={() => {
+                    navigate(`/blog/${blog.id}`);
+                  }}
+                  style={{ marginBottom: 16 }}
                   cover={
                     <img
                       alt={blog.title}
