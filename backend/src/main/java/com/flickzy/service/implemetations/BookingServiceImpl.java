@@ -1,5 +1,7 @@
 package com.flickzy.service.implemetations;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flickzy.dto.BookingRequestDTO;
 import com.flickzy.dto.BookingSeatResponseDTO;
 import com.flickzy.dto.BookingResponseDTO;
@@ -35,6 +37,7 @@ public class BookingServiceImpl implements BookingService {
     private final SeatsRepository seatRepository;
     private final UserRepository userRepository;
     private final BookingMapper bookingMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper(); // Add this
 
     @Override
     public List<BookingResponseDTO> getBookingHistory(UUID userId) {
@@ -48,7 +51,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public List<BookingResponseDTO> addBooking(BookingRequestDTO bookingRequestDTO, UUID userId) {
-        logger.info("Adding new bookings: scheduleId={}, userId={}", bookingRequestDTO.getScheduleId(), userId);
+        logger.info("Adding new booking: scheduleId={}, userId={}", bookingRequestDTO.getScheduleId(), userId);
 
         // Validate Schedule
         Schedule schedule = scheduleRepository.findById(bookingRequestDTO.getScheduleId())
@@ -64,58 +67,47 @@ public class BookingServiceImpl implements BookingService {
                     return new EntityNotFoundException("User not found");
                 });
 
-        List<BookingResponseDTO> responses = new java.util.ArrayList<>();
-        for (BookingRequestDTO.BookingInfo info : bookingRequestDTO.getBookingInfo()) {
-            // Validate Seat
-            Seats seat = seatRepository.findById(info.getSeatId())
-                    .orElseThrow(() -> {
-                        logger.error("Seat not found: {}", info.getSeatId());
-                        return new EntityNotFoundException("Seat not found");
-                    });
-
-            // Check if seat belongs to the schedule's room
-            if (!seat.getRoom().getRoomId().equals(schedule.getRoom().getRoomId())) {
-                logger.error("Seat does not belong to the schedule's room: seatId={}, roomId={}",
-                        seat.getSeatId(), schedule.getRoom().getRoomId());
-                throw new IllegalArgumentException("Seat does not belong to the schedule's room");
-            }
-
-            // Check if seat is already booked
-            long existingBookings = bookingRepository.count(
-                    BookingSpecifications.byScheduleAndSeat(schedule.getScheduleId(), seat.getSeatId()));
-            if (existingBookings > 0) {
-                logger.error("Seat is already booked: seatId={}", seat.getSeatId());
-                throw new IllegalStateException("Seat is already booked");
-            }
-
-            // Remove price validation
-            // Integer expectedPrice = seat.getPrice() != null ? seat.getPrice() : seat.getSeatTypeId().getPrice();
-            // if (!info.getPrice().equals(expectedPrice.doubleValue())) {
-            //     logger.error("Invalid price: provided={}, expected={}", info.getPrice(), expectedPrice);
-            //     throw new IllegalArgumentException("Price does not match the seat's price");
-            // }
-
-            // Validate Schedule Time
-            LocalDateTime scheduleStart = schedule.getScheduleDate().atTime(schedule.getScheduleStart());
-            if (scheduleStart.isBefore(LocalDateTime.now())) {
-                logger.error("Cannot book a past schedule: scheduleId={}", schedule.getScheduleId());
-                throw new IllegalStateException("Cannot book a past schedule");
-            }
-
-            // Create Booking
-            Booking booking = Booking.builder()
-                    .user(user)
-                    .schedule(schedule)
-                    .seat(seat)
-                    .price(info.getPrice())
-                    .seatStatus(1) // CONFIRMED
-                    .build();
-
-            Booking savedBooking = bookingRepository.save(booking);
-            logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
-            responses.add(bookingMapper.toDto(savedBooking));
+        // Serialize seats and snacks to JSON
+        String seatsJson;
+        String snacksJson;
+        try {
+            seatsJson = objectMapper.writeValueAsString(bookingRequestDTO.getSeats());
+            snacksJson = objectMapper.writeValueAsString(bookingRequestDTO.getSnacks());
+        } catch (Exception e) {
+            logger.error("Failed to serialize seats/snacks", e);
+            throw new IllegalArgumentException("Invalid seats/snacks data");
         }
-        return responses;
+
+        // Optionally, you can sum up the total price from seats and snacks
+        double totalPrice = 0.0;
+        if (bookingRequestDTO.getSeats() != null) {
+            totalPrice += bookingRequestDTO.getSeats().stream()
+                .filter(s -> s.getPrice() != null)
+                .mapToDouble(BookingRequestDTO.SeatDTO::getPrice)
+                .sum();
+        }
+        if (bookingRequestDTO.getSnacks() != null) {
+            totalPrice += bookingRequestDTO.getSnacks().stream()
+                .filter(s -> s.getPrice() != null && s.getQuantity() != null)
+                .mapToDouble(s -> s.getPrice() * s.getQuantity())
+                .sum();
+        }
+
+        // Create Booking (one booking per request)
+        Booking booking = Booking.builder()
+                .user(user)
+                .schedule(schedule)
+                .seats(seatsJson)
+                .snacks(snacksJson)
+                .price(totalPrice)
+                .seatStatus(1) // CONFIRMED
+                .momoID(bookingRequestDTO.getMomoID()) // Add this line
+                .build();
+
+        Booking savedBooking = bookingRepository.save(booking);
+        logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
+
+        return List.of(bookingMapper.toDto(savedBooking));
     }
     public List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId) {
         logger.info("Fetching bookings for scheduleId={}", scheduleId);
@@ -130,8 +122,22 @@ public class BookingServiceImpl implements BookingService {
         // Lấy danh sách booking theo scheduleId
         List<BookingResponseDTO> bookings = getBookingByScheduleId(scheduleId);
         // Trả về danh sách seatId đã được đặt
-        return bookings.stream()
-            .map(b -> new BookingSeatResponseDTO(b.getSeat().getSeatId()))
-            .toList();
+        // Parse seatIds from each booking's seats JSON
+        List<BookingSeatResponseDTO> seatIds = new java.util.ArrayList<>();
+        for (BookingResponseDTO booking : bookings) {
+            String seatsJson = booking.getSeats();
+            if (seatsJson != null) {
+                try {
+                    List<com.flickzy.dto.BookingRequestDTO.SeatDTO> seats = objectMapper.readValue(
+                        seatsJson, new TypeReference<>() {});
+                    for (com.flickzy.dto.BookingRequestDTO.SeatDTO seat : seats) {
+                        seatIds.add(new BookingSeatResponseDTO(seat.getSeatId()));
+                    }
+                } catch (Exception e) {
+                    logger.error("Failed to parse seats JSON for bookingId={}", booking.getBookingId(), e);
+                }
+            }
+        }
+        return seatIds;
     }
 }

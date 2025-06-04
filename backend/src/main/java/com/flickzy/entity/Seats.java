@@ -40,7 +40,6 @@ public class Seats extends BaseEntity {
 
     String name;
 
-    @OneToMany(mappedBy = "seat")
-    List<Booking> bookings;
+ 
     
 }

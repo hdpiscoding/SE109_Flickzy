@@ -25,6 +25,10 @@ public class BookingMapper implements BaseMapper<Booking, BookingResponseDTO> {
         response.setSeatStatus(entity.getSeatStatus());
         response.setPrice(entity.getPrice());
 
+        // Add seats and snacks JSON
+        response.setSeats(entity.getSeats());
+        response.setSnacks(entity.getSnacks());
+
         // Movie Info
         BookingResponseDTO.MovieInfoDTO movieInfo = new BookingResponseDTO.MovieInfoDTO(
                 entity.getSchedule().getMovie().getId(),
@@ -56,17 +60,6 @@ public class BookingMapper implements BaseMapper<Booking, BookingResponseDTO> {
                 entity.getSchedule().getRoom().getCinema().getProvince()
         );
         response.setCinemaInfo(cinemaInfo);
-
-        // Seat Info
-        BookingResponseDTO.SeatInfoDTO seatInfo = new BookingResponseDTO.SeatInfoDTO(
-                entity.getSeat().getSeatId(),
-                entity.getSeat().getName(),
-                entity.getSeat().getSeatTypeId().getName(),
-                entity.getSeat().getRow(),
-                entity.getSeat().getColumnn(),
-                entity.getSeat().getPrice() != null ? entity.getSeat().getPrice() : entity.getSeat().getSeatTypeId().getPrice()
-        );
-        response.setSeat(seatInfo);
 
         return response;
     }

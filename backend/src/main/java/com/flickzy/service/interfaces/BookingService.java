@@ -10,6 +10,6 @@ import java.util.UUID;
 public interface BookingService {
     List<BookingResponseDTO> getBookingHistory(UUID userId);
     List<BookingResponseDTO> addBooking(BookingRequestDTO bookingRequestDTO, UUID userId);
-List<BookingSeatResponseDTO> getBookedSeatIdsByScheduleId(UUID scheduleId);
+    List<BookingSeatResponseDTO> getBookedSeatIdsByScheduleId(UUID scheduleId);
 
 }

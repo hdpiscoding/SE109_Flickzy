@@ -29,9 +29,15 @@ public class Booking extends BaseEntity {
     @JoinColumn(name = "schedule_id")
     Schedule schedule;
 
-    @ManyToOne
-    @JoinColumn(name = "seat_id")
-    Seats seat;
+    @Column(columnDefinition = "text")
+    String seats; // JSON array as text
+
+    @Column(columnDefinition = "text")
+    String snacks; // JSON array as text
+
+    // Add momoID field
+    @Column(name = "momo_id")
+    String momoID;
 
     Double price;
 

@@ -1,0 +1,103 @@
+.floating-booking {
+  position: fixed;
+  z-index: 1000;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  /* Thêm style tùy chỉnh cho box */
+  background: white;
+  padding: 0 !important;
+  border-radius: 1rem;
+  min-width: 1200px;
+  max-width: 98%;
+
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-height: 99%;
+
+  animation: fadeIn 0.5s ease-in-out;
+}
+@import "../../variables.css";
+.neary {
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 16px;
+  margin-left: 8px;
+  border: 1px solid #d9d9d9;
+  font-family: "Aminute", sans-serif;
+  display: flex;
+  background-color: white;
+  gap: 8px;
+}
+.neary:hover {
+  background-color: var(--xanh-nhat);
+  color: black;
+  cursor: pointer;
+}
+.cinema-card {
+  height: 70px;
+  width: 70px;
+  border: 1.5px solid #d9d9d9;
+  border-radius: 8px;
+  margin-right: 8px;
+}
+.cinema-card:hover {
+  border: 2px solid var(--xanh-dam);
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.cinema-item {
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+  justify-content: left !important;
+  gap: 16px;
+}
+
+.cinema-item:hover {
+  background-color: #f2f2f2b5 !important;
+}
+.cinema-item-selected {
+  background-color: #9cee69 !important; /* Màu nền cho mục được chọn */
+  pointer-events: none; /* Vô hiệu hóa hover */
+}
+.image-container {
+  height: 45px;
+  width: 45px;
+  background-color: #d9d9d9;
+}
+.primarybtnn,
+.defaultbtnn {
+  width: fit-content;
+  min-width: 90px;
+
+  cursor: pointer;
+  padding: 14px 4px;
+  border-radius: 4px;
+}
+.primarybtnn {
+  background-color: #9cee69;
+  font-weight: bold;
+}
+.defaultbtnn {
+  border: 1px solid #d9d9d9;
+}
+.defaultbtn:hover {
+  border: 1px solid #6cc832;
+  color: #6cc832;
+  cursor: pointer;
+}
+.slot-button:hover {
+  background-color: var(--xanh-nhat);
+  color: black !important;
+  cursor: pointer;
+
+  transition: all 0.3s;
+}
+.back_btn:hover {
+  background-color: var(--xanh-nhat);
+  color: black !important;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.close_btn:hover {
+  color: #f52e2e !important;
+}

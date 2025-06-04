@@ -66,10 +66,12 @@ export default function Blog() {
   };
   return (
     <>
-      <div className="container">
-        <div className="title">{title}</div>
-        <div className="description">{description}</div>
-        <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+      <div className="blog-wrapper">
+        <div className="container">
+          <div className="title">{title}</div>
+          <div className="description">{description}</div>
+          <Tabs defaultActiveKey="1" items={items} onChange={onChange} />
+        </div>
       </div>
     </>
   );
