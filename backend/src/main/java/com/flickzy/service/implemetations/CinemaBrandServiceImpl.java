@@ -5,6 +5,7 @@ import com.flickzy.dto.PaginatedResponse;
 import com.flickzy.entity.CinemaBrand;
 import com.flickzy.exception.CinemaBrandNotFoundException;
 import com.flickzy.repository.CinemaBrandRepository;
+import com.flickzy.repository.CinemasRepository;
 import com.flickzy.service.interfaces.CinemaBrandService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -27,6 +28,8 @@ import java.util.stream.Collectors;
 public class CinemaBrandServiceImpl implements CinemaBrandService {
 
     private final CinemaBrandRepository cinemaBrandRepository;
+    private final CinemasRepository cinemaRepository; // Thêm dòng này vào class
+
 
     @Override
     @Transactional
@@ -100,11 +103,16 @@ public class CinemaBrandServiceImpl implements CinemaBrandService {
     }
 
     private CinemaBrandDTO toDTO(CinemaBrand cinemaBrand) {
+        int cinemaCount = cinemaRepository.countByCinemaBrand_Id(cinemaBrand.getId());
+
+
         return CinemaBrandDTO.builder()
+
                 .id(cinemaBrand.getId())
                 .brandName(cinemaBrand.getBrandName())
                 .avatar(cinemaBrand.getAvatar())
                 .cover(cinemaBrand.getCover())
+                .cinemaCount(cinemaCount)
                 .description(cinemaBrand.getDescription())
                 .intro(cinemaBrand.getIntro())
                 .build();
