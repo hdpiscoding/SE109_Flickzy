@@ -87,8 +87,7 @@ export default function Snack({
         justifyContent: "center",
         alignItems: "center",
         zIndex: 1000,
-      }}
-    >
+      }}>
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -97,25 +96,22 @@ export default function Snack({
           borderRadius: 8,
           width: "400px",
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      >
+        }}>
         <div
           style={{
             display: "flex",
             margin: 0,
             alignContent: "center",
             alignItems: "center",
-          }}
-        >
+          }}>
           <div
             style={{
               flex: 1,
               textAlign: "center",
               fontSize: 18,
               fontWeight: "bold",
-            }}
-          >
-            Popcorn & Drinks
+            }}>
+            Bắp nước & Đồ uống
           </div>
           <div
             onClick={handleClose}
@@ -127,8 +123,7 @@ export default function Snack({
               fontWeight: "bold",
               marginLeft: "8 !important",
               transform: "translateY(-5px)",
-            }}
-          >
+            }}>
             ✕
           </div>
         </div>
@@ -139,7 +134,7 @@ export default function Snack({
             ) : items.length === 0 ? (
               <div style={{ textAlign: "center", padding: 32, color: "#888" }}>
                 <Empty
-                  description="No snack available"
+                  description="Không có bắp nước nào"
                   style={{ marginTop: 40 }}
                 />
               </div>
@@ -163,8 +158,7 @@ export default function Snack({
                         style={{ width: 24, height: 24 }}
                         onClick={() =>
                           updateQuantity(item.id, item.quantity - 1)
-                        }
-                      >
+                        }>
                         -
                       </button>
                       <input
@@ -185,8 +179,7 @@ export default function Snack({
                         style={{ width: 24, height: 24 }}
                         onClick={() =>
                           updateQuantity(item.id, item.quantity + 1)
-                        }
-                      >
+                        }>
                         +
                       </button>
                     </div>
@@ -198,14 +191,13 @@ export default function Snack({
 
           <div className="pfooter">
             <div className="total">
-              <span>Total amount</span>
+              <span>Tổng cộng</span>
               <span>{total.toLocaleString()}đ</span>
             </div>
             <Button
-              text="Pay"
+              text="Thanh toán"
               isFullWidth={true}
-              onClick={handlePayClick}
-            ></Button>
+              onClick={handlePayClick}></Button>
           </div>
         </div>
       </div>
@@ -233,8 +225,7 @@ export default function Snack({
         onCancel={() => setShowEmailModal(false)}
         onOk={handleEmailSubmit}
         okText="Tiếp tục"
-        cancelText="Hủy"
-      >
+        cancelText="Hủy">
         <Input
           placeholder="Nhập email của bạn"
           value={email}

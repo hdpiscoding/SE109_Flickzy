@@ -155,7 +155,7 @@ export default function BookingComponent({ haveclosebtn }) {
 
         const allBrand = {
           id: "all",
-          name: "All",
+          name: "Tất cả",
           avatar:
             "https://static.vecteezy.com/system/resources/thumbnails/026/631/971/small/category-icon-symbol-design-illustration-vector.jpg",
         };
@@ -278,8 +278,7 @@ export default function BookingComponent({ haveclosebtn }) {
         padding: 20,
         minWidth: 1000,
         backgroundColor: "transparent",
-      }}
-    >
+      }}>
       <Row align="middle" style={{ marginBottom: 16 }}>
         <div
           style={{
@@ -287,8 +286,7 @@ export default function BookingComponent({ haveclosebtn }) {
             alignItems: "center",
             justifyContent: "space-between",
             width: "100%",
-          }}
-        >
+          }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <EnvironmentOutlined
               style={{ color: "#6cc832", marginRight: 8, fontSize: 22 }}
@@ -305,8 +303,7 @@ export default function BookingComponent({ haveclosebtn }) {
                   ? "1.5px solid #6cc832"
                   : "1.5px solid #d9d9d9",
                 position: "relative",
-              }}
-            >
+              }}>
               <select
                 value={selectedProvince}
                 onChange={handleProvinceChange}
@@ -322,9 +319,8 @@ export default function BookingComponent({ haveclosebtn }) {
                   appearance: "none",
                   minWidth: 180,
                   cursor: "pointer",
-                }}
-              >
-                <option value="">Select province/city</option>
+                }}>
+                <option value="">Chọn tỉnh/thành phố</option>
                 {provinces.map((province) => (
                   <option key={province.code} value={province.name}>
                     {province.name}
@@ -353,8 +349,7 @@ export default function BookingComponent({ haveclosebtn }) {
                     border: "1px solid #eee",
                     zIndex: 2,
                   }}
-                  title="Xóa chọn"
-                >
+                  title="Xóa chọn">
                   <div>✕</div>
                 </span>
               )}
@@ -375,8 +370,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 alignItems: "center",
                 transition: "background 0.2s, color 0.2s",
                 position: "relative",
-              }}
-            >
+              }}>
               {loadingProvince && (
                 <Spin
                   size="small"
@@ -385,7 +379,7 @@ export default function BookingComponent({ haveclosebtn }) {
                   }}
                 />
               )}
-              Near You <FaRegMap style={{ marginLeft: 4, fontSize: 20 }} />
+              Gần bạn <FaRegMap style={{ marginLeft: 4, fontSize: 20 }} />
             </div>
           </div>
 
@@ -398,8 +392,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 color: "gray",
                 cursor: "pointer",
                 fontWeight: "bold",
-              }}
-            >
+              }}>
               ✕
             </div>
           )}
@@ -431,8 +424,7 @@ export default function BookingComponent({ haveclosebtn }) {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
-            }}
-          >
+            }}>
             <img
               src={brand.avatar}
               style={{
@@ -450,8 +442,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 color: selectedBrand === brand.id ? "#6cc832" : "#333",
                 fontSize: 13,
                 marginTop: 4,
-              }}
-            >
+              }}>
               {brand.name}
             </div>
           </div>
@@ -462,7 +453,7 @@ export default function BookingComponent({ haveclosebtn }) {
         <Col xs={24} md={8}>
           <Spin spinning={loadingProvince}>
             <Input
-              placeholder="Search cinema by name"
+              placeholder="Tìm rạp theo tên"
               value={searchText}
               onChange={handleSearchChange}
               style={{ marginBottom: 8, borderRadius: 8 }}
@@ -487,16 +478,14 @@ export default function BookingComponent({ haveclosebtn }) {
                     padding: "8px 8px",
                     marginTop: 8,
                   }}
-                  onClick={() => setSelectedCinema(cinema)}
-                >
+                  onClick={() => setSelectedCinema(cinema)}>
                   <Text
                     style={{
                       fontWeight:
                         cinema.cinemaName === selectedCinema?.cinemaName
                           ? "bold"
                           : "normal",
-                    }}
-                  >
+                    }}>
                     {cinema.cinemaName}
                   </Text>
                 </List.Item>
@@ -508,12 +497,9 @@ export default function BookingComponent({ haveclosebtn }) {
         <Col
           xs={24}
           md={16}
-          style={{ padding: "0 32px", transform: "translateY(-20px)" }}
-        >
+          style={{ padding: "0 32px", transform: "translateY(-20px)" }}>
           <div style={{ margin: "16px 0" }} onClick={handleOpenMap}>
-            <Title level={4}>
-              {selectedCinema?.cinemaName} movie showtimes
-            </Title>
+            <Title level={4}>Suất chiếu tại {selectedCinema?.cinemaName}</Title>
             <Text type="secondary">{selectedCinema?.cinemaAddress}</Text>
             <Text
               style={{
@@ -521,9 +507,8 @@ export default function BookingComponent({ haveclosebtn }) {
                 textDecoration: "underline",
                 marginLeft: 8,
                 cursor: "pointer",
-              }}
-            >
-              Map
+              }}>
+              Bản đồ
             </Text>
           </div>
 
@@ -534,8 +519,7 @@ export default function BookingComponent({ haveclosebtn }) {
                 className={
                   index === selectedDateIndex ? "primarybtnn" : "defaultbtnn"
                 }
-                onClick={() => setSelectedDateIndex(index)}
-              >
+                onClick={() => setSelectedDateIndex(index)}>
                 <div style={{ textAlign: "center" }}>
                   <div style={{ fontWeight: "bold", fontSize: 20 }}>{date}</div>
                   <div>{weekdays[index]}</div>
@@ -549,15 +533,13 @@ export default function BookingComponent({ haveclosebtn }) {
               minHeight: 300,
               overflowY: "auto",
               position: "relative",
-            }}
-          >
+            }}>
             <Spin
               spinning={loadingSchedule}
-              style={{ transform: "translateY(100px)" }}
-            >
+              style={{ transform: "translateY(100px)" }}>
               {!loadingSchedule && schedule.length === 0 ? (
                 <Empty
-                  description="No schedule available"
+                  description="Không có lịch chiếu"
                   style={{ marginTop: 40 }}
                 />
               ) : (
@@ -565,14 +547,12 @@ export default function BookingComponent({ haveclosebtn }) {
                   style={{
                     maxHeight: haveclosebtn ? "60vh" : 900,
                     overflowY: "auto",
-                  }}
-                >
+                  }}>
                   {schedule.map((item, idx) => (
                     <Card
                       bordered
                       style={{ marginTop: 16 }}
-                      key={item.id || idx}
-                    >
+                      key={item.id || idx}>
                       <Row gutter={16}>
                         <Col>
                           <Image
@@ -599,8 +579,7 @@ export default function BookingComponent({ haveclosebtn }) {
                               borderRadius: 2,
                               width: 30,
                               textAlign: "center",
-                            }}
-                          >
+                            }}>
                             {item.ageRating}
                           </div>
                           <div
@@ -611,8 +590,7 @@ export default function BookingComponent({ haveclosebtn }) {
                               maxWidth: 400,
                               whiteSpace: "normal",
                               wordBreak: "break-word",
-                            }}
-                          >
+                            }}>
                             {item.movieName}
                           </div>
                           <Text type="secondary">{item.genresName}</Text>
@@ -639,15 +617,13 @@ export default function BookingComponent({ haveclosebtn }) {
                             ).map((group, groupIdx) => (
                               <div
                                 key={group.typeName + groupIdx}
-                                style={{ marginBottom: 8 }}
-                              >
+                                style={{ marginBottom: 8 }}>
                                 <div
                                   style={{
                                     fontSize: 14,
                                     fontWeight: "bold",
                                     marginBottom: 4,
-                                  }}
-                                >
+                                  }}>
                                   {group.typeName}
                                 </div>
                                 <div
@@ -655,8 +631,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                     display: "flex",
                                     gap: 8,
                                     flexWrap: "wrap",
-                                  }}
-                                >
+                                  }}>
                                   {group.slots.map((slot, slotIdx) => {
                                     const disabled = isTimePassed(
                                       dates[selectedDateIndex],
@@ -686,8 +661,7 @@ export default function BookingComponent({ haveclosebtn }) {
                                             ? "#f5f5f5"
                                             : "transparent",
                                           opacity: disabled ? 0.6 : 1,
-                                        }}
-                                      >
+                                        }}>
                                         {slot.label}
                                       </div>
                                     );

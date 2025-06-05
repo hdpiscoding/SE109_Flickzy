@@ -116,7 +116,7 @@ export default function UserProfile() {
         }
         fetchUserData();
 
-        // Fetch booking history
+        // Lấy lịch sử đặt vé
         const fetchBookings = async () => {
             try {
                 const res = await getUserBookingHistory();
@@ -128,20 +128,20 @@ export default function UserProfile() {
         fetchBookings();
     }, []);
 
-    // Handle avatar upload
+    // Xử lý tải ảnh đại diện
     const beforeUpload = (file) => {
         setAvatarFile(file);
         const reader = new FileReader();
         reader.onload = e => setAvatarUrl(e.target.result);
         reader.readAsDataURL(file);
-        return false; // Prevent default upload
+        return false; // Ngăn upload mặc định
     };
 
     const onInfoFinish = async (values) => {
         setLoading(true);
         try {
             let uploadedAvatarUrl = avatarUrl;
-            // If a new file is selected, upload to Cloudinary
+            // Nếu có file mới, tải lên Cloudinary
             if (avatarFile) {
                 uploadedAvatarUrl = await uploadToCloudinary(avatarFile);
             }
@@ -274,13 +274,13 @@ export default function UserProfile() {
                                                 name="fullname"
                                                 label="Họ tên"
                                             >
-                                                <Input />
+                                                <Input placeholder="Nhập họ tên của bạn" />
                                             </Form.Item>
                                             <Form.Item
                                                 name="birthday"
                                                 label="Ngày sinh"
                                             >
-                                                <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" />
+                                                <DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" placeholder="Chọn ngày sinh" />
                                             </Form.Item>
                                             <Form.Item
                                                 name="gender"
@@ -295,13 +295,13 @@ export default function UserProfile() {
                                                     { pattern: /^0\d{9,10}$/, message: 'Số điện thoại không hợp lệ' }
                                                 ]}
                                             >
-                                                <Input />
+                                                <Input placeholder="Nhập số điện thoại" />
                                             </Form.Item>
                                             <Form.Item
                                                 name="email"
                                                 label="Email"
                                             >
-                                                <Input disabled />
+                                                <Input disabled placeholder="Email của bạn" />
                                             </Form.Item>
                                             <Form.Item>
                                                 <Button type="primary" htmlType="submit" loading={loading}>Cập nhật</Button>
@@ -324,7 +324,7 @@ export default function UserProfile() {
                                             label="Mật khẩu hiện tại"
                                             rules={[{ required: true, message: 'Vui lòng nhập mật khẩu hiện tại' }]}
                                         >
-                                            <Input.Password />
+                                            <Input.Password placeholder="Nhập mật khẩu hiện tại" />
                                         </Form.Item>
                                         <Form.Item
                                             name="newPassword"
@@ -334,7 +334,7 @@ export default function UserProfile() {
                                                 { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự' }
                                             ]}
                                         >
-                                            <Input.Password />
+                                            <Input.Password placeholder="Nhập mật khẩu mới" />
                                         </Form.Item>
                                         <Form.Item
                                             name="confirmPassword"
@@ -352,7 +352,7 @@ export default function UserProfile() {
                                                 })
                                             ]}
                                         >
-                                            <Input.Password />
+                                            <Input.Password placeholder="Nhập lại mật khẩu mới" />
                                         </Form.Item>
                                         <Form.Item>
                                             <Button type="primary" htmlType="submit" loading={loading}>Đổi mật khẩu</Button>
@@ -374,6 +374,9 @@ export default function UserProfile() {
                                             onRow={record => ({
                                                 onClick: () => handleRowClick(record)
                                             })}
+                                            locale={{
+                                                emptyText: 'Không có dữ liệu'
+                                            }}
                                         />
                                         <Modal
                                             open={modalVisible}

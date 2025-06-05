@@ -29,11 +29,10 @@ const BlogHome = () => {
         padding: 24,
         backgroundColor: "transparent",
         minHeight: 300,
-      }}
-    >
+      }}>
       {loading ? (
         <div style={{ textAlign: "center", padding: 40 }}>
-          <Spin size="large" tip="Loading..." />
+          <Spin size="large" tip="Đang tải..." />
         </div>
       ) : (
         <>
@@ -52,13 +51,12 @@ const BlogHome = () => {
                       src={blog.cover}
                       style={{ height: 160, objectFit: "cover" }}
                     />
-                  }
-                >
+                  }>
                   <Card.Meta
                     title={<span style={{ fontSize: 14 }}>{blog.title}</span>}
                     description={
                       <span style={{ fontSize: 12, color: "#888" }}>
-                        {blog.views} views
+                        {blog.views} lượt xem
                       </span>
                     }
                   />
@@ -67,7 +65,7 @@ const BlogHome = () => {
             ))}
           </Row>
           <div style={{ textAlign: "center", marginTop: 40, marginBottom: 12 }}>
-            <Button text={"See more"}></Button>
+            <Button text={"Xem thêm"}></Button>
           </div>
         </>
       )}

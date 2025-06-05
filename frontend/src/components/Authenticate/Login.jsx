@@ -15,10 +15,10 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
         try {
             const res = await login(values.email, values.password);
             if (res.status === 200) {
-                message.success("Login successful!");
+                message.success("Đăng nhập thành công!");
                 onLoginSuccess({ user: res.data.user, token: res.data.token });
                 form.resetFields();
-                toast.success("Log in successfully!");
+                toast.success("Đăng nhập thành công!");
                 navigate("/");
             }
         } catch (err) {
@@ -27,9 +27,9 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
                 err.response.status === 401 &&
                 err.response.data?.error === "Unauthorized"
             ) {
-                toast.error("Incorrect login information.");
+                toast.error("Thông tin đăng nhập không chính xác.");
             } else {
-                toast.error("Login failed. Please check your credentials.");
+                toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
             }
             console.log("Login failed:", err);
         } finally {
@@ -61,7 +61,7 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
             <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div className="flickzy-modal">
                     <div>
-                        <h1 className="flickzy-header">Login</h1>
+                        <h1 className="flickzy-header">Đăng nhập</h1>
                     </div>
 
                     <Form
@@ -74,25 +74,25 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
                             label="Email"
                             name="email"
                             rules={[
-                                { required: true, message: 'Email is required' },
-                                { type: 'email', message: 'Invalid email format' },
+                                { required: true, message: 'Vui lòng nhập email' },
+                                { type: 'email', message: 'Email không hợp lệ' },
                             ]}
                         >
-                            <Input placeholder="Enter email" style={{ width: "350px" }} />
+                            <Input placeholder="Nhập email" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item
-                            label="Password"
+                            label="Mật khẩu"
                             name="password"
                             rules={[
-                                { required: true, message: 'Password is required' },
+                                { required: true, message: 'Vui lòng nhập mật khẩu' },
                             ]}
                         >
-                            <Input.Password placeholder="Enter password" style={{ width: "350px" }} />
+                            <Input.Password placeholder="Nhập mật khẩu" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <div className="forgot-password-container">
-                            <span className="forgot-password" onClick={onShowForgot}>Forgot your password?</span>
+                            <span className="forgot-password" onClick={onShowForgot}>Quên mật khẩu?</span>
                         </div>
 
                         <Form.Item>
@@ -107,15 +107,15 @@ export default function Login({ open, onClose, onLoginSuccess, onShowRegister, o
                                     fontSize: "18px",
                                 }}
                             >
-                                LOG IN
+                                ĐĂNG NHẬP
                             </Button>
                         </Form.Item>
                     </Form>
 
                     <div>
-                        <span className="end-text">Don't have an account?</span>
+                        <span className="end-text">Chưa có tài khoản?</span>
                         &nbsp;
-                        <span className="end-texttext" onClick={onShowRegister}>Sign up here</span>
+                        <span className="end-texttext" onClick={onShowRegister}>Đăng ký ngay</span>
                     </div>
                 </div>
             </Modal>

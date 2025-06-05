@@ -22,7 +22,8 @@ export default function Header({ onBookingClick }) {
   const [showRegister, setShowRegister] = useState(false);
   const [showForgot, setShowForgot] = useState(false);
   const [showDone, setShowDone] = useState(false);
-  const [showReset, setShowReset] = useState(false);  const [resetEmail, setResetEmail] = useState("");
+  const [showReset, setShowReset] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
   const [cinemas, setCinemas] = useState([]);
 
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function Header({ onBookingClick }) {
       navigate("/user/profile");
     } else if (key === "signout") {
       logout();
-      toast.success("Log out successfully!");
+      toast.success("Đăng xuất thành công!");
       navigate("/");
       // Add your sign out logic here
     }
@@ -65,13 +66,13 @@ export default function Header({ onBookingClick }) {
         {
           key: "profile",
           icon: <UserOutlined />,
-          label: "View Profile",
+          label: "Xem hồ sơ",
         },
         {
           key: "signout",
           icon: <LogoutOutlined />,
           danger: true,
-          label: "Sign Out",
+          label: "Đăng xuất",
         },
       ]}
     />
@@ -100,7 +101,7 @@ export default function Header({ onBookingClick }) {
             <input
               type="text"
               className="search-input2"
-              placeholder="Search..."
+              placeholder="Tìm kiếm..."
             />
           </div>
 
@@ -108,12 +109,12 @@ export default function Header({ onBookingClick }) {
             <ul className="nav-links">
               <div>
                 <Link className="link" to="/">
-                  Home
+                  Trang chủ
                 </Link>
               </div>
               <div>
                 <Link className="link" to="/movie">
-                  Movies
+                  Phim
                 </Link>
               </div>
               <div>
@@ -124,7 +125,7 @@ export default function Header({ onBookingClick }) {
                   arrow
                   overlayClassName="cinema-dropdown">
                   <span className="link" style={{ cursor: "pointer" }}>
-                    Cinema
+                    Rạp chiếu
                   </span>
                 </AntdDropdown>
               </div>
@@ -135,7 +136,7 @@ export default function Header({ onBookingClick }) {
               </div>
             </ul>
             <div className="booking_btn" onClick={onBookingClick}>
-              BOOKING NOW!
+              ĐẶT VÉ NGAY!
             </div>
             {isLoggedIn ? (
               <AntdDropdown overlay={menu} trigger={["click"]}>
@@ -170,7 +171,7 @@ export default function Header({ onBookingClick }) {
               </AntdDropdown>
             ) : (
               <div className="signin_btn" onClick={() => setShowLogin(true)}>
-                Sign In
+                Đăng nhập
               </div>
             )}
           </div>
@@ -218,31 +219,30 @@ export default function Header({ onBookingClick }) {
         />
       )}
       {showReset && (
-          <ForgotResetPassword
-              open={showReset}
-              email={resetEmail}
-              onClose={() => setShowReset(false)}
-              onShowForgot={() => {
-                setShowReset(false);
-                setShowForgot(true);
-              }}
-              onSuccess={() => {
-                  setShowReset(false);
-                  setShowDone(true);
-                }
-              }
-          />
+        <ForgotResetPassword
+          open={showReset}
+          email={resetEmail}
+          onClose={() => setShowReset(false)}
+          onShowForgot={() => {
+            setShowReset(false);
+            setShowForgot(true);
+          }}
+          onSuccess={() => {
+            setShowReset(false);
+            setShowDone(true);
+          }}
+        />
       )}
       {showDone && (
-          <ForgotDone
-              open={showDone}
-              onClose={() => setShowDone(false)}
-              onDone={() => {
-                setShowDone(false);
-                navigate('/');
-                setShowLogin(true);
-              }}
-          />
+        <ForgotDone
+          open={showDone}
+          onClose={() => setShowDone(false)}
+          onDone={() => {
+            setShowDone(false);
+            navigate("/");
+            setShowLogin(true);
+          }}
+        />
       )}
     </div>
   );

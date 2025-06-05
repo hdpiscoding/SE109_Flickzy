@@ -211,7 +211,7 @@ export default function MovieDetail() {
                 setSummary(res.data.summary || "");
         }
         catch (error) {
-            console.error("Error fetching review summary:", error);
+            console.error("Lỗi khi lấy tổng hợp đánh giá:", error);
         }
     }
 
@@ -341,10 +341,10 @@ export default function MovieDetail() {
             // Refresh reviews and set isUserReviewedState to true
             await fetchReviews(currentPage, pageSize);
             setIsUserReviewedState(true);
-            toast.success('Rating submitted successfully!');
+            toast.success('Gửi đánh giá thành công!');
         } catch (error) {
             // Optionally show an error message
-            console.error("Error submitting review:", error);
+            console.error("Lỗi khi gửi đánh giá:", error);
         }
     }
 
@@ -523,7 +523,7 @@ export default function MovieDetail() {
                                             </Flex>
                                         </div>
                                         :
-                                        <Empty description={<Typography.Text>No reviews</Typography.Text>}/>}
+                                        <Empty description={<Typography.Text>Chưa có đánh giá</Typography.Text>}/>}
 
                                     {!isUserReviewedState && canUserReviewState && isLoggedIn ? <ReviewInput onSubmit={handleRating} /> : <div/>}
 

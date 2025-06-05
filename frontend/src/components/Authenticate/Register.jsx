@@ -12,7 +12,7 @@ export default function Register({ open, onClose, onShowLogin, onRegisterSuccess
         try {
             const res = await register(values.email, values.password);
             if (res.status === 201) {
-                toast.success("Registration successful!");
+                toast.success("Đăng ký thành công!");
                 onRegisterSuccess({ user: res.user, token: res.token });
                 form.resetFields();
             }
@@ -24,10 +24,10 @@ export default function Register({ open, onClose, onShowLogin, onRegisterSuccess
             ) {
                 form.setFields([{
                     name: "email",
-                    errors: ["Email already exists"],
+                    errors: ["Email đã tồn tại"],
                 }]);
             } else {
-                toast.error("Registration failed. Please try again.");
+                toast.error("Đăng ký thất bại. Vui lòng thử lại.");
             }
         } finally {
             setLoading(false);
@@ -58,7 +58,7 @@ export default function Register({ open, onClose, onShowLogin, onRegisterSuccess
             <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div className="flickzy-modal">
                     <div>
-                        <h1 className="flickzy-header">Sign Up</h1>
+                        <h1 className="flickzy-header">Đăng ký</h1>
                     </div>
 
                     <Form
@@ -71,21 +71,21 @@ export default function Register({ open, onClose, onShowLogin, onRegisterSuccess
                             label="Email"
                             name="email"
                             rules={[
-                                { required: true, message: 'Email is required' },
-                                { type: 'email', message: 'Invalid email format' },
+                                { required: true, message: 'Vui lòng nhập email' },
+                                { type: 'email', message: 'Email không hợp lệ' },
                             ]}
                         >
-                            <Input placeholder="Enter email" style={{ width: "350px" }} />
+                            <Input placeholder="Nhập email" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item
-                            label="Password"
+                            label="Mật khẩu"
                             name="password"
                             rules={[
-                                { required: true, message: 'Password is required' },
+                                { required: true, message: 'Vui lòng nhập mật khẩu' },
                             ]}
                         >
-                            <Input.Password placeholder="Enter password" style={{ width: "350px" }} />
+                            <Input.Password placeholder="Nhập mật khẩu" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item>
@@ -101,15 +101,15 @@ export default function Register({ open, onClose, onShowLogin, onRegisterSuccess
                                     fontSize: "18px",
                                 }}
                             >
-                                SIGN UP
+                                ĐĂNG KÝ
                             </Button>
                         </Form.Item>
                     </Form>
 
                     <div>
-                        <span className="end-text">Already have an account?</span>
+                        <span className="end-text">Đã có tài khoản?</span>
                         &nbsp;
-                        <span className="end-texttext" onClick={onShowLogin}>Log in here</span>
+                        <span className="end-texttext" onClick={onShowLogin}>Đăng nhập ngay</span>
                     </div>
                 </div>
             </Modal>

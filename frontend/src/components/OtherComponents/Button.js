@@ -23,8 +23,7 @@ export default function Button({
         width: isFullWidth ? "100%" : "auto",
       }}
       onMouseOver={(e) => (e.target.style.backgroundColor = "#6cc832")}
-      onMouseOut={(e) => (e.target.style.backgroundColor = "#9cee69")}
-    >
+      onMouseOut={(e) => (e.target.style.backgroundColor = "#9cee69")}>
       {text}
     </button>
   );

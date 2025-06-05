@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import "./Latest.scss"; // Import CSS file for styling
+import "./Latest.scss"; // Import file CSS cho giao diện
 import LargeBlogCard from "../bloc_cards/LargeBlogCard";
 import SmallBlogCard from "../bloc_cards/SmallBlogCard";
 import TopBlogCard from "../bloc_cards/TopBlogCard";
@@ -10,15 +10,17 @@ export default function Latest() {
   const [blogList, setBlogList] = React.useState([]);
   const [topBlogList, setTopBlogList] = React.useState([]);
   useEffect(() => {
-    // Fetch genres
+    // Lấy danh sách bài viết
     getAllBlog({
       categoryId: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b",
     })
       .then((data) => setBlogList(Array.isArray(data.data) ? data.data : []))
-      .catch((err) => console.error("Error fetching genres:", err));
+      .catch((err) => console.error("Lỗi khi lấy danh sách bài viết:", err));
     getAllBlog({ top: 5, categoryId: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b" })
       .then((data) => setTopBlogList(Array.isArray(data.data) ? data.data : []))
-      .catch((err) => console.error("Error fetching genres:", err));
+      .catch((err) =>
+        console.error("Lỗi khi lấy danh sách bài viết nổi bật:", err)
+      );
   }, []);
   return (
     <div className="theatrical-movie-container">

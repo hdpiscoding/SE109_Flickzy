@@ -48,7 +48,7 @@ export default function DetailBlog() {
             </Col>
             <Col xs={24} sm={8} md={8} className="table-of-contents">
               <div>
-                <h2>Bài viết có liên quan</h2>
+                <h2>Bài viết liên quan</h2>
                 {relatedBlogs.length === 0 ? (
                   <div>Đang tải...</div>
                 ) : (

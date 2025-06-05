@@ -22,7 +22,7 @@ export default function MovieCard({movie, type}) {
             <Flex vertical gap={5}>
                 <div className="image-container">
                     <div className={`age-badge age-${movie.ageRating}`}>{movie.ageRating}</div>
-                    <img className="zoom-inside" src={movie.moviePoster} alt="Sample Movie" onClick={handleNavigate}/>
+                    <img className="zoom-inside" src={movie.moviePoster} alt="Ảnh phim" onClick={handleNavigate}/>
                 </div>
 
                 <Flex vertical gap={2}>

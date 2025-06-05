@@ -14,10 +14,10 @@ export default function MovieCollection() {
       categoryId: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd", // TODO: replace with actual category id
     })
       .then((data) => setBlogList(Array.isArray(data.data) ? data.data : []))
-      .catch((err) => console.error("Error fetching blogs:", err));
+      .catch((err) => console.error("Lỗi khi lấy blog:", err));
     getAllBlog({ top: 5, categoryId: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd" })
       .then((data) => setTopBlogList(Array.isArray(data.data) ? data.data : []))
-      .catch((err) => console.error("Error fetching top blogs:", err));
+      .catch((err) => console.error("Lỗi khi lấy blog nổi bật:", err));
   }, []);
   return (
     <div className="theatrical-movie-container">
