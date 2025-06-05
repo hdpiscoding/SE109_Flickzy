@@ -36,7 +36,7 @@ export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuc
             if (!value || getFieldValue('newPassword') === value) {
                 return Promise.resolve();
             }
-            return Promise.reject(new Error('The two passwords that you entered do not match!'));
+            return Promise.reject(new Error('Hai mật khẩu bạn nhập không khớp!'));
         },
     });
 
@@ -60,7 +60,7 @@ export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuc
             <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div style={{ display: "flex", alignItems: "center", gap: '68px', marginTop: '20px' }}>
                     <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}} onClick={onShowForgot}/>
-                    <h1 className="flickzy-header">New Password</h1>
+                    <h1 className="flickzy-header">Mật khẩu mới</h1>
                 </div>
 
                 <div className="flickzy-modal">
@@ -71,11 +71,11 @@ export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuc
                         layout="vertical"
                     >
                         <Form.Item
-                            label="OTP"
+                            label="Mã OTP"
                             name="otp"
                             rules={[
-                                { required: true, message: 'OTP is required' },
-                                { pattern: /^\d{6}$/, message: 'OTP must be exactly 6 digits' },
+                                { required: true, message: 'Vui lòng nhập mã OTP' },
+                                { pattern: /^\d{6}$/, message: 'OTP phải gồm đúng 6 chữ số' },
                             ]}
                         >
                             <Input.OTP
@@ -86,25 +86,25 @@ export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuc
                         </Form.Item>
 
                         <Form.Item
-                            label="Password"
+                            label="Mật khẩu mới"
                             name="newPassword"
                             rules={[
-                                { required: true, message: 'Password is required' },
+                                { required: true, message: 'Vui lòng nhập mật khẩu mới' },
                             ]}
                         >
-                            <Input.Password placeholder="Enter password" style={{ width: "350px" }} />
+                            <Input.Password placeholder="Nhập mật khẩu mới" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item
-                            label="Confirm Password"
+                            label="Xác nhận mật khẩu"
                             name="confirm_password"
                             dependencies={['password']}
                             rules={[
-                                { required: true, message: 'Confirm password is required' },
+                                { required: true, message: 'Vui lòng xác nhận mật khẩu' },
                                 validateConfirmPassword,
                             ]}
                         >
-                            <Input.Password placeholder="Enter confirm password" style={{ width: "350px" }} />
+                            <Input.Password placeholder="Nhập lại mật khẩu" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item>
@@ -120,7 +120,7 @@ export default function ForgotResetPassword({ open, onClose, onShowForgot, onSuc
                                     fontSize: "18px",
                                 }}
                             >
-                                CREATE
+                                TẠO MỚI
                             </Button>
                         </Form.Item>
                     </Form>

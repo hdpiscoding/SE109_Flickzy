@@ -296,7 +296,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
                   minWidth: 180,
                   cursor: "pointer",
                 }}>
-                <option value="">Select province/city</option>
+                <option value="">Chọn tỉnh/thành phố</option>
                 {provinces.map((province) => (
                   <option key={province.code} value={province.name}>
                     {province.name}
@@ -355,7 +355,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
                   }}
                 />
               )}
-              Near You <FaRegMap style={{ marginLeft: 4, fontSize: 20 }} />
+              Gần bạn <FaRegMap style={{ marginLeft: 4, fontSize: 20 }} />
             </div>
           </div>
 
@@ -378,7 +378,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
         <Col xs={24} md={8}>
           <Spin spinning={loadingProvince}>
             <Input
-              placeholder="Search cinema by name"
+              placeholder="Tìm rạp theo tên"
               value={searchText}
               onChange={handleSearchChange}
               style={{ marginBottom: 8, borderRadius: 8 }}
@@ -424,9 +424,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
           md={16}
           style={{ padding: "0 32px", transform: "translateY(-20px)" }}>
           <div style={{ margin: "16px 0" }} onClick={handleOpenMap}>
-            <Title level={4}>
-              {selectedCinema?.cinemaName} movie showtimes
-            </Title>
+            <Title level={4}>Suất chiếu tại {selectedCinema?.cinemaName}</Title>
             <Text type="secondary">{selectedCinema?.cinemaAddress}</Text>
             <Text
               style={{
@@ -435,7 +433,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
                 marginLeft: 8,
                 cursor: "pointer",
               }}>
-              Map
+              Bản đồ
             </Text>
           </div>
 
@@ -466,7 +464,7 @@ export default function BookingComponent({ haveclosebtn, brandId }) {
               style={{ transform: "translateY(100px)" }}>
               {!loadingSchedule && schedule.length === 0 ? (
                 <Empty
-                  description="No schedule available"
+                  description="Không có lịch chiếu"
                   style={{ marginTop: 40 }}
                 />
               ) : (

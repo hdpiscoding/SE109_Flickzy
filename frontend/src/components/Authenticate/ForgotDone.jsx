@@ -24,11 +24,11 @@ export default function ForgotDone({open, onClose, onDone}) {
             <Modal open={open} footer={null} centered={true}>
                 <div className="flickzy-modal">
                     <div>
-                        <h1 className="flickzy-header">You're all set</h1>
+                        <h1 className="flickzy-header">Hoàn tất</h1>
                     </div>
 
                     <p style={{width: '350px', color: '#333'}}>
-                        Your password has been successfully updated, you are now logged in.
+                        Mật khẩu của bạn đã được cập nhật thành công, bạn đã đăng nhập vào hệ thống.
                     </p>
 
                     <Button

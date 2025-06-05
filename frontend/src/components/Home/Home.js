@@ -75,8 +75,7 @@ export default function Home() {
   return (
     <div
       className="home-container"
-      style={{ fontFamily: '"Aminute", sans-serif' }}
-    >
+      style={{ fontFamily: '"Aminute", sans-serif' }}>
       {loading ? (
         <div
           style={{
@@ -90,15 +89,13 @@ export default function Home() {
             position: "fixed",
             top: 0,
             left: 0,
-          }}
-        >
-          <Spin size="large" tip="Loading..." />
+          }}>
+          <Spin size="large" tip="Đang tải..." />
         </div>
       ) : (
         <div
           className="carousel-container"
-          style={{ backgroundImage: `url(${current.image})` }}
-        >
+          style={{ backgroundImage: `url(${current.image})` }}>
           <div className="carousel-gradient-overlay"></div>
           <div className="carousel-overlay">
             <div style={{ display: "flex", gap: 16 }}>
@@ -115,8 +112,7 @@ export default function Home() {
                   padding: "2px 5px",
                   fontWeight: "bold",
                   borderRadius: "5px",
-                }}
-              >
+                }}>
                 {current.tag}
               </div>
               <div
@@ -129,8 +125,7 @@ export default function Home() {
                   whiteSpace: "normal",
                   wordBreak: "break-word",
                   lineHeight: 1.2,
-                }}
-              >
+                }}>
                 {current.title}
               </div>
             </div>
@@ -138,7 +133,7 @@ export default function Home() {
             <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
               <img
                 src="/rating.png"
-                alt="Rating"
+                alt="Đánh giá"
                 style={{
                   width: 28,
                   height: 32,
@@ -157,18 +152,17 @@ export default function Home() {
                 gap: 20,
                 marginTop: "0 16px !important",
                 fontSize: 16,
-              }}
-            >
+              }}>
               <div>
-                <div className="chudam">Time</div>
+                <div className="chudam">Thời lượng</div>
                 <div className="chunhat">{current.time}</div>
               </div>
               <div>
-                <div className="chudam">Genres </div>
+                <div className="chudam">Thể loại</div>
                 <div className="chunhat">{current.genres}</div>
               </div>
               <div>
-                <div className="chudam">Date</div>
+                <div className="chudam">Ngày khởi chiếu</div>
                 <div className="chunhat">{current.date}</div>
               </div>
             </div>
@@ -178,9 +172,8 @@ export default function Home() {
                 onClick={() => {
                   navigate(`/movie/${current.id}`);
                 }}
-                text="See Detail"
-                fontSize={16}
-              ></Button>
+                text="Xem chi tiết"
+                fontSize={16}></Button>
 
               <button
                 onClick={() => {
@@ -192,8 +185,7 @@ export default function Home() {
                 style={{
                   alignContent: "center",
                   alignItems: "center",
-                }}
-              >
+                }}>
                 {" "}
                 <IoPlayCircleOutline
                   style={{
@@ -202,7 +194,7 @@ export default function Home() {
                     marginRight: 5,
                   }}
                 />
-                Watch Trailer
+                Xem trailer
               </button>
             </div>
           </div>
@@ -222,18 +214,17 @@ export default function Home() {
         </div>
       )}
       <div className="midle-title">
-        <div style={{ transform: "translateY(-4px)" }}>MOVIE SHOWTIMES</div>
+        <div style={{ transform: "translateY(-4px)" }}>LỊCH CHIẾU PHIM</div>
       </div>
       <div style={{ backgroundColor: "#F8F8F8" }}>
         {" "}
         <BookingComponent haveclosebtn={false}></BookingComponent>
       </div>
       <div className="midle-title">
-        <div style={{ transform: "translateY(-4px)" }}>BLOGS</div>
+        <div style={{ transform: "translateY(-4px)" }}>BLOG</div>
       </div>
       <div
-        style={{ backgroundColor: "#F8F8F8", padding: " 40px 100px 0 100px" }}
-      >
+        style={{ backgroundColor: "#F8F8F8", padding: " 40px 100px 0 100px" }}>
         {" "}
         <BlogHome></BlogHome>
       </div>

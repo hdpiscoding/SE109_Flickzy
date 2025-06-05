@@ -9,55 +9,55 @@ import "./Blog.scss";
 const items = [
   {
     key: "1",
-    label: "Latest",
+    label: "Mới nhất",
     children: <Latest />,
   },
   {
     key: "2",
-    label: "Theatrical movie",
+    label: "Phim chiếu rạp",
     children: <TheatricalMovie />,
   },
   {
     key: "3",
-    label: "Movie Collection",
+    label: "Tổng hợp phim",
     children: <MovieCollection />,
   },
   {
     key: "4",
-    label: "Movie Review",
+    label: "Đánh giá phim",
     children: <MovieReview />,
   },
 ];
 export default function Blog() {
   useEffect(() => {}, []);
-  const [title, setTitle] = React.useState("Latest");
+  const [title, setTitle] = React.useState("Mới nhất");
   const [description, setDescription] = React.useState(
-    "Stay updated with the best movie blogs on the market, covering all genres and countries. Unravel intriguing and captivating film content."
+    "Cập nhật những blog phim mới nhất trên thị trường, đa dạng thể loại và quốc gia. Khám phá những nội dung điện ảnh hấp dẫn và lôi cuốn."
   );
   const onChange = (key) => {
     switch (key) {
       case "1":
-        setTitle("Latest");
+        setTitle("Mới nhất");
         setDescription(
-          "Stay updated with the best movie blogs on the market, covering all genres and countries. Unravel intriguing and captivating film content."
+          "Cập nhật những blog phim mới nhất trên thị trường, đa dạng thể loại và quốc gia. Khám phá những nội dung điện ảnh hấp dẫn và lôi cuốn."
         );
         break;
       case "2":
-        setTitle("Theatrical movie");
+        setTitle("Phim chiếu rạp");
         setDescription(
-          "Blockbuster and theatrical releases that leave a strong impression—only on Flickzy."
+          "Những bom tấn và phim chiếu rạp gây ấn tượng mạnh – chỉ có tại Flickzy."
         );
         break;
       case "3":
-        setTitle("Movie Collection");
+        setTitle("Tổng hợp phim");
         setDescription(
-          "A collection of exciting movies, series, Netflix content, and more."
+          "Tổng hợp những bộ phim, series, nội dung Netflix và nhiều hơn nữa."
         );
         break;
       case "4":
-        setTitle("Movie Review");
+        setTitle("Đánh giá phim");
         setDescription(
-          "Great movie reviews, online films, theatrical releases, and much more..."
+          "Những bài đánh giá phim hay, phim trực tuyến, phim chiếu rạp và nhiều hơn thế nữa..."
         );
         break;
       default:

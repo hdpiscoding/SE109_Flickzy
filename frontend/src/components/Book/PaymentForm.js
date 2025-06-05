@@ -168,8 +168,7 @@ export default function PaymentForm({
         alignItems: "center",
         transition: "all 0.3s ease-in-out",
         zIndex: 1000,
-      }}
-    >
+      }}>
       <div
         onClick={(e) => e.stopPropagation()} // Ngăn sự kiện click lan xuống nền
         style={{
@@ -178,8 +177,7 @@ export default function PaymentForm({
           borderRadius: 8,
 
           boxShadow: "0 4px 8px rgba(0, 0, 0, 0.2)",
-        }}
-      >
+        }}>
         {" "}
         <div style={{ display: "flex", minWidth: 1000 }}>
           {/* LEFT */}
@@ -192,8 +190,7 @@ export default function PaymentForm({
                   style={{
                     backgroundColor:
                       ageRatingColors[ticketData.movieInfo.ageRating],
-                  }}
-                >
+                  }}>
                   {ticketData.movieInfo.ageRating}
                 </span>{" "}
                 {ticketData.movieInfo.movieName}
@@ -206,19 +203,20 @@ export default function PaymentForm({
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}
-            >
+              }}>
               {" "}
               <div>
                 <div
                   className="info-row"
-                  style={{ fontWeight: "bold", fontSize: 17 }}
-                >
+                  style={{ fontWeight: "bold", fontSize: 17 }}>
                   {ticketData.cinema.cinemaName}
                 </div>
                 <div
-                  style={{ color: "gray", whiteSpace: "normal", maxWidth: 550 }}
-                >
+                  style={{
+                    color: "gray",
+                    whiteSpace: "normal",
+                    maxWidth: 550,
+                  }}>
                   {" "}
                   {ticketData.cinema.cinemaAddress}
                   <span
@@ -228,8 +226,7 @@ export default function PaymentForm({
                       cursor: "pointer",
                       textDecoration: "underline",
                       marginLeft: 8,
-                    }}
-                  >
+                    }}>
                     Map
                   </span>
                 </div>
@@ -240,8 +237,7 @@ export default function PaymentForm({
                   flexDirection: "column  ",
                   gap: 8,
                   alignItems: "center",
-                }}
-              >
+                }}>
                 {" "}
                 <div
                   style={{
@@ -253,8 +249,7 @@ export default function PaymentForm({
                     transform: "translateY(-3px)",
                     width: "fit-content",
                     padding: "1px 5px",
-                  }}
-                >
+                  }}>
                   {ticketData.scheduleInfo.roomName}
                 </div>
                 <div>ROOM</div>
@@ -266,8 +261,7 @@ export default function PaymentForm({
                 fontSize: 22,
                 marginBottom: 4,
                 marginTop: 4,
-              }}
-            >
+              }}>
               {fommatTime(ticketData.scheduleInfo.scheduleStart)} -{" "}
               {fommatTime(ticketData.scheduleInfo.scheduleEnd)}{" "}
               {formateDate(ticketData.scheduleInfo.scheduleDate)}
@@ -301,8 +295,7 @@ export default function PaymentForm({
 
             <div
               className="total-row"
-              style={{ alignItems: "center", display: "flex", gap: 8 }}
-            >
+              style={{ alignItems: "center", display: "flex", gap: 8 }}>
               <div>
                 <span>TOTAL AMOUNT</span>
                 <div className="note">

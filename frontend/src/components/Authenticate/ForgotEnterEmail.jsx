@@ -51,12 +51,12 @@ export default function ForgotEnterEmail({ open, onClose, onShowLogin, onSuccess
             <Modal open={open} footer={null} centered={true} onCancel={onClose} destroyOnClose>
                 <div style={{ display: "flex", alignItems: "center", gap: '63px', marginTop: '20px' }}>
                     <ArrowLeft style={{width:'30px', height:'30px', cursor:'pointer'}} onClick={onShowLogin}/>
-                    <h1 className="flickzy-header">Reset Password</h1>
+                    <h1 className="flickzy-header">Đặt lại mật khẩu</h1>
                 </div>
 
                 <div className="flickzy-modal">
                     <p style={{width: '350px', color: '#333'}}>
-                        Enter your email address that linked to your account and we’ll send you an email.
+                        Nhập địa chỉ email đã liên kết với tài khoản của bạn và chúng tôi sẽ gửi email hướng dẫn đặt lại mật khẩu.
                     </p>
 
                     <Form
@@ -69,11 +69,11 @@ export default function ForgotEnterEmail({ open, onClose, onShowLogin, onSuccess
                             label="Email"
                             name="email"
                             rules={[
-                                { required: true, message: 'Email is required' },
-                                { type: 'email', message: 'Invalid email format' },
+                                { required: true, message: 'Vui lòng nhập email' },
+                                { type: 'email', message: 'Email không hợp lệ' },
                             ]}
                         >
-                            <Input placeholder="Enter email" style={{ width: "350px" }} />
+                            <Input placeholder="Nhập email" style={{ width: "350px" }} />
                         </Form.Item>
 
                         <Form.Item>
@@ -89,7 +89,7 @@ export default function ForgotEnterEmail({ open, onClose, onShowLogin, onSuccess
                                     fontSize: "18px",
                                 }}
                             >
-                                SEND
+                                GỬI
                             </Button>
                         </Form.Item>
                     </Form>

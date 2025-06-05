@@ -15,7 +15,7 @@ export default function MovieHorizontalCard(props){
     const navigate = useNavigate();
     return (
         <Flex gap={10}>
-            <img src={props.image} alt={'image'} style={{width:'64px', height:'92px', borderRadius: '5px'}}/>
+            <img src={props.image} alt={'Ảnh phim'} style={{width:'64px', height:'92px', borderRadius: '5px'}}/>
 
             <Flex vertical gap={2}>
                 <div style={{width: '24px', textAlign: 'center', fontSize: '12px', backgroundColor: `${ageRatingColors[props.ageRating]}`, borderRadius: '3px', color: '#fff'}}>{props.ageRating}</div>
