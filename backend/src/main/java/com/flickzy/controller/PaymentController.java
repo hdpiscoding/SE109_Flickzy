@@ -39,7 +39,7 @@ public class PaymentController extends BaseController {
             String secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
             String orderInfo = paymentRequest.getPaymentinfo();
             String redirectUrl = "https://momo.vn/return";
-            String ipnUrl = "https://eff6-14-169-74-244.ngrok-free.app/api/v1/payment/callback";
+            String ipnUrl = "https://7bb9-2402-800-f689-4a75-611c-3d0c-8129-52a9.ngrok-free.app/api/v1/payment/callback";
             String requestType = "captureWallet";
             String extraData =  new ObjectMapper().writeValueAsString(paymentRequest.getExtraData());
             String requestId = partnerCode + System.currentTimeMillis();
@@ -126,4 +126,27 @@ public class PaymentController extends BaseController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Callback error: " + e.getMessage());
         }
     }
+    @PostMapping("/check")
+    public ResponseEntity<?> checkPayment(@RequestBody Map<String, String> request) {
+        try {
+            String orderId = request.get("orderId");
+            if (orderId == null || orderId.isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("message", "Missing orderId"));
+            }
+    
+            // Kiểm tra trong bảng booking có bản ghi nào có momo_id = orderId không
+            boolean paymentSuccessful = bookingService.existsByMomoID(orderId);
+    
+            if (paymentSuccessful) {
+                return ResponseEntity.ok(Map.of("message", "sucess"));
+            } else {
+                return ResponseEntity.ok(Map.of("message", "failed"));
+
+            }
+        } catch (Exception e) {
+            return ResponseEntity.ok(Map.of("message", "failed"));
+
+        }
+    }
+    
 }

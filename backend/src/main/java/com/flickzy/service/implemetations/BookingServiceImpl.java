@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -52,21 +53,24 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public List<BookingResponseDTO> addBooking(BookingRequestDTO bookingRequestDTO, UUID userId) {
         logger.info("Adding new booking: scheduleId={}, userId={}", bookingRequestDTO.getScheduleId(), userId);
-
+    
         // Validate Schedule
         Schedule schedule = scheduleRepository.findById(bookingRequestDTO.getScheduleId())
                 .orElseThrow(() -> {
                     logger.error("Schedule not found: {}", bookingRequestDTO.getScheduleId());
                     return new EntityNotFoundException("Schedule not found");
                 });
-
-        // Validate User
-        Users user = userRepository.findById(userId)
-                .orElseThrow(() -> {
-                    logger.error("User not found: {}", userId);
-                    return new EntityNotFoundException("User not found");
-                });
-
+    
+        // Nếu userId null thì user cũng null (cho phép booking guest)
+        Users user = null;
+        if (userId != null) {
+            user = userRepository.findById(userId)
+                    .orElseThrow(() -> {
+                        logger.error("User not found: {}", userId);
+                        return new EntityNotFoundException("User not found");
+                    });
+        }
+    
         // Serialize seats and snacks to JSON
         String seatsJson;
         String snacksJson;
@@ -77,8 +81,8 @@ public class BookingServiceImpl implements BookingService {
             logger.error("Failed to serialize seats/snacks", e);
             throw new IllegalArgumentException("Invalid seats/snacks data");
         }
-
-        // Optionally, you can sum up the total price from seats and snacks
+    
+        // Tính tổng tiền
         double totalPrice = 0.0;
         if (bookingRequestDTO.getSeats() != null) {
             totalPrice += bookingRequestDTO.getSeats().stream()
@@ -92,21 +96,21 @@ public class BookingServiceImpl implements BookingService {
                 .mapToDouble(s -> s.getPrice() * s.getQuantity())
                 .sum();
         }
-
+    
         // Create Booking (one booking per request)
         Booking booking = Booking.builder()
-                .user(user)
+                .user(user) // user có thể null
                 .schedule(schedule)
                 .seats(seatsJson)
                 .snacks(snacksJson)
                 .price(totalPrice)
                 .seatStatus(1) // CONFIRMED
-                .momoID(bookingRequestDTO.getMomoID()) // Add this line
+                .momoID(bookingRequestDTO.getMomoID())
                 .build();
-
+    
         Booking savedBooking = bookingRepository.save(booking);
         logger.info("Booking added successfully: bookingId={}", savedBooking.getBookingId());
-
+    
         return List.of(bookingMapper.toDto(savedBooking));
     }
     public List<BookingResponseDTO> getBookingByScheduleId(UUID scheduleId) {
@@ -116,7 +120,10 @@ public class BookingServiceImpl implements BookingService {
         );
         return bookingMapper.toDtoList(bookings);
     }
-
+    @Override
+    public boolean existsByMomoID(String momoId) {
+        return bookingRepository.existsByMomoID(momoId);
+    }
     @Override
     public List<BookingSeatResponseDTO> getBookedSeatIdsByScheduleId(UUID scheduleId) {
         // Lấy danh sách booking theo scheduleId
@@ -140,4 +147,15 @@ public class BookingServiceImpl implements BookingService {
         }
         return seatIds;
     }
+    @Override
+public boolean updateEmailByMomoID(String momoId, String email) {
+    Optional<Booking> bookingOpt = bookingRepository.findByMomoID(momoId);
+    if (bookingOpt.isPresent()) {
+        Booking booking = bookingOpt.get();
+        booking.setEmail(email);
+        bookingRepository.save(booking);
+        return true;
+    }
+    return false;
+}
 }

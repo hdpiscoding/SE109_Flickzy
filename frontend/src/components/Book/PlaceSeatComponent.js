@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 export default function PlaceSeatComponent() {
   const { handleBack, handleNav, handleClose, step1, ticketData } =
     useGlobalContext();
+  const [email, setEmail] = useState("");
   const [brandId] = useState(ticketData.brandId);
   const [scheduleInfo, setScheduleInfo] = useState(ticketData.scheduleInfo);
   const moviesInfo = ticketData.movieInfo;
@@ -541,9 +542,10 @@ export default function PlaceSeatComponent() {
           handleClose={() => {
             setIsModalVisible(false);
           }}
-          handleOpenPaymentForm={(snacks) => {
+          handleOpenPaymentForm={(snacks, email) => {
             setIsPayFormVisible(true);
             setSnacks(snacks);
+            setEmail(email);
           }}
           initAmount={totalAmount}
           brandId={brandId}
@@ -556,6 +558,7 @@ export default function PlaceSeatComponent() {
             setIsPayFormVisible(false);
           }}
           snacks={snacks}
+          email={email}
         ></PaymentForm>
       )}
     </div>

@@ -45,16 +45,19 @@ const Footer = () => {
 
         <div style={{ display: "flex", gap: 50 }}>
           <div className="footer-section">
-            <h4>ABOUT US</h4>
+            <h4>LINK</h4>
             <ul>
               <li>
-                <a href="#">Our Story</a>
+                <a href="">Home</a>
               </li>
               <li>
-                <a href="#">Made with Care</a>
+                <a href="movie">Movies</a>
               </li>
               <li>
-                <a href="#">Blog</a>
+                <a href="cinema">Cinema</a>
+              </li>
+              <li>
+                <a href="blog">Blogs</a>
               </li>
             </ul>
           </div>
@@ -80,10 +83,7 @@ const Footer = () => {
             <h4>BOUTIQUES</h4>
             <ul>
               <li>
-                <a href="#">Find a store</a>
-              </li>
-              <li>
-                <a href="#">Book a free eye test</a>
+                <a href="">Booking now</a>
               </li>
             </ul>
           </div>

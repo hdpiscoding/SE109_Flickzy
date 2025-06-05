@@ -65,6 +65,7 @@ public class SnackServiceImpl implements SnackService {
                     snack.setPrice(snackDTO.getPrice());
                     snack.setIsDelete(snackDTO.getIsDelete());
                     snack.setIsAvailable(snackDTO.getIsAvailable());
+                    snack.setBrandId(snackDTO.getBrandId());
                     return toDTO(snackRepository.save(snack));
                 })
                 .orElseThrow(() -> new SnackNotFoundException(id));
@@ -138,6 +139,7 @@ public class SnackServiceImpl implements SnackService {
                 .image(snack.getImage())
                 .price(snack.getPrice())
                 .isDelete(snack.getIsDelete())
+                .brandId(snack.getBrandId())
                 .isAvailable(snack.getIsAvailable())
                 .build();
     }
@@ -149,6 +151,7 @@ public class SnackServiceImpl implements SnackService {
                 .image(snackDTO.getImage())
                 .price(snackDTO.getPrice())
                 .isDelete(snackDTO.getIsDelete())
+                .brandId(snackDTO.getBrandId())
                 .isAvailable(snackDTO.getIsAvailable())
                 .build();
     }

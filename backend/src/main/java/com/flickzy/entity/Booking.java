@@ -39,6 +39,8 @@ public class Booking extends BaseEntity {
     @Column(name = "momo_id")
     String momoID;
 
+ @Column(name = "email")
+    String email;
     Double price;
 
     Integer seatStatus;
