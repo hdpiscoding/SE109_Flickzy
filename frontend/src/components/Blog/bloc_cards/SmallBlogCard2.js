@@ -9,7 +9,7 @@ export default function SmallBlogCard({ blog }) {
     navigate("/blog/" + blog.id);
   };
   return (
-    <div className="article-item" onClick={handleClick}>
+    <div className="article-item2" onClick={handleClick}>
       <img
         className="article-image"
         alt={blog ? blog.title : "N/A"}

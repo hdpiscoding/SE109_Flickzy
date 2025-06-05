@@ -19,6 +19,18 @@
         cursor          : pointer;
     }
 
+    h1 {
+        font-size: 30px;
+    }
+
+    h2 {
+        font-size: 23px;
+    }
+
+    p {
+        font-size: 17px;
+    }
+
     h1,
     h2,
     h3,
@@ -26,7 +38,7 @@
     h5,
     h6 {
         color : #d32f2f;
-        margin: 0.5rem 0;
+        margin: 1rem 0;
     }
 
     p {
@@ -38,7 +50,8 @@
         padding-left: 1.5rem;
 
         li {
-            margin: 0.5rem 0;
+            margin   : 0.5rem 0;
+            font-size: 17px;
         }
     }
 
@@ -113,7 +126,7 @@
 }
 
 .blog-info {
-    font-size    : 14px;
+    font-size    : 20px;
     color        : #888;
     margin-bottom: 16px;
 }
@@ -132,9 +145,10 @@
 }
 
 .table-of-contents h3 {
-    font-size    : 15px;
     margin-bottom: 10px;
 }
+
+
 
 .table-of-contents ul {
     list-style: none;
