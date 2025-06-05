@@ -3,6 +3,7 @@ import { Form, Input, Button, Row, Col } from "antd";
 import "./EditCinemaModal.scss";
 import { editACinema } from "../../services/cinemaService";
 import { getAllBrand } from "../../services/brandService";
+import { toast } from "react-toastify";
 
 const EditCinemaModal = ({ cinema, onSuccess }) => {
   const [brands, setBrands] = useState([]);
@@ -51,6 +52,8 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
     };
     try {
       await editACinema(cinema.id, cinemaData);
+      if (onSuccess) onSuccess();
+
       toast.success("Edit cinema successfully!");
     } catch (error) {
       // handle error

@@ -6,6 +6,7 @@ import MdEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { addABrand } from "../../services/brandService";
+import { toast } from "react-toastify";
 import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
 const mdParser = new MarkdownIt();
 
@@ -72,6 +73,8 @@ const AddBrandModal = ({ onSuccess }) => {
         description: description,
       };
       await addABrand(brandData);
+      if (onSuccess) onSuccess();
+
       toast.success("Add brand successfully!");
     } catch (error) {
       // handle error

@@ -9,6 +9,8 @@ import {
   Row,
   Col,
 } from "antd";
+import { toast } from "react-toastify";
+
 import { UploadOutlined } from "@ant-design/icons";
 import "antd/dist/reset.css";
 import "./AddBlogsModal.scss";
@@ -68,6 +70,8 @@ const AddBlogsModal = ({ onSuccess }) => {
         categoryId: values.categoryId,
       };
       await addABlog(blogData);
+      if (onSuccess) onSuccess();
+
       toast.success("Create blog successfully!");
     } catch (error) {
       toast.error("Failed to create blog!");

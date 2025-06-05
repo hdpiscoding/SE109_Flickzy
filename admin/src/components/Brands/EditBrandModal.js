@@ -10,7 +10,7 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { auto } from "@cloudinary/url-gen/actions/resize";
 import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
-
+import { toast } from "react-toastify";
 const mdParser = new MarkdownIt();
 const cld = new Cloudinary({ cloud: { cloudName: "dwye9udip" } });
 
@@ -63,6 +63,8 @@ const EditBrandModal = ({ brand, onSuccess }) => {
         description: description,
       };
       await editABrand(brand.id, brandData);
+      if (onSuccess) onSuccess();
+
       toast.success("Edit brand successfully!");
     } catch (error) {
       toast.error("Failed to edit brand!");
