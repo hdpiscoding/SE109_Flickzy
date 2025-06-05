@@ -1,7 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import "./DetailBlog.scss";
-import SmallBlogCard from "./bloc_cards/SmallBlogCard";
+import SmallBlogCard2 from "./bloc_cards/SmallBlogCard2";
 import { Col, Image, Row } from "antd";
 import { useParams } from "react-router-dom";
 import { getABlog, getAllBlog } from "../../services/BlogService"; // thêm getAllBlog
@@ -53,7 +53,7 @@ export default function DetailBlog() {
                   <div>Đang tải...</div>
                 ) : (
                   relatedBlogs.map((item, idx) => (
-                    <SmallBlogCard key={item.id || idx} blog={item} />
+                    <SmallBlogCard2 key={item.id || idx} blog={item} />
                   ))
                 )}
               </div>

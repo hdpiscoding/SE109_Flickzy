@@ -14,7 +14,7 @@ export default function LoginPage() {
     const onFinish = async (values) => {
         setLoading(true);
         try {
-            const res = await Login(values.email, values.password);
+            const res = await Login(values?.email, values.password);
             if (res.status === 200) {
                 login({ user: res.data.user, token: res.data.token });
                 form.resetFields();

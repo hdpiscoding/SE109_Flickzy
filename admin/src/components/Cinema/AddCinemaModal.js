@@ -3,6 +3,7 @@ import { Form, Input, Button, Row, Col } from "antd";
 import "./AddCinemaModal.scss";
 import { addACinema } from "../../services/cinemaService";
 import { getAllBrand } from "../../services/brandService";
+import { toast } from "react-toastify";
 
 const AddCinemaModal = ({ onSuccess }) => {
   const [brands, setBrands] = useState([]);
@@ -44,8 +45,11 @@ const AddCinemaModal = ({ onSuccess }) => {
     try {
       await addACinema(cinemaData);
       if (onSuccess) onSuccess();
+
+      toast.success("Add cinema successfully!");
+      if (onSuccess) onSuccess();
     } catch (error) {
-      // handle error
+      console.error("Failed to add cinema:", error);
     }
   };
 

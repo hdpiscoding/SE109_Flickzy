@@ -66,24 +66,24 @@
 }
 .primarybtnn,
 .defaultbtnn {
-  width: fit-content;
-  min-width: 90px;
+  width: fit-content !important;
+  min-width: 90px !important;
 
-  cursor: pointer;
-  padding: 14px 4px;
-  border-radius: 4px;
+  cursor: pointer !important;
+  padding: 14px 4px !important;
+  border-radius: 4px !important;
 }
 .primarybtnn {
-  background-color: #9cee69;
-  font-weight: bold;
+  background-color: #9cee69 !important;
+  font-weight: bold !important;
 }
 .defaultbtnn {
-  border: 1px solid #d9d9d9;
+  border: 1px solid #d9d9d9 !important;
 }
 .defaultbtn:hover {
-  border: 1px solid #6cc832;
-  color: #6cc832;
-  cursor: pointer;
+  border: 1px solid #6cc832 !important;
+  color: #6cc832 !important;
+  cursor: pointer !important;
 }
 .slot-button:hover {
   background-color: var(--xanh-nhat);

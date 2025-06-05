@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import "./Cinemas.scss";
 import { Col, Image, Row } from "antd";
 import { useParams } from "react-router-dom";
@@ -47,12 +48,8 @@ export default function Cinemas() {
             </Col>
             <Col className="cinema-details">
               <h2>{cinemaBrand?.brandName}</h2>
-              <div>Hệ thống rạp chiếu phim từ Hàn Quốc</div>
-              <div className="cinema-rating">
-                <span>⭐ 5 / 5</span>
-                <span>9218 đánh giá</span>
-              </div>
-              <p>49 cửa hàng trong hệ thống</p>
+              <div className="cinema-intro">{cinemaBrand?.intro}</div>
+              <p>{cinemaBrand?.cinemaCount} cửa hàng trong hệ thống</p>
             </Col>
           </Row>
         </div>
@@ -61,10 +58,14 @@ export default function Cinemas() {
             <div className="schedule-title">
               Lịch chiếu phim {cinemaBrand?.brandName}
             </div>
-            <BookingComponent haveclosebtn={false}></BookingComponent>
+            <BookingComponent
+              haveclosebtn={false}
+              brandId={id}></BookingComponent>
           </div>
           <div className="markdown">
-            <ReactMarkdown>{cinemaBrand?.description}</ReactMarkdown>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {cinemaBrand?.description}
+            </ReactMarkdown>
           </div>
         </div>
       </div>

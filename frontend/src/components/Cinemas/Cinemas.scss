@@ -36,9 +36,15 @@
             }
 
             .cinema-details {
-
                 gap: 20px;
 
+                .cinema-intro {
+                    max-width    : 400px;
+                    word-break   : break-word;
+                    white-space  : pre-line;
+                    overflow-wrap: break-word;
+                    color        : #f4f4f4;
+                }
             }
         }
     }
@@ -49,13 +55,15 @@
         font-weight  : 700;
         color        : #d32f2f;
         text-align   : center;
+        margin-top   : 20px;
     }
 
     .markdown {
-        font-family: Arial, sans-serif;
-        line-height: 1.6;
-        color      : #333;
-        margin-top : 20px;
+        font-family   : Arial, sans-serif;
+        line-height   : 1.6;
+        color         : #333;
+        margin-top    : 20px;
+        padding-bottom: 30px;
 
         h1,
         h2,

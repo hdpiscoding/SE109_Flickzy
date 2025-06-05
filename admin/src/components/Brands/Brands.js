@@ -19,6 +19,7 @@ const Brands = () => {
   const fetchBrands = async () => {
     try {
       const res = await getAllBrand();
+      console.log("Fetched brands:", res);
       setBrands(res.data || []);
     } catch (error) {
       setBrands([]);

@@ -17,6 +17,7 @@ import "react-markdown-editor-lite/lib/index.css";
 import MarkdownIt from "markdown-it";
 import { editABlog } from "../../services/blogService";
 import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 
@@ -82,8 +83,9 @@ const EditBlogsModal = ({ blog, onSuccess }) => {
       };
       await editABlog(blog.id, blogData);
       if (onSuccess) onSuccess();
+      toast.success("Edit blog successfully!");
     } catch (error) {
-      console.error("Edit blog failed", error);
+      toast.error("Failed to edit blog!");
     }
     setUploading(false);
   };
