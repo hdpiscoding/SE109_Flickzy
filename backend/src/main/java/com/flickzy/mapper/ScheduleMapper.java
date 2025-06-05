@@ -4,6 +4,7 @@ import com.flickzy.base.BaseMapper;
 import com.flickzy.dto.Schedule.CinemaScheduleResponseDTO;
 import com.flickzy.dto.Schedule.MovieScheduleResponseDTO;
 import com.flickzy.dto.Schedule.ScheduleDTO;
+import com.flickzy.dto.Schedule.ScheduleSimpleDTO;
 import com.flickzy.entity.CinemaBrand;
 import com.flickzy.entity.Cinemas;
 import com.flickzy.entity.Schedule;
@@ -163,5 +164,21 @@ public class ScheduleMapper implements BaseMapper<Schedule, CinemaScheduleRespon
     @Override
     public Set<Schedule> toEntitySet(Set<CinemaScheduleResponseDTO> dtos) {
         return dtos.stream().map(this::toEntity).collect(Collectors.toSet());
+    }
+
+    public ScheduleSimpleDTO toSimpleDto(Schedule entity) {
+        ScheduleSimpleDTO dto = new ScheduleSimpleDTO();
+        dto.setScheduleId(entity.getScheduleId());
+        dto.setMovieId(entity.getMovie() != null ? entity.getMovie().getId() : null);
+        dto.setRoomId(entity.getRoom() != null ? entity.getRoom().getRoomId() : null);
+        dto.setScheduleDate(entity.getScheduleDate());
+        dto.setScheduleStart(entity.getScheduleStart());
+        dto.setScheduleEnd(entity.getScheduleEnd());
+        dto.setTypeId(entity.getType() != null ? entity.getType().getId() : null);
+        return dto;
+    }
+
+    public List<ScheduleSimpleDTO> toSimpleDtoList(List<Schedule> entities) {
+        return entities.stream().map(this::toSimpleDto).toList();
     }
 }

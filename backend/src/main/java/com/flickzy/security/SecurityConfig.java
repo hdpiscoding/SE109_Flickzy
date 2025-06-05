@@ -90,7 +90,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/v1/snacks").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/v1/snacks/{id}").hasAuthority("ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/api/v1/snacks/{id}/delete").hasAuthority("ADMIN")
-                         .requestMatchers(HttpMethod.PATCH, "/api/v1/snacks/{id}/availability").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/v1/snacks/{id}/availability").hasAuthority("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/schedules").hasAuthority("ADMIN")
                         // Default APIs
                         .anyRequest().authenticated()
                 )
