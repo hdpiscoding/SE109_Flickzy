@@ -68,9 +68,9 @@ const AddBlogsModal = ({ onSuccess }) => {
         categoryId: values.categoryId,
       };
       await addABlog(blogData);
-      if (onSuccess) onSuccess();
+      toast.success("Create blog successfully!");
     } catch (error) {
-      console.error("Create blog failed", error);
+      toast.error("Failed to create blog!");
     }
     setUploading(false);
   };

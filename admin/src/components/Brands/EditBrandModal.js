@@ -63,9 +63,9 @@ const EditBrandModal = ({ brand, onSuccess }) => {
         description: description,
       };
       await editABrand(brand.id, brandData);
-      if (onSuccess) onSuccess();
+      toast.success("Edit brand successfully!");
     } catch (error) {
-      message.error("Save failed!");
+      toast.error("Failed to edit brand!");
     }
     setUploading(false);
   };

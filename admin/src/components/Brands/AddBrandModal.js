@@ -72,9 +72,10 @@ const AddBrandModal = ({ onSuccess }) => {
         description: description,
       };
       await addABrand(brandData);
-      if (onSuccess) onSuccess();
+      toast.success("Add brand successfully!");
     } catch (error) {
       // handle error
+      toast.error("Failed to add brand!");
     }
     setUploading(false);
   };

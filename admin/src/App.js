@@ -7,9 +7,10 @@ import {
   LogoutOutlined,
   AppstoreOutlined,
   SolutionOutlined,
-  DollarOutlined,
-  FileExclamationOutlined,
-  GiftOutlined,
+  PlayCircleOutlined, // thêm mới
+  CalendarOutlined, // thêm mới
+  HomeOutlined, // thêm mới
+  ReadOutlined, // thêm mới
 } from "@ant-design/icons";
 import {
   Avatar,
@@ -31,32 +32,32 @@ const { Header, Content, Footer, Sider } = Layout;
 const items = [
   {
     key: 1,
-    icon: React.createElement(UserOutlined),
+    icon: React.createElement(VideoCameraOutlined), // Cinema
     label: "Cinema ",
   },
   {
     key: 2,
-    icon: React.createElement(AppstoreOutlined),
+    icon: React.createElement(AppstoreOutlined), // Brands
     label: "Brands",
   },
   {
     key: 3,
-    icon: React.createElement(AppstoreOutlined),
+    icon: React.createElement(PlayCircleOutlined), // Movies
     label: "Movies",
   },
   {
     key: 4,
-    icon: React.createElement(SolutionOutlined),
+    icon: React.createElement(CalendarOutlined), // Schedules
     label: "Schedules",
   },
   {
     key: 5,
-    icon: React.createElement(DollarOutlined),
+    icon: React.createElement(HomeOutlined), // Rooms
     label: "Rooms",
   },
   {
     key: 6,
-    icon: React.createElement(DollarOutlined),
+    icon: React.createElement(ReadOutlined), // Blogs
     label: "Blogs",
   },
 ];

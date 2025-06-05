@@ -43,9 +43,10 @@ const AddCinemaModal = ({ onSuccess }) => {
     };
     try {
       await addACinema(cinemaData);
+      toast.success("Add cinema successfully!");
       if (onSuccess) onSuccess();
     } catch (error) {
-      // handle error
+      console.error("Failed to add cinema:", error);
     }
   };
 

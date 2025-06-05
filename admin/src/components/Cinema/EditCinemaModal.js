@@ -51,9 +51,10 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
     };
     try {
       await editACinema(cinema.id, cinemaData);
-      if (onSuccess) onSuccess();
+      toast.success("Edit cinema successfully!");
     } catch (error) {
       // handle error
+      toast.error("Failed to edit cinema!");
     }
   };
 
