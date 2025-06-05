@@ -33,32 +33,32 @@ const items = [
   {
     key: 1,
     icon: React.createElement(VideoCameraOutlined), // Cinema
-    label: "Cinema ",
+    label: "Rạp chiếu phim", // Dịch "Cinema"
   },
   {
     key: 2,
     icon: React.createElement(AppstoreOutlined), // Brands
-    label: "Brands",
+    label: "Thương hiệu", // Dịch "Brands"
   },
   {
     key: 3,
     icon: React.createElement(PlayCircleOutlined), // Movies
-    label: "Movies",
+    label: "Phim", // Dịch "Movies"
   },
   {
     key: 4,
     icon: React.createElement(CalendarOutlined), // Schedules
-    label: "Schedules",
+    label: "Lịch chiếu", // Dịch "Schedules"
   },
   {
     key: 5,
     icon: React.createElement(HomeOutlined), // Rooms
-    label: "Rooms",
+    label: "Phòng chiếu", // Dịch "Rooms"
   },
   {
     key: 6,
     icon: React.createElement(ReadOutlined), // Blogs
-    label: "Blogs",
+    label: "Blog",
   },
 ];
 
@@ -158,7 +158,7 @@ const App = () => {
                   marginLeft: "1rem",
                   fontWeight: "bold",
                 }}>
-                Admin
+                Quản trị viên {/* Dịch "Admin" */}
               </span>
               <Dropdown
                 overlay={<Menu onClick={handleMenuClick} items={menuProps} />}>
