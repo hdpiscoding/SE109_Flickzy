@@ -14,7 +14,7 @@ import java.util.List;
 public class MoMoPaymentRequest {
     private String amount;
     private String paymentinfo;
-    private ExtraData extraData;     public String getAmount() {
+    private BookingRequestDTO extraData;     public String getAmount() {
         return amount;
     }
 
@@ -27,10 +27,10 @@ public class MoMoPaymentRequest {
     public void setPaymentinfo(String paymentinfo) {
         this.paymentinfo = paymentinfo;
     }
-    public ExtraData getExtraData() {
+    public BookingRequestDTO getExtraData() {
         return extraData;
     }
-    public void setExtraData(ExtraData extraData) {
+    public void setExtraData(BookingRequestDTO extraData) {
         this.extraData = extraData;
     }
 }

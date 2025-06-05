@@ -27,9 +27,20 @@ const formatTime = (time) => {
   const [hourStr, minuteStr] = time.split(":");
   let hour = parseInt(hourStr, 10);
   const minute = minuteStr;
-  return `${hour}:${minute}`;
+  return `${hour.toString().padStart(2, "0")}:${minute}`;
 };
+const isTimePassed = (date, time, selectedDateIndex) => {
+  const now = new Date();
+  const today = new Date();
+  const selectedDate = new Date(today);
+  selectedDate.setDate(today.getDate() + selectedDateIndex);
+  const [hour, minute] = time.split(":");
 
+  const scheduleDateTime = new Date(selectedDate);
+  scheduleDateTime.setHours(parseInt(hour, 10), parseInt(minute, 10), 0, 0);
+
+  return scheduleDateTime < now;
+};
 export default function BookingComponent({ haveclosebtn }) {
   const [brands, setBrands] = useState([]);
   const [cinemas, setCinemas] = useState([]);
@@ -646,25 +657,41 @@ export default function BookingComponent({ haveclosebtn }) {
                                     flexWrap: "wrap",
                                   }}
                                 >
-                                  {group.slots.map((slot, slotIdx) => (
-                                    <div
-                                      key={slot.label + slotIdx}
-                                      onClick={() =>
-                                        handleNavigate(idx, slot.schedule)
-                                      }
-                                      style={{
-                                        fontSize: 16,
-                                        padding: "4px 16px",
-                                        border: "2px solid #9cee69",
-                                        color: "#4B8C22",
-                                        cursor: "pointer",
-                                        fontWeight: "bold",
-                                        borderRadius: 8,
-                                      }}
-                                    >
-                                      {slot.label}
-                                    </div>
-                                  ))}
+                                  {group.slots.map((slot, slotIdx) => {
+                                    const disabled = isTimePassed(
+                                      dates[selectedDateIndex],
+                                      slot.schedule.scheduleStart,
+                                      selectedDateIndex
+                                    );
+                                    return (
+                                      <div
+                                        key={slot.label + slotIdx}
+                                        onClick={() =>
+                                          !disabled &&
+                                          handleNavigate(idx, slot.schedule)
+                                        }
+                                        style={{
+                                          fontSize: 16,
+                                          padding: "4px 16px",
+                                          border: disabled
+                                            ? "2px solid #d9d9d9"
+                                            : "2px solid #9cee69",
+                                          color: disabled ? "#999" : "#4B8C22",
+                                          cursor: disabled
+                                            ? "not-allowed"
+                                            : "pointer",
+                                          fontWeight: "bold",
+                                          borderRadius: 8,
+                                          backgroundColor: disabled
+                                            ? "#f5f5f5"
+                                            : "transparent",
+                                          opacity: disabled ? 0.6 : 1,
+                                        }}
+                                      >
+                                        {slot.label}
+                                      </div>
+                                    );
+                                  })}
                                 </div>
                               </div>
                             ))}

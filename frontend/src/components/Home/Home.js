@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { IoPlayCircleOutline } from "react-icons/io5";
 import { useOutletContext } from "react-router-dom";
 import "./Home.css";
+import { useNavigate } from "react-router-dom";
+
 import Button from "../OtherComponents/Button";
 import BookingComponent from "../Book/BookingComponent";
 import BlogHome from "./Blog";
@@ -13,7 +15,7 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true); // Thêm state loading
-
+  const navigate = useNavigate();
   useEffect(() => {
     // Gọi API lấy danh sách phim
     const fetchMovies = async () => {
@@ -24,6 +26,7 @@ export default function Home() {
         // Map lại dữ liệu cho phù hợp với carousel
         setMovies(
           data.map((item) => ({
+            id: item.id,
             tag: item.ageRating,
             tag_color:
               item.ageRating === "18+"
@@ -171,7 +174,13 @@ export default function Home() {
             </div>
             <br></br>
             <div className="buttons">
-              <Button text="Book Ticket" fontSize={16}></Button>
+              <Button
+                onClick={() => {
+                  navigate(`/movie/${current.id}`);
+                }}
+                text="See Detail"
+                fontSize={16}
+              ></Button>
 
               <button
                 onClick={() => {

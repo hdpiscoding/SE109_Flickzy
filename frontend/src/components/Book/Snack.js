@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import Button from "../OtherComponents/Button";
 import "./Snack.css";
 import { getAvailableSnacks } from "../../services/BookingService";
-import { Empty, Spin } from "antd";
+import { Empty, Spin, Input, Modal } from "antd";
+
 export default function Snack({
   handleClose,
   handleOpenPaymentForm,
@@ -11,6 +12,9 @@ export default function Snack({
 }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
 
   useEffect(() => {
     const fetchSnacks = async () => {
@@ -44,9 +48,33 @@ export default function Snack({
     initAmount +
     items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+  const validateEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const handlePayClick = () => {
+    const auth = localStorage.getItem("auth-storage");
+    if (!auth) {
+      setShowEmailModal(true);
+      return;
+    }
+    handleOpenPaymentForm(items);
+  };
+
+  const handleEmailSubmit = () => {
+    if (!validateEmail(email)) {
+      setEmailError("Email không hợp lệ!");
+      return;
+    }
+    setEmailError("");
+    setShowEmailModal(false);
+    // Có thể lưu email vào localStorage nếu muốn
+    // localStorage.setItem("guest-email", email);
+    handleOpenPaymentForm(items, email);
+  };
+
   return (
     <div
-      onClick={handleClose}
       style={{
         position: "fixed",
         top: "50%",
@@ -107,7 +135,7 @@ export default function Snack({
         <div className="combo-container">
           <div className="item-list">
             {loading ? (
-              <Spin></Spin>
+              <Spin />
             ) : items.length === 0 ? (
               <div style={{ textAlign: "center", padding: 32, color: "#888" }}>
                 <Empty
@@ -176,9 +204,7 @@ export default function Snack({
             <Button
               text="Pay"
               isFullWidth={true}
-              onClick={() => {
-                handleOpenPaymentForm(items);
-              }}
+              onClick={handlePayClick}
             ></Button>
           </div>
         </div>
@@ -201,6 +227,23 @@ export default function Snack({
           }
         `}
       </style>
+      <Modal
+        open={showEmailModal}
+        title="Vui lòng nhập email để tiếp tục"
+        onCancel={() => setShowEmailModal(false)}
+        onOk={handleEmailSubmit}
+        okText="Tiếp tục"
+        cancelText="Hủy"
+      >
+        <Input
+          placeholder="Nhập email của bạn"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        {emailError && (
+          <div style={{ color: "red", marginTop: 8 }}>{emailError}</div>
+        )}
+      </Modal>
     </div>
   );
 }

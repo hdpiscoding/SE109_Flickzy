@@ -1,17 +1,48 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { QRCodeCanvas } from "qrcode.react";
+import { useNavigate } from "react-router-dom";
+
 import Button from "../OtherComponents/Button";
 import "./PaymentForm.css"; // Import CSS for styling
+import PaymentSuccess from "./PaymentSucces";
+
 import { useGlobalContext } from "../../Layout";
-import { getLink } from "../../services/PaymentService";
-export default function PaymentForm({ handleClose, seats, snacks }) {
-  const { ticketData } = useGlobalContext();
+import {
+  checkPayment,
+  getLink,
+  updateEmail,
+} from "../../services/PaymentService";
+import { Navigate } from "react-router-dom";
+export default function PaymentForm({
+  handleClose,
+  seats,
+  snacks,
+  roomId,
+  email,
+}) {
+  const navigate = useNavigate();
+  const context = useGlobalContext();
+  const { handleNav, setTicketData, ticketData } = context;
+
   const [qrCode, setQrCode] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+  const [isSucces, setIsSuccess] = useState(false);
+  const intervalRef = useRef(null);
   const handlePriceSeats = (seats) => {
     if (!Array.isArray(seats)) return 0;
     return seats.reduce((total, seat) => {
       return total + (seat.seatTypeId?.price || 0);
     }, 0);
+  };
+  const getUserIdFromAuthStorage = () => {
+    const auth = localStorage.getItem("auth-storage");
+    if (!auth) return null;
+    try {
+      const parsed = JSON.parse(auth);
+      return parsed?.state?.user?.id || null;
+    } catch {
+      return null;
+    }
   };
   const handlePriceSnacks = (snacks) => {
     if (!Array.isArray(snacks)) return 0;
@@ -23,6 +54,11 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
   const formatMoney = (amount) => {
     if (typeof amount !== "number") return "0 đ";
     return amount.toLocaleString("vi-VN") + " đ";
+  };
+  const formateDate = (dateString) => {
+    const options = { year: "numeric", month: "2-digit", day: "2-digit" };
+    const date = new Date(dateString);
+    return date.toLocaleDateString("vi-VN", options);
   };
 
   const items = [];
@@ -48,11 +84,39 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
     window.open(url, "_blank");
   };
   useEffect(() => {
+    if (email) {
+    }
     const fetchQRCode = async () => {
       const sum = handlePriceSeats(seats) + handlePriceSnacks(snacks);
+      const newSeats = seats.map((seat) => ({
+        name: seat.name,
+        seatId: seat.seatId,
+        row: seat.row,
+        column: seat.columnn,
+        seat_type_id: seat.seatTypeId?.seatTypeId,
+        price: seat.seatTypeId?.price,
+        room_id: ticketData.scheduleInfo.roomId,
+      }));
+      const newSnacks = snacks
+        .filter((snack) => snack.quantity > 0)
+        .map((snack) => ({
+          snackId: snack.id,
+          name: snack.name,
+          price: snack.price,
+          brand_id: snack.brandId,
+          quantity: snack.quantity,
+        }));
       try {
-        const response = await getLink(sum, "Thanh toán vé xem phim");
+        const response = await getLink(
+          sum,
+          "Thanh toán vé xem phim",
+          newSeats,
+          newSnacks,
+          ticketData.scheduleInfo.scheduleId,
+          getUserIdFromAuthStorage() ?? null
+        );
         setQrCode(response.payUrl);
+        setOrderId(response.orderId);
       } catch (error) {
         console.error("Lỗi khi lấy link thanh toán:", error);
       }
@@ -60,7 +124,33 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
 
     fetchQRCode();
   }, []);
-  return (
+
+  const checkPaymentStatus = async () => {
+    try {
+      const response = await checkPayment(orderId);
+
+      if (response.message === "sucess") {
+        if (email) await updateEmail(orderId, email);
+        setIsSuccess(true);
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi khi kiểm tra trạng thái thanh toán:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!orderId) return;
+    intervalRef.current = setInterval(() => {
+      checkPaymentStatus();
+    }, 1000);
+    return () => clearInterval(intervalRef.current);
+  }, [orderId]);
+  return isSucces ? (
+    <PaymentSuccess handleClose={handleClose} />
+  ) : (
     <div
       onClick={handleClose} // Gọi handleClose khi nhấp vào nền
       style={{
@@ -180,7 +270,7 @@ export default function PaymentForm({ handleClose, seats, snacks }) {
             >
               {fommatTime(ticketData.scheduleInfo.scheduleStart)} -{" "}
               {fommatTime(ticketData.scheduleInfo.scheduleEnd)}{" "}
-              {ticketData.scheduleInfo.scheduleDate}
+              {formateDate(ticketData.scheduleInfo.scheduleDate)}
             </div>
 
             <div className="section-title">SEATS</div>

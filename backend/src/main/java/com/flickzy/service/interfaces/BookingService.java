@@ -11,5 +11,8 @@ public interface BookingService {
     List<BookingResponseDTO> getBookingHistory(UUID userId);
     List<BookingResponseDTO> addBooking(BookingRequestDTO bookingRequestDTO, UUID userId);
     List<BookingSeatResponseDTO> getBookedSeatIdsByScheduleId(UUID scheduleId);
+    boolean existsByMomoID(String momoId);
+    boolean updateEmailByMomoID(String momoId, String email);
+    
 
 }

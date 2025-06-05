@@ -87,4 +87,16 @@ public ResponseEntity<Object> getBookedSeatIdsByScheduleId(@PathVariable UUID id
         List<BookingResponseDTO> response = bookingService.addBooking(bookingRequestDTO, userId);
         return buildResponse(response, HttpStatus.CREATED, "Booking(s) added successfully");
     }
+    @PutMapping("/booking/update-email-by-momo")
+
+public ResponseEntity<Object> updateEmailByMomoId(
+        @RequestParam String momoId,
+        @RequestParam String email) {
+    boolean updated = bookingService.updateEmailByMomoID(momoId, email);
+    if (updated) {
+        return buildResponse(null, HttpStatus.OK, "Email updated successfully for momoId: " + momoId);
+    } else {
+        return buildResponse(null, HttpStatus.NOT_FOUND, "Booking not found for momoId: " + momoId);
+    }
+}
 }

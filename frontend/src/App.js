@@ -14,7 +14,7 @@ function App() {
   return (
     <>
       {" "}
-      <ToastContainer position="top-right" />
+      <ToastContainer position="top-right"></ToastContainer>
       <Routes className="rootApp">
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
