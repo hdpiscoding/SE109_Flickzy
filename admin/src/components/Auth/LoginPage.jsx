@@ -18,7 +18,7 @@ export default function LoginPage() {
             if (res.status === 200) {
                 login({ user: res.data.user, token: res.data.token });
                 form.resetFields();
-                toast.success("Log in successfully!");
+                toast.success("Đăng nhập thành công!");
                 navigate("/", { replace: true });
             }
         } catch (err) {
@@ -27,18 +27,18 @@ export default function LoginPage() {
                 err.response.status === 401 &&
                 err.response.data?.error === "Unauthorized"
             ) {
-                toast.error("Incorrect login information.");
+                toast.error("Thông tin đăng nhập không chính xác.");
             } else {
-                toast.error("Login failed. Please check your credentials.");
+                toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
             }
-            console.log("Login failed:", err);
+            console.log("Đăng nhập thất bại:", err);
         } finally {
             setLoading(false);
         }
     };
 
     const onFinishFailed = (errorInfo) => {
-        console.log("Failed:", errorInfo);
+        console.log("Thất bại:", errorInfo);
     };
 
     return (
@@ -70,7 +70,7 @@ export default function LoginPage() {
                 gap: '15px',
             }}>
                 <div>
-                    <h1 style={{color: '#333'}}>Login</h1>
+                    <h1 style={{color: '#333'}}>Đăng nhập</h1>
                 </div>
 
                 <Form
@@ -83,21 +83,21 @@ export default function LoginPage() {
                         label="Email"
                         name="email"
                         rules={[
-                            { required: true, message: 'Email is required' },
-                            { type: 'email', message: 'Invalid email format' },
+                            { required: true, message: 'Vui lòng nhập email' },
+                            { type: 'email', message: 'Email không hợp lệ' },
                         ]}
                     >
-                        <Input placeholder="Enter email" style={{ width: "350px" }} />
+                        <Input placeholder="Nhập email" style={{ width: "350px" }} />
                     </Form.Item>
 
                     <Form.Item
-                        label="Password"
+                        label="Mật khẩu"
                         name="password"
                         rules={[
-                            { required: true, message: 'Password is required' },
+                            { required: true, message: 'Vui lòng nhập mật khẩu' },
                         ]}
                     >
-                        <Input.Password placeholder="Enter password" style={{ width: "350px" }} />
+                        <Input.Password placeholder="Nhập mật khẩu" style={{ width: "350px" }} />
                     </Form.Item>
 
                     <Form.Item>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                                 fontSize: "18px",
                             }}
                         >
-                            LOG IN
+                            ĐĂNG NHẬP
                         </Button>
                     </Form.Item>
                 </Form>

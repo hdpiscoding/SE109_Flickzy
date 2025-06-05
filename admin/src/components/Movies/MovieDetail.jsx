@@ -81,37 +81,37 @@ export default function MovieDetail() {
 
     return (
         <div style={{ marginTop: '10px' }}>
-            <Button onClick={() => navigate('/movies')} style={{ marginBottom: 16 }}>Back</Button>
+            <Button onClick={() => navigate('/movies')} style={{ marginBottom: 16 }}>Quay lại</Button>
             <div style={{display: 'flex', justifyContent: 'end', marginBottom: 16}}>
-                <Button type="primary" onClick={() => navigate(`/movies/${movieId}/edit`)}>Edit movie</Button>
+                <Button type="primary" onClick={() => navigate(`/movies/${movieId}/edit`)}>Chỉnh sửa phim</Button>
             </div>
             <Card
                 title={movie.movieName}
                 bordered={false}
             >
                 <Descriptions column={1} bordered>
-                    <Descriptions.Item label="Description">{movie.movieDescription}</Descriptions.Item>
-                    <Descriptions.Item label="Content">{movie.movieContent}</Descriptions.Item>
-                    <Descriptions.Item label="Release Date">{movie.movieRelease}</Descriptions.Item>
-                    <Descriptions.Item label="Age Rating">
+                    <Descriptions.Item label="Mô tả">{movie.movieDescription}</Descriptions.Item>
+                    <Descriptions.Item label="Nội dung">{movie.movieContent}</Descriptions.Item>
+                    <Descriptions.Item label="Ngày khởi chiếu">{movie.movieRelease}</Descriptions.Item>
+                    <Descriptions.Item label="Phân loại độ tuổi">
                         <Tag color={ageRatingColors[movie.ageRating] || 'default'}>{movie.ageRating}</Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Ratings">{movie.movieRating}</Descriptions.Item>
-                    <Descriptions.Item label="Nation">{movie.movieNation}</Descriptions.Item>
-                    <Descriptions.Item label="Duration">{movie.movieLength} phút</Descriptions.Item>
-                    <Descriptions.Item label="Actors">{movie.movieActors}</Descriptions.Item>
-                    <Descriptions.Item label="Director">{movie.movieDirector}</Descriptions.Item>
-                    <Descriptions.Item label="Genres">{genresToString(movie.genres)}</Descriptions.Item>
+                    <Descriptions.Item label="Đánh giá">{movie.movieRating}</Descriptions.Item>
+                    <Descriptions.Item label="Quốc gia">{movie.movieNation}</Descriptions.Item>
+                    <Descriptions.Item label="Thời lượng">{movie.movieLength} phút</Descriptions.Item>
+                    <Descriptions.Item label="Diễn viên">{movie.movieActors}</Descriptions.Item>
+                    <Descriptions.Item label="Đạo diễn">{movie.movieDirector}</Descriptions.Item>
+                    <Descriptions.Item label="Thể loại">{genresToString(movie.genres)}</Descriptions.Item>
                     <Descriptions.Item label="Poster">
                         <Image src={movie.moviePoster} width={120} />
                     </Descriptions.Item>
-                    <Descriptions.Item label="Background">
+                    <Descriptions.Item label="Ảnh nền">
                         <Image src={movie.movieBackground} width={250} />
                     </Descriptions.Item>
                     <Descriptions.Item label="Trailer">
                         <a href={movie.movieTrailer} target="_blank" rel="noopener noreferrer">{movie.movieTrailer}</a>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Showing Info">
+                    <Descriptions.Item label="Thông tin suất chiếu">
                         {movieShowings && movieShowings?.length > 0 ? (
                             <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
                                 {movieShowings?.map((showing, idx) => {
@@ -131,17 +131,17 @@ export default function MovieDetail() {
                                             }}
                                         >
                                             <div>
-                                                <b>Start Date:</b> {showing.startDate}
+                                                <b>Ngày bắt đầu:</b> {showing.startDate}
                                             </div>
                                             <div>
-                                                <b>End Date:</b> {showing.endDate}
+                                                <b>Ngày kết thúc:</b> {showing.endDate}
                                             </div>
                                         </Card>
                                     );
                                 })}
                             </div>
                         ) : (
-                            "No showing info"
+                            "Chưa có thông tin suất chiếu"
                         )}
                     </Descriptions.Item>
                 </Descriptions>

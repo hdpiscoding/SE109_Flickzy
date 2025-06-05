@@ -54,16 +54,16 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
       await editACinema(cinema.id, cinemaData);
       if (onSuccess) onSuccess();
 
-      toast.success("Edit cinema successfully!");
+      toast.success("Cập nhật rạp phim thành công!");
     } catch (error) {
       // handle error
-      toast.error("Failed to edit cinema!");
+      toast.error("Cập nhật rạp phim thất bại!");
     }
   };
 
   return (
     <div className="cinema-form-container">
-      <h1>Edit Cinema</h1>
+      <h1>Chỉnh sửa rạp phim</h1>
       <Form
         form={form}
         layout="vertical"
@@ -72,23 +72,25 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Cinema Name"
+              label="Tên rạp phim"
               name="cinemaName"
               rules={[
-                { required: true, message: "Please input the cinema name!" },
+                { required: true, message: "Vui lòng nhập tên rạp phim!" },
               ]}>
-              <Input placeholder="Cinema Name" />
+              <Input placeholder="Tên rạp phim" />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Brand"
+              label="Thương hiệu"
               name="brandId"
-              rules={[{ required: true, message: "Please select a brand!" }]}>
+              rules={[
+                { required: true, message: "Vui lòng chọn thương hiệu!" },
+              ]}>
               <select className="ant-input" style={{ width: "100%" }}>
-                <option value="">Select Brand</option>
+                <option value="">Chọn thương hiệu</option>
                 {brands.map((brand) => (
                   <option key={brand.id} value={brand.id}>
                     {brand.brandName}
@@ -99,13 +101,13 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Province"
+              label="Tỉnh/Thành phố"
               name="province"
               rules={[
-                { required: true, message: "Please select a province!" },
+                { required: true, message: "Vui lòng chọn tỉnh/thành phố!" },
               ]}>
               <select className="ant-input" style={{ width: "100%" }}>
-                <option value="">Select Province</option>
+                <option value="">Chọn tỉnh/thành phố</option>
                 {provinces.map((province) => (
                   <option key={province.id} value={province.name}>
                     {province.name}
@@ -118,12 +120,10 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Address"
+              label="Địa chỉ"
               name="cinemaAddress"
-              rules={[
-                { required: true, message: "Please input the address!" },
-              ]}>
-              <Input placeholder="Cinema Address" />
+              rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}>
+              <Input placeholder="Địa chỉ rạp phim" />
             </Form.Item>
           </Col>
         </Row>
@@ -131,7 +131,7 @@ const EditCinemaModal = ({ cinema, onSuccess }) => {
           <Col span={24}>
             <Form.Item>
               <Button type="primary" htmlType="submit" block>
-                Save Change
+                Lưu thay đổi
               </Button>
             </Form.Item>
           </Col>

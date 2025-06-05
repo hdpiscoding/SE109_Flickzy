@@ -60,7 +60,7 @@ const AddBrandModal = ({ onSuccess }) => {
       }
 
       if (!avatarUrl || !coverUrl) {
-        message.error("Please upload both avatar and cover!");
+        message.error("Vui lòng tải lên cả ảnh đại diện và ảnh bìa!");
         setUploading(false);
         return;
       }
@@ -75,10 +75,10 @@ const AddBrandModal = ({ onSuccess }) => {
       await addABrand(brandData);
       if (onSuccess) onSuccess();
 
-      toast.success("Add brand successfully!");
+      toast.success("Thêm thương hiệu thành công!");
     } catch (error) {
       // handle error
-      toast.error("Failed to add brand!");
+      toast.error("Thêm thương hiệu thất bại!");
     }
     setUploading(false);
   };
@@ -101,7 +101,7 @@ const AddBrandModal = ({ onSuccess }) => {
 
   return (
     <div className="brand-form-container">
-      <h1>Create New Brand</h1>
+      <h1>Thêm thương hiệu mới</h1>
       <Form
         form={form}
         layout="vertical"
@@ -110,12 +110,12 @@ const AddBrandModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Brand Name"
+              label="Tên thương hiệu"
               name="brandName"
               rules={[
-                { required: true, message: "Please input the brand name!" },
+                { required: true, message: "Vui lòng nhập tên thương hiệu!" },
               ]}>
-              <Input placeholder="Brand Name" />
+              <Input placeholder="Tên thương hiệu" />
             </Form.Item>
           </Col>
         </Row>
@@ -123,11 +123,16 @@ const AddBrandModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Intro"
+              label="Giới thiệu ngắn"
               name="intro"
-              rules={[{ required: true, message: "Please input the intro!" }]}>
+              rules={[
+                {
+                  required: true,
+                  message: "Vui lòng nhập phần giới thiệu ngắn!",
+                },
+              ]}>
               <Input
-                placeholder="Short introduction"
+                placeholder="Giới thiệu ngắn về thương hiệu"
                 value={intro}
                 onChange={(e) => setIntro(e.target.value)}
               />
@@ -137,9 +142,11 @@ const AddBrandModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Avatar"
+              label="Ảnh đại diện"
               required
-              rules={[{ required: true, message: "Please upload an avatar!" }]}>
+              rules={[
+                { required: true, message: "Vui lòng tải lên ảnh đại diện!" },
+              ]}>
               <Upload
                 accept="image/*"
                 listType="picture"
@@ -149,7 +156,7 @@ const AddBrandModal = ({ onSuccess }) => {
                 onRemove={() => setAvatarFile(null)}
                 showUploadList={false}
                 disabled={uploading}>
-                <Button icon={<UploadOutlined />}>Select Avatar</Button>
+                <Button icon={<UploadOutlined />}>Chọn ảnh đại diện</Button>
               </Upload>
               {avatarImg && (
                 <div style={{ marginTop: 12 }}>
@@ -167,10 +174,10 @@ const AddBrandModal = ({ onSuccess }) => {
           </Col>
           <Col xs={24} md={12}>
             <Form.Item
-              label="Cover"
+              label="Ảnh bìa"
               required
               rules={[
-                { required: true, message: "Please upload a cover image!" },
+                { required: true, message: "Vui lòng tải lên ảnh bìa!" },
               ]}>
               <Upload
                 accept="image/*"
@@ -181,7 +188,7 @@ const AddBrandModal = ({ onSuccess }) => {
                 onRemove={() => setCoverFile(null)}
                 showUploadList={false}
                 disabled={uploading}>
-                <Button icon={<UploadOutlined />}>Select Cover</Button>
+                <Button icon={<UploadOutlined />}>Chọn ảnh bìa</Button>
               </Upload>
               {coverImg && (
                 <div style={{ marginTop: 12 }}>
@@ -202,7 +209,7 @@ const AddBrandModal = ({ onSuccess }) => {
           <Col span={24}>
             <div className="md-editor-block">
               <label className="ant-form-item-label">
-                <span>Description</span>
+                <span>Mô tả</span>
               </label>
               <MdEditor
                 value={description}
@@ -222,7 +229,7 @@ const AddBrandModal = ({ onSuccess }) => {
                 htmlType="submit"
                 block
                 loading={uploading}>
-                Create Brand
+                Thêm thương hiệu
               </Button>
             </Form.Item>
           </Col>

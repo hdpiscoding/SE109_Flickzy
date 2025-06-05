@@ -126,10 +126,10 @@ export default function EditMovie() {
                 await updateMovieShowing(values.movieShowing.id, showingData);
             }
 
-            toast.success('Movie updated successfully!');
+            toast.success('Cập nhật phim thành công!');
             navigate(`/movies/${movieId}`);
         } catch (error) {
-            toast.error('Failed to update movie or showing');
+            toast.error('Cập nhật phim hoặc suất chiếu thất bại');
         }
     };
 
@@ -169,53 +169,53 @@ export default function EditMovie() {
             }
         }}>
             <div style={{ marginTop: '10px', background: '#fff', padding: 32, borderRadius: 8 }}>
-                <Button onClick={() => navigate(`/movies/${movieId}`)} style={{ marginBottom: 16, color: '#333' }}>Back</Button>
-                <h2>Edit movie</h2>
+                <Button onClick={() => navigate(`/movies/${movieId}`)} style={{ marginBottom: 16, color: '#333' }}>Quay lại</Button>
+                <h2>Chỉnh sửa phim</h2>
                 <Form form={form} layout="vertical" onFinish={onFinish}>
                     {/* Same fields as AddMovie */}
-                    <Form.Item name="movieName" label="Name" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieName" label="Tên phim" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập tên phim" />
                     </Form.Item>
-                    <Form.Item name="movieDescription" label="Description" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieDescription" label="Mô tả" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập mô tả" />
                     </Form.Item>
-                    <Form.Item name="movieContent" label="Content" rules={[{ required: true }]}>
-                        <Input.TextArea rows={3} />
+                    <Form.Item name="movieContent" label="Nội dung" rules={[{ required: true }]}>
+                        <Input.TextArea rows={3} placeholder="Nhập nội dung phim" />
                     </Form.Item>
                     <Form.Item name="movieTrailer" label="Trailer (URL)">
-                        <Input />
+                        <Input placeholder="Nhập đường dẫn trailer" />
                     </Form.Item>
-                    <Form.Item name="genres" label="Genres" rules={[{ required: true }]}>
-                        <Select mode="multiple" options={genreList} placeholder="Choose genre..." />
+                    <Form.Item name="genres" label="Thể loại" rules={[{ required: true }]}>
+                        <Select mode="multiple" options={genreList} placeholder="Chọn thể loại..." />
                     </Form.Item>
-                    <Form.Item name="movieRelease" label="Release Date" rules={[{ required: true }]}>
-                        <DatePicker style={{ width: '100%' }} />
+                    <Form.Item name="movieRelease" label="Ngày khởi chiếu" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày khởi chiếu" />
                     </Form.Item>
                     <Form.Item name="moviePoster" label="Poster (URL)" rules={[{ required: true }]}>
-                        <Input />
+                        <Input placeholder="Nhập đường dẫn poster" />
                     </Form.Item>
-                    <Form.Item name="movieBackground" label="Background (URL)" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieBackground" label="Ảnh nền (URL)" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập đường dẫn ảnh nền" />
                     </Form.Item>
-                    <Form.Item name="movieNation" label="Nation" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieNation" label="Quốc gia" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập quốc gia sản xuất" />
                     </Form.Item>
-                    <Form.Item name="movieLength" label="Duration (min)" rules={[{ required: true, type: 'number', min: 1, message: 'Nhập số phút hợp lệ' }]}>
-                        <InputNumber style={{ width: '100%' }} min={1} />
+                    <Form.Item name="movieLength" label="Thời lượng (phút)" rules={[{ required: true, type: 'number', min: 1, message: 'Nhập số phút hợp lệ' }]}>
+                        <InputNumber style={{ width: '100%' }} min={1} placeholder="Nhập thời lượng phim" />
                     </Form.Item>
-                    <Form.Item name="movieActors" label="Actors" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieActors" label="Diễn viên" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập tên diễn viên" />
                     </Form.Item>
-                    <Form.Item name="movieDirector" label="Director" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="movieDirector" label="Đạo diễn" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập tên đạo diễn" />
                     </Form.Item>
-                    <Form.Item name="ageRating" label="Age Rating" rules={[{ required: true }]}>
-                        <Select options={ageRatingOptions} placeholder="Choose age rating..." />
+                    <Form.Item name="ageRating" label="Phân loại độ tuổi" rules={[{ required: true }]}>
+                        <Select options={ageRatingOptions} placeholder="Chọn phân loại độ tuổi..." />
                     </Form.Item>
-                    <Form.Item label="Movie Showing" name="movieShowing">
+                    <Form.Item label="Suất chiếu" name="movieShowing">
                         <div>
                             <Button type='dashed' style={{ color: '#9CEE69', borderColor: '#9CEE69' }} onClick={handleAddOrEditShowing}>
-                                {showing ? "Edit Showing" : "Add Showing"}
+                                {showing ? "Chỉnh sửa suất chiếu" : "Thêm suất chiếu"}
                             </Button>
                             {showing && (
                                 <div style={{ marginTop: 16, cursor: 'pointer' }} onClick={handleAddOrEditShowing}>
@@ -231,10 +231,10 @@ export default function EditMovie() {
                                         }}
                                     >
                                         <div>
-                                            <b>Start Date:</b> {showing.startDate}
+                                            <b>Ngày bắt đầu:</b> {showing.startDate}
                                         </div>
                                         <div>
-                                            <b>End Date:</b> {showing.endDate}
+                                            <b>Ngày kết thúc:</b> {showing.endDate}
                                         </div>
                                     </Card>
                                 </div>
@@ -242,12 +242,12 @@ export default function EditMovie() {
                         </div>
                     </Form.Item>
                     <Form.Item>
-                        <Button type="primary" htmlType="submit">Save</Button>
+                        <Button type="primary" htmlType="submit">Lưu</Button>
                     </Form.Item>
                 </Form>
             </div>
             <Modal
-                title="Movie Showing"
+                title="Suất chiếu"
                 open={showingModalOpen}
                 onOk={handleShowingOk}
                 onCancel={() => setShowingModalOpen(false)}
@@ -255,23 +255,23 @@ export default function EditMovie() {
                 footer={
                     <Flex justify="end" gap={8}>
                         <Button style={{ color: '#b7b7b7' }} onClick={() => setShowingModalOpen(false)}>
-                            Cancel
+                            Hủy
                         </Button>
                         <Button type="primary" onClick={handleShowingOk}>
-                            Save
+                            Lưu
                         </Button>
                     </Flex>
                 }
             >
                 <Form form={showingForm} layout="vertical">
-                    <Form.Item name="name" label="Name" rules={[{ required: true }]}>
-                        <Input />
+                    <Form.Item name="name" label="Tên suất chiếu" rules={[{ required: true }]}>
+                        <Input placeholder="Nhập tên suất chiếu" />
                     </Form.Item>
-                    <Form.Item name="startDate" label="Start Date" rules={[{ required: true }]}>
-                        <DatePicker style={{ width: '100%' }} />
+                    <Form.Item name="startDate" label="Ngày bắt đầu" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày bắt đầu" />
                     </Form.Item>
-                    <Form.Item name="endDate" label="End Date" rules={[{ required: true }]}>
-                        <DatePicker style={{ width: '100%' }} />
+                    <Form.Item name="endDate" label="Ngày kết thúc" rules={[{ required: true }]}>
+                        <DatePicker style={{ width: '100%' }} placeholder="Chọn ngày kết thúc" />
                     </Form.Item>
                 </Form>
             </Modal>

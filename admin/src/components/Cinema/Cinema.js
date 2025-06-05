@@ -51,7 +51,7 @@ const CinemaAndBrand = () => {
 
   const columns = [
     {
-      title: "Cinema Name",
+      title: "Tên rạp phim",
       dataIndex: "cinemaName",
       key: "cinemaName",
       width: 180,
@@ -59,32 +59,32 @@ const CinemaAndBrand = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Brand ID",
+      title: "ID thương hiệu",
       dataIndex: "brandId",
       key: "brandId",
       width: 180,
       ellipsis: true,
     },
     {
-      title: "Address",
+      title: "Địa chỉ",
       dataIndex: "cinemaAddress",
       key: "cinemaAddress",
       width: 220,
       ellipsis: true,
     },
     {
-      title: "Province",
+      title: "Tỉnh/Thành phố",
       dataIndex: "province",
       key: "province",
       width: 120,
     },
     {
-      title: "Action",
+      title: "Thao tác",
       key: "action",
       width: 120,
       render: (_, record) => (
         <Space>
-          <Tooltip title="Edit">
+          <Tooltip title="Chỉnh sửa">
             <Button
               icon={<EditOutlined />}
               size="small"
@@ -92,11 +92,11 @@ const CinemaAndBrand = () => {
             />
           </Tooltip>
           <Popconfirm
-            title="Are you sure to delete this cinema?"
+            title="Bạn có chắc chắn muốn xóa rạp phim này?"
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No">
-            <Tooltip title="Delete">
+            okText="Có"
+            cancelText="Không">
+            <Tooltip title="Xóa">
               <Button icon={<DeleteOutlined />} size="small" danger />
             </Tooltip>
           </Popconfirm>
@@ -108,12 +108,12 @@ const CinemaAndBrand = () => {
   return (
     <div className="cinema-management-page">
       <div className="cinema-header">
-        <h2>Cinema Management</h2>
+        <h2>Quản lý rạp phim</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsModalOpen(true)}>
-          Add Cinema
+          Thêm rạp phim
         </Button>
       </div>
       <Table

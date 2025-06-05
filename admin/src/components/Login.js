@@ -24,8 +24,7 @@ function Login() {
         padding: 24,
         border: "1px solid #ccc",
         borderRadius: 8,
-      }}
-    >
+      }}>
       <h2>Đăng nhập</h2>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: 16 }}>
@@ -36,6 +35,7 @@ function Login() {
             onChange={(e) => setUsername(e.target.value)}
             style={{ width: "100%", padding: 8, marginTop: 4 }}
             required
+            placeholder="Nhập tên đăng nhập"
           />
         </div>
         <div style={{ marginBottom: 16 }}>
@@ -46,6 +46,7 @@ function Login() {
             onChange={(e) => setPassword(e.target.value)}
             style={{ width: "100%", padding: 8, marginTop: 4 }}
             required
+            placeholder="Nhập mật khẩu"
           />
         </div>
         <button type="submit" style={{ width: "100%", padding: 10 }}>

@@ -52,7 +52,7 @@ const Brands = () => {
 
   const columns = [
     {
-      title: "Avatar",
+      title: "Ảnh đại diện",
       dataIndex: "avatar",
       key: "avatar",
       render: (url) => (
@@ -61,7 +61,7 @@ const Brands = () => {
       width: 80,
     },
     {
-      title: "Brand Name",
+      title: "Tên thương hiệu",
       dataIndex: "brandName",
       key: "brandName",
       width: 180,
@@ -69,7 +69,7 @@ const Brands = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Cover",
+      title: "Ảnh bìa",
       dataIndex: "cover",
       key: "cover",
       render: (url) => (
@@ -78,12 +78,12 @@ const Brands = () => {
       width: 120,
     },
     {
-      title: "Action",
+      title: "Thao tác",
       key: "action",
       width: 120,
       render: (_, record) => (
         <Space>
-          <Tooltip title="Edit">
+          <Tooltip title="Chỉnh sửa">
             <Button
               icon={<EditOutlined />}
               size="small"
@@ -91,11 +91,11 @@ const Brands = () => {
             />
           </Tooltip>
           <Popconfirm
-            title="Are you sure to delete this brand?"
+            title="Bạn có chắc chắn muốn xóa thương hiệu này?"
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No">
-            <Tooltip title="Delete">
+            okText="Có"
+            cancelText="Không">
+            <Tooltip title="Xóa">
               <Button icon={<DeleteOutlined />} size="small" danger />
             </Tooltip>
           </Popconfirm>
@@ -107,12 +107,12 @@ const Brands = () => {
   return (
     <div className="brand-management-page">
       <div className="brand-header">
-        <h2>Brand Management</h2>
+        <h2>Quản lý thương hiệu</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsModalOpen(true)}>
-          Add Brand
+          Thêm thương hiệu
         </Button>
       </div>
       <Table

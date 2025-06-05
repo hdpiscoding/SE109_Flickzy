@@ -33,7 +33,7 @@ const Blog = () => {
   // Thêm hàm fetchBlogs để dùng lại
   const fetchBlogs = async () => {
     try {
-      const res = await getAllBlog({});
+      const res = await getAllBlog({ limit: 100, page: 1 });
       setBlogs(res.data || []);
     } catch (error) {
       setBlogs([]);
@@ -74,14 +74,14 @@ const Blog = () => {
 
   const columns = [
     {
-      title: "Cover",
+      title: "Ảnh bìa",
       dataIndex: "cover",
       key: "cover",
       render: (url) => <img src={url} alt="cover" className="blog-cover-img" />,
       width: 100,
     },
     {
-      title: "Title",
+      title: "Tiêu đề",
       dataIndex: "title",
       key: "title",
       width: 200,
@@ -89,24 +89,24 @@ const Blog = () => {
       sortDirections: ["ascend", "descend"],
     },
     {
-      title: "Description",
+      title: "Mô tả",
       dataIndex: "description",
       key: "description",
       width: 300,
     },
     {
-      title: "Views",
+      title: "Lượt xem",
       dataIndex: "views",
       key: "views",
       width: 80,
     },
     {
-      title: "Action",
+      title: "Thao tác",
       key: "action",
       width: 120,
       render: (_, record) => (
         <Space>
-          <Tooltip title="Edit">
+          <Tooltip title="Chỉnh sửa">
             <Button
               icon={<EditOutlined />}
               size="small"
@@ -114,11 +114,11 @@ const Blog = () => {
             />
           </Tooltip>
           <Popconfirm
-            title="Are you sure to delete this blog?"
+            title="Bạn có chắc chắn muốn xóa blog này không?"
             onConfirm={() => handleDelete(record.id)}
-            okText="Yes"
-            cancelText="No">
-            <Tooltip title="Delete">
+            okText="Có"
+            cancelText="Không">
+            <Tooltip title="Xóa">
               <Button icon={<DeleteOutlined />} size="small" danger />
             </Tooltip>
           </Popconfirm>
@@ -130,19 +130,19 @@ const Blog = () => {
   return (
     <div className="blog-management-page">
       <div className="blog-header">
-        <h2>Blog Management</h2>
+        <h2>Quản lý blog</h2>
         <Button
           type="primary"
           icon={<PlusOutlined />}
           onClick={() => setIsModalOpen(true)}>
-          Add Blog
+          Thêm blog
         </Button>
       </div>
       <Table
         columns={columns}
         dataSource={blogs}
         rowKey="id"
-        pagination={{ pageSize: 5 }}
+        pagination={{ pageSize: 5 }} // Hiển thị 20 blog mỗi tranghị tất cả blog, không phân trang
         className="blog-table"
       />
       <Modal

@@ -23,10 +23,10 @@ import { uploadToCloudinary } from "../../untils/uploadToCloudinary";
 const { Option } = Select;
 
 const categories = [
-  { id: "550e8400-e29b-41d4-a716-446655440000", name: "Theatrical Movie" },
-  { id: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd", name: "Movie Collection" },
-  { id: "c183e72d-e684-4936-a1d9-5c84e3f9b41a", name: "Movie Review" },
-  { id: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b", name: "Latest" },
+  { id: "550e8400-e29b-41d4-a716-446655440000", name: "Phim chiếu rạp" },
+  { id: "a4b52c20-6d4b-42d1-9a6f-51c9d3f4e2bd", name: "Bộ sưu tập phim" },
+  { id: "c183e72d-e684-4936-a1d9-5c84e3f9b41a", name: "Đánh giá phim" },
+  { id: "e3a05d6f-d59c-4b85-87dc-0167d4fc0f6b", name: "Mới nhất" },
 ];
 
 const mdParser = new MarkdownIt();
@@ -72,9 +72,9 @@ const AddBlogsModal = ({ onSuccess }) => {
       await addABlog(blogData);
       if (onSuccess) onSuccess();
 
-      toast.success("Create blog successfully!");
+      toast.success("Tạo blog thành công!");
     } catch (error) {
-      toast.error("Failed to create blog!");
+      toast.error("Tạo blog thất bại!");
     }
     setUploading(false);
   };
@@ -87,7 +87,7 @@ const AddBlogsModal = ({ onSuccess }) => {
 
   return (
     <div className="blog-form-container">
-      <h1>Create New Blog</h1>
+      <h1>Tạo blog mới</h1>
       <Form
         form={form}
         layout="vertical"
@@ -100,20 +100,20 @@ const AddBlogsModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col xs={24} md={16}>
             <Form.Item
-              label="Title"
+              label="Tiêu đề"
               name="title"
               rules={[
-                { required: true, message: "Please input the blog title!" },
+                { required: true, message: "Vui lòng nhập tiêu đề blog!" },
               ]}>
-              <Input placeholder="Blog Title" />
+              <Input placeholder="Tiêu đề blog" />
             </Form.Item>
           </Col>
           <Col xs={24} md={8}>
             <Form.Item
-              label="Time To Read (minutes)"
+              label="Thời gian đọc (phút)"
               name="timeToRead"
               rules={[
-                { required: true, message: "Please input time to read!" },
+                { required: true, message: "Vui lòng nhập thời gian đọc!" },
               ]}>
               <InputNumber min={1} max={60} style={{ width: "100%" }} />
             </Form.Item>
@@ -122,22 +122,20 @@ const AddBlogsModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Description"
+              label="Mô tả"
               name="description"
-              rules={[
-                { required: true, message: "Please input the description!" },
-              ]}>
-              <Input placeholder="Short description" />
+              rules={[{ required: true, message: "Vui lòng nhập mô tả!" }]}>
+              <Input placeholder="Mô tả ngắn" />
             </Form.Item>
           </Col>
         </Row>
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Cover Image"
+              label="Ảnh bìa"
               required
               rules={[
-                { required: true, message: "Please upload a cover image!" },
+                { required: true, message: "Vui lòng tải lên ảnh bìa!" },
               ]}>
               <Upload
                 accept="image/*"
@@ -148,12 +146,12 @@ const AddBlogsModal = ({ onSuccess }) => {
                 onRemove={() => setCoverFile(null)}
                 showUploadList={false}
                 disabled={uploading}>
-                <Button icon={<UploadOutlined />}>Select Image</Button>
+                <Button icon={<UploadOutlined />}>Chọn ảnh</Button>
               </Upload>
               {coverImg && (
                 <img
                   src={coverImg}
-                  alt="cover preview"
+                  alt="Xem trước ảnh bìa"
                   style={{
                     marginTop: 12,
                     maxHeight: 180,
@@ -167,11 +165,9 @@ const AddBlogsModal = ({ onSuccess }) => {
         <Row gutter={24}>
           <Col span={24}>
             <Form.Item
-              label="Category"
+              label="Thể loại"
               name="categoryId"
-              rules={[
-                { required: true, message: "Please select a category!" },
-              ]}>
+              rules={[{ required: true, message: "Vui lòng chọn thể loại!" }]}>
               <Select>
                 {categories.map((cat) => (
                   <Option key={cat.id} value={cat.id}>
@@ -186,7 +182,7 @@ const AddBlogsModal = ({ onSuccess }) => {
           <Col span={24}>
             <div className="md-editor-block">
               <label className="ant-form-item-label">
-                <span>Content</span>
+                <span>Nội dung</span>
               </label>
               <MdEditor
                 value={content}
@@ -202,7 +198,7 @@ const AddBlogsModal = ({ onSuccess }) => {
           <Col span={24}>
             <Form.Item>
               <Button type="primary" htmlType="submit" block>
-                Create Blog
+                Tạo blog
               </Button>
             </Form.Item>
           </Col>
