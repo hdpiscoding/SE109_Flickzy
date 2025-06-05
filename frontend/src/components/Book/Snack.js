@@ -54,11 +54,21 @@ export default function Snack({
 
   const handlePayClick = () => {
     const auth = localStorage.getItem("auth-storage");
-    if (!auth) {
-      setShowEmailModal(true);
-      return;
+    let user = null;
+    try {
+      if (auth) {
+        const parsed = JSON.parse(auth);
+        user = parsed?.state?.user || null;
+      }
+    } catch (e) {
+      user = null;
     }
-    handleOpenPaymentForm(items);
+
+    if (user) {
+      handleOpenPaymentForm(items);
+    } else {
+      setShowEmailModal(true);
+    }
   };
 
   const handleEmailSubmit = () => {
