@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { Tabs, Form, Input, Button, DatePicker, Select, message, ConfigProvider, Upload, Avatar, Table } from 'antd';
+import { Tabs, Form, Input, Button, DatePicker, Select, message, ConfigProvider, Upload, Avatar, Table, Descriptions, Modal, Tag } from 'antd';
 import { UserOutlined, UploadOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import {getUserProfile, updateUserProfile, updateUserPassword, getUserBookingHistory} from "../../services/UserService";
@@ -55,6 +55,44 @@ export default function UserProfile() {
     const [avatarFile, setAvatarFile] = useState(null);
     const [bookings, setBookings] = useState([]);
     const { updateUser } = useAuthStore();
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleRowClick = (record) => {
+        setSelectedBooking(record);
+        setModalVisible(true);
+    };
+
+    const renderBookingDetails = () => {
+        if (!selectedBooking) return null;
+        const { bookingId, createdAt, price, seatStatus, movieInfo, scheduleInfo, cinemaInfo, seats, snacks } = selectedBooking;
+        return (
+            <Descriptions column={1} bordered size="middle">
+                <Descriptions.Item label="Mã đặt vé">{bookingId}</Descriptions.Item>
+                <Descriptions.Item label="Thời điểm đặt">{createdAt ? dayjs(createdAt).format('DD/MM/YYYY HH:mm') : '--'}</Descriptions.Item>
+                <Descriptions.Item label="Trạng thái ghế">{seatStatus === 1 ? <Tag color="green">Đã đặt</Tag> : <Tag color="red">Chưa đặt</Tag>}</Descriptions.Item>
+                <Descriptions.Item label="Giá">{price?.toLocaleString() + ' đ'}</Descriptions.Item>
+                <Descriptions.Item label="Tên phim">{movieInfo?.movieName}</Descriptions.Item>
+                <Descriptions.Item label="Thể loại">{movieInfo?.genresName}</Descriptions.Item>
+                <Descriptions.Item label="Suất chiếu">
+                    {scheduleInfo?.scheduleDate} {scheduleInfo?.scheduleStart} ~ {scheduleInfo?.scheduleEnd}
+                </Descriptions.Item>
+                <Descriptions.Item label="Phòng chiếu">{scheduleInfo?.roomType}</Descriptions.Item>
+                <Descriptions.Item label="Rạp">{cinemaInfo?.cinemaName}</Descriptions.Item>
+                <Descriptions.Item label="Địa chỉ rạp">{cinemaInfo?.cinemaAddress}</Descriptions.Item>
+                <Descriptions.Item label="Chỗ ngồi">
+                    {Array.isArray(seats) && seats.length > 0
+                        ? seats.map(seat => seat.name).filter(Boolean).join(', ')
+                        : '--'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Đồ ăn">
+                    {Array.isArray(snacks) && snacks.length > 0
+                        ? snacks.map(snack => `${snack.name} x${snack.quantity}`).join(', ')
+                        : '--'}
+                </Descriptions.Item>
+            </Descriptions>
+        );
+    };
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -163,6 +201,17 @@ export default function UserProfile() {
             dataIndex: ['movieInfo', 'movieName'],
             key: 'movieName',
             width: 180,
+        },
+        {
+            title: 'Chỗ ngồi',
+            key: 'seats',
+            render: (_, record) => {
+                if (Array.isArray(record.seats) && record.seats.length > 0) {
+                    return record.seats.map(seat => seat.name).filter(Boolean).join(', ');
+                }
+                return '--';
+            },
+            width: 120,
         },
         {
             title: 'Suất chiếu',
@@ -315,13 +364,27 @@ export default function UserProfile() {
                                 key: '3',
                                 label: 'Lịch sử đặt vé',
                                 children: (
-                                    <Table
-                                        columns={columns}
-                                        dataSource={bookings}
-                                        rowKey="bookingId"
-                                        pagination={{ pageSize: 5 }}
-                                        style={{ marginTop: 16 }}
-                                    />
+                                    <>
+                                        <Table
+                                            columns={columns}
+                                            dataSource={bookings}
+                                            rowKey="bookingId"
+                                            pagination={{ pageSize: 5 }}
+                                            style={{ marginTop: 16, cursor: 'pointer' }}
+                                            onRow={record => ({
+                                                onClick: () => handleRowClick(record)
+                                            })}
+                                        />
+                                        <Modal
+                                            open={modalVisible}
+                                            onCancel={() => setModalVisible(false)}
+                                            footer={null}
+                                            title="Chi tiết đặt vé"
+                                            width={600}
+                                        >
+                                            {renderBookingDetails()}
+                                        </Modal>
+                                    </>
                                 )
                             }
                         ]}
