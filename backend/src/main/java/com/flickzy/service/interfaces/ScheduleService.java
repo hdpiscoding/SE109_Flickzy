@@ -5,6 +5,7 @@ import com.flickzy.dto.Schedule.CinemaScheduleResponseDTO;
 import com.flickzy.dto.Schedule.MovieScheduleFilterDTO;
 import com.flickzy.dto.Schedule.MovieScheduleResponseDTO;
 import com.flickzy.dto.Schedule.ScheduleDTO;
+import com.flickzy.dto.Schedule.ScheduleSimpleDTO;
 
 import java.util.List;
 import java.util.UUID;
@@ -15,4 +16,6 @@ public interface ScheduleService {
     CinemaScheduleResponseDTO addSchedule(ScheduleDTO scheduleDTO);
     CinemaScheduleResponseDTO editSchedule(UUID scheduleId, ScheduleDTO scheduleDTO);
     void deleteSchedule(UUID scheduleId);
+
+    List<ScheduleSimpleDTO> getAllSchedules();
 }

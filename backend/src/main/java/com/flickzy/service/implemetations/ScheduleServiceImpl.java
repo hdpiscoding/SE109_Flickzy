@@ -5,6 +5,7 @@ import com.flickzy.dto.Schedule.CinemaScheduleResponseDTO;
 import com.flickzy.dto.Schedule.MovieScheduleFilterDTO;
 import com.flickzy.dto.Schedule.MovieScheduleResponseDTO;
 import com.flickzy.dto.Schedule.ScheduleDTO;
+import com.flickzy.dto.Schedule.ScheduleSimpleDTO;
 import com.flickzy.entity.Movies;
 import com.flickzy.entity.Room;
 import com.flickzy.entity.Schedule;
@@ -154,6 +155,12 @@ public class ScheduleServiceImpl implements ScheduleService {
 
         scheduleRepository.delete(schedule);
         logger.info("Schedule deleted successfully: scheduleId={}", scheduleId);
+    }
+
+    @Override
+    public List<ScheduleSimpleDTO> getAllSchedules() {
+        List<Schedule> schedules = scheduleRepository.findAll();
+        return scheduleMapper.toSimpleDtoList(schedules);
     }
 
     private void validateScheduleTimes(ScheduleDTO scheduleDTO) {

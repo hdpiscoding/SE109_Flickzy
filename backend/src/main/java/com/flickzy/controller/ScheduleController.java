@@ -6,6 +6,7 @@ import com.flickzy.dto.Schedule.CinemaScheduleResponseDTO;
 import com.flickzy.dto.Schedule.MovieScheduleFilterDTO;
 import com.flickzy.dto.Schedule.MovieScheduleResponseDTO;
 import com.flickzy.dto.Schedule.ScheduleDTO;
+import com.flickzy.dto.Schedule.ScheduleSimpleDTO;
 import com.flickzy.service.interfaces.ScheduleService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -56,5 +57,11 @@ public class ScheduleController extends BaseController {
     public ResponseEntity<Object> deleteSchedule(@PathVariable UUID scheduleId) {
         scheduleService.deleteSchedule(scheduleId);
         return buildResponse(null, HttpStatus.OK, "Schedule deleted successfully");
+    }
+
+    @GetMapping("/schedules")
+    public ResponseEntity<Object> getAllSchedules() {
+        List<ScheduleSimpleDTO> schedules = scheduleService.getAllSchedules();
+        return buildResponse(schedules, HttpStatus.OK, "All schedules retrieved successfully");
     }
 }
