@@ -1,24 +1,27 @@
-import { Button, Input, Select, Form, Spin } from "antd"; // Import Spin từ Ant Design
+import { Button, Input, Select, Form, Spin } from "antd";
 import React, { useEffect, useState } from "react";
 import { addRoom, addSeat } from "../../services/adminService";
+import { getAllCinema } from "../../services/cinemaService";
 
 export default function NewRoom2({ rectangles, height, width }) {
   const [roomName, setRoomName] = useState("");
   const [cinemaId, setCinemaId] = useState(null);
   const [roomType, setRoomType] = useState("");
   const [cinemas, setCinemas] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Trạng thái loading
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Giả lập fetch dữ liệu
-    setTimeout(() => {
-      setCinemas([
-        { id: 1, name: "Cinema 1" },
-        { id: 2, name: "Cinema 2" },
-        { id: 3, name: "Cinema 3" },
-      ]);
-      setIsLoading(false); // Dữ liệu đã tải xong
-    }, 1000); // Giả lập thời gian tải
+    // Lấy danh sách rạp từ API
+    const fetchCinemas = async () => {
+      try {
+        const res = await getAllCinema();
+        setCinemas(res.data || []);
+      } catch (error) {
+        setCinemas([]);
+      }
+      setIsLoading(false);
+    };
+    fetchCinemas();
   }, []);
 
   const insertData = async () => {
@@ -27,23 +30,23 @@ export default function NewRoom2({ rectangles, height, width }) {
       return;
     }
 
-    setIsLoading(true); // Bắt đầu loading khi insert data
+    setIsLoading(true);
     try {
       const createRoomRes = await addRoom({
         roomName: roomName,
         roomType: roomType,
         height: height,
         width: width,
-        cinemaId: "0d31a0d1-c9fb-459b-b673-7a8070ec077d",
+        cinemaId: cinemaId, // Lấy từ Select
       });
 
       for (const rect of rectangles) {
         await addSeat({
-          seatTypeId: String(rect.seatTypeId), // đảm bảo là string
-          roomId: String(createRoomRes.data.roomId), // đảm bảo là string
-          row: Number(rect.row), // đảm bảo là number
-          column: Number(rect.col), // đảm bảo là number
-          name: String(rect.name), // đảm bảo là string
+          seatTypeId: String(rect.seatTypeId),
+          roomId: String(createRoomRes.data.roomId),
+          row: Number(rect.row),
+          column: Number(rect.col),
+          name: String(rect.name),
         });
       }
 
@@ -53,7 +56,7 @@ export default function NewRoom2({ rectangles, height, width }) {
       console.error("Error inserting data:", error);
       alert(error);
     } finally {
-      setIsLoading(false); // Kết thúc loading
+      setIsLoading(false);
     }
   };
 
@@ -68,7 +71,7 @@ export default function NewRoom2({ rectangles, height, width }) {
             height: "100vh",
           }}
         >
-          <Spin size="large" /> {/* Hiển thị vòng tròn loading */}
+          <Spin size="large" />
         </div>
       ) : (
         <div>
@@ -85,10 +88,12 @@ export default function NewRoom2({ rectangles, height, width }) {
                 value={cinemaId}
                 onChange={(value) => setCinemaId(value)}
                 placeholder="Select a cinema"
+                showSearch
+                optionFilterProp="children"
               >
                 {cinemas.map((cinema) => (
                   <Select.Option key={cinema.id} value={cinema.id}>
-                    {cinema.name}
+                    {cinema.cinemaName} - {cinema.cinemaAddress}
                   </Select.Option>
                 ))}
               </Select>
@@ -124,9 +129,7 @@ export default function NewRoom2({ rectangles, height, width }) {
                   justifyContent: "center",
                   fontWeight: "bold",
                 }}
-              >
-                {/* Ô trống góc trên cùng */}
-              </div>
+              ></div>
               {Array.from({ length: width }).map((_, colIndex) => (
                 <div
                   key={`col-${colIndex}`}
@@ -150,7 +153,6 @@ export default function NewRoom2({ rectangles, height, width }) {
             {/* Render the grid with row numbers */}
             {Array.from({ length: height }).map((_, rowIndex) => (
               <div key={rowIndex} style={{ display: "flex" }}>
-                {/* Render the row number */}
                 <div
                   style={{
                     width: "40px",
@@ -194,7 +196,7 @@ export default function NewRoom2({ rectangles, height, width }) {
                   border: "1px solid black",
                 }}
               >
-                {rectangles.name}
+                {rect.name}
               </div>
             ))}
           </div>
