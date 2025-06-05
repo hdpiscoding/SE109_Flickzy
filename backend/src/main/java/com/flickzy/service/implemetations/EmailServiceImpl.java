@@ -58,37 +58,37 @@ public class EmailServiceImpl implements EmailService {
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
             String htmlContent =
-                    "<h2>🎬 Booking Confirmation</h2>" +
-                            "<p>Thank you for your booking! Here are your details:</p>" +
+                    "<h2>🎬 Xác nhận đặt vé</h2>" +
+                            "<p>Cảm ơn bạn đã đặt vé! Thông tin chi tiết của bạn:</p>" +
                             "<hr>" +
-                            "<h3>Movie Information</h3>" +
+                            "<h3>Thông tin phim</h3>" +
                             "<ul>" +
-                            "  <li><b>Movie:</b> " + body.getMovieName() + "</li>" +
-                            "  <li><b>Date:</b> " + body.getScheduleDate() + "</li>" +
-                            "  <li><b>Time:</b> " + body.getScheduleStart() + " - " + body.getScheduleEnd() + "</li>" +
+                            "  <li><b>Tên phim:</b> " + body.getMovieName() + "</li>" +
+                            "  <li><b>Ngày chiếu:</b> " + body.getScheduleDate() + "</li>" +
+                            "  <li><b>Thời gian:</b> " + body.getScheduleStart() + " - " + body.getScheduleEnd() + "</li>" +
                             "</ul>" +
-                            "<h3>Room Information</h3>" +
+                            "<h3>Thông tin phòng chiếu</h3>" +
                             "<ul>" +
-                            "  <li><b>Room:</b> " + body.getRoomName() + "</li>" +
-                            "  <li><b>Type:</b> " + body.getRoomType() + "</li>" +
+                            "  <li><b>Phòng:</b> " + body.getRoomName() + "</li>" +
+                            "  <li><b>Loại phòng:</b> " + body.getRoomType() + "</li>" +
                             "</ul>" +
-                            "<h3>Seats</h3>" +
+                            "<h3>Ghế đã đặt</h3>" +
                             "<table border='1' cellpadding='5' cellspacing='0'>" +
-                            "  <tr><th>Seat</th><th>Price</th></tr>" +
+                            "  <tr><th>Ghế</th><th>Giá</th></tr>" +
                             body.getSeats().stream()
                                     .map(seat -> "<tr><td>" + seat.getSeatName() + "</td><td>" + seat.getPrice() + "₫</td></tr>")
                                     .reduce("", String::concat) +
                             "</table>" +
-                            "<h3>Snacks</h3>" +
+                            "<h3>Đồ ăn kèm</h3>" +
                             "<table border='1' cellpadding='5' cellspacing='0'>" +
-                            "  <tr><th>Snack</th><th>Quantity</th><th>Price</th></tr>" +
+                            "  <tr><th>Tên</th><th>Số lượng</th><th>Giá</th></tr>" +
                             body.getSnacks().stream()
                                     .map(snack -> "<tr><td>" + snack.getSnackName() + "</td><td>" + snack.getQuantity() + "</td><td>" + snack.getPrice() + "₫</td></tr>")
                                     .reduce("", String::concat) +
                             "</table>" +
                             "<hr>" +
-                            "<h3>Total Price: <span style='color:green'>" + body.getTotalPrice() + "₫</span></h3>" +
-                            "<p>Enjoy your movie!</p>";
+                            "<h3>Tổng cộng: <span style='color:green'>" + body.getTotalPrice() + "₫</span></h3>" +
+                            "<p>Chúc bạn xem phim vui vẻ!</p>";
 
             helper.setTo(to);
             helper.setSubject("Thông báo đặt vé thành công");
