@@ -1,6 +1,7 @@
 package com.flickzy.controller;
 
 import com.flickzy.base.BaseController;
+import com.flickzy.dto.Booking.BookingNotificationDTO;
 import com.flickzy.dto.BookingRequestDTO;
 import com.flickzy.dto.BookingResponseDTO;
 import com.flickzy.dto.BookingSeatResponseDTO;
@@ -9,6 +10,7 @@ import com.flickzy.repository.UserRepository;
 import com.flickzy.service.interfaces.BookingService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flickzy.service.interfaces.EmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,6 +28,7 @@ import java.util.UUID;
 public class BookingController extends BaseController {
     private final BookingService bookingService;
     private final UserRepository userRepository;
+    private final EmailService emailService;
 
     @GetMapping("/bookings/me")
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
@@ -70,33 +73,46 @@ public class BookingController extends BaseController {
         }
         return buildResponse(result, HttpStatus.OK, "Booking history retrieved successfully");
     }
-@GetMapping("/booking-by-schedule/{id}")
-public ResponseEntity<Object> getBookedSeatIdsByScheduleId(@PathVariable UUID id) {
-    List<BookingSeatResponseDTO> seatIds = bookingService.getBookedSeatIdsByScheduleId(id);
-    return buildResponse(seatIds, HttpStatus.OK, "Booked seatIds retrieved successfully");
-}
-    @PostMapping("/booking")
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    public ResponseEntity<Object> addBooking(
-            @Valid @RequestBody BookingRequestDTO bookingRequestDTO,
-            Authentication authentication) {
-        String email = authentication.getName();
-        Users user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
-        UUID userId = user.getId();
-        List<BookingResponseDTO> response = bookingService.addBooking(bookingRequestDTO, userId);
-        return buildResponse(response, HttpStatus.CREATED, "Booking(s) added successfully");
-    }
-    @PutMapping("/booking/update-email-by-momo")
 
-public ResponseEntity<Object> updateEmailByMomoId(
-        @RequestParam String momoId,
-        @RequestParam String email) {
-    boolean updated = bookingService.updateEmailByMomoID(momoId, email);
-    if (updated) {
-        return buildResponse(null, HttpStatus.OK, "Email updated successfully for momoId: " + momoId);
-    } else {
-        return buildResponse(null, HttpStatus.NOT_FOUND, "Booking not found for momoId: " + momoId);
+    @GetMapping("/booking-by-schedule/{id}")
+    public ResponseEntity<Object> getBookedSeatIdsByScheduleId(@PathVariable UUID id) {
+        List<BookingSeatResponseDTO> seatIds = bookingService.getBookedSeatIdsByScheduleId(id);
+        return buildResponse(seatIds, HttpStatus.OK, "Booked seatIds retrieved successfully");
     }
-}
+        @PostMapping("/booking")
+        @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+        public ResponseEntity<Object> addBooking(
+                @Valid @RequestBody BookingRequestDTO bookingRequestDTO,
+                Authentication authentication) {
+            String email = authentication.getName();
+            Users user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new IllegalArgumentException("User not found for email: " + email));
+            UUID userId = user.getId();
+            List<BookingResponseDTO> response = bookingService.addBooking(bookingRequestDTO, userId);
+            return buildResponse(response, HttpStatus.CREATED, "Booking(s) added successfully");
+        }
+        @PutMapping("/booking/update-email-by-momo")
+
+    public ResponseEntity<Object> updateEmailByMomoId(
+            @RequestParam String momoId,
+            @RequestParam String email) {
+        boolean updated = bookingService.updateEmailByMomoID(momoId, email);
+        if (updated) {
+            return buildResponse(null, HttpStatus.OK, "Email updated successfully for momoId: " + momoId);
+        } else {
+            return buildResponse(null, HttpStatus.NOT_FOUND, "Booking not found for momoId: " + momoId);
+        }
+    }
+
+    @PostMapping("/bookings/send-email")
+    public ResponseEntity<Object> sendBookingConfirmationEmail(
+            @RequestParam String email,
+            @RequestBody BookingNotificationDTO bookingDetails) {
+        try {
+            emailService.sendBookNotificationEmail(email, bookingDetails);
+            return buildResponse(null, HttpStatus.OK, "Booking confirmation email sent successfully");
+        } catch (Exception e) {
+            return buildResponse(null, HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send booking confirmation email: " + e.getMessage());
+        }
+    }
 }
